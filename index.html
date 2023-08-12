@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="stylesheet" href="../bootstrap/css/bootstrap.css" />
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script>
+            var giocatori=[]
+            var ruoli_partita=[]
+            var ruoli_gioco=['lupo','veggente','medium','guardia','matto',
+            'cacciatore','indemoniato','contadino','angelo','spaccino','insinuo','illusionista','puttana','senzaVolto','inquisitore','neomelodico','fantasma']
+            var ng
+            var lupi
+            var contadini
+            var cont_g=0;
+            var turno=0
+            
+            function refresh(){
+              window.open("index.html","_self")
+            }
+
+            function chiudiC(){
+              var modal = document.getElementById("numC");
+              modal.style.display = "none";
+              document.getElementById("contadino").checked=false
+            }
+            function chiudiL(){
+              var modal = document.getElementById("numL");
+              document.getElementById("lupo").checked=false
+              modal.style.display = "none";
+          }
+          function mostra_ruoli(){
+            document.getElementById("tabella").style.display="flex"
+            document.getElementById("mosNas").innerHTML="Nascondi ruoli"
+            document.getElementById("mosNas").setAttribute("onclick","nascondi_ruoli()")
+          }
+          function nascondi_ruoli(){
+            document.getElementById("tabella").style.display="none"
+            document.getElementById("mosNas").innerHTML="Mostra_ruoli"
+            document.getElementById("mosNas").setAttribute("onclick","mostra_ruoli()")
+          }
+            function modal_giocatori(){
+                var modal=document.getElementById("numG")
+                modal.style.display="block"
+            }
+            function inserisci_nomi(){
+                document.getElementById("numG").style.display="none"
+                ng=parseInt(document.getElementById("ng").value)
+                document.getElementById("nomiG").style.display="block"
+            }
+            function leggi_nomi(){
+                if(cont_g<ng-1){
+                    giocatori.push(document.getElementById("nomeg").value)
+                    cont_g+=1
+                    document.getElementById("posG").innerHTML=cont_g+1
+                    document.getElementById("nomeg").value=""
+                }
+                else{
+                    giocatori.push(document.getElementById("nomeg").value)
+                    document.getElementById("nomiG").style.display="none"
+                    document.getElementById("ruoli").style.display="block"
+                    
+                }
+            }
+            function acquisisci_ruoli(){
+              ruoli_gioco.forEach((ruolo)=>{
+                if(document.getElementById(ruolo).checked==true){
+                  if(ruolo=='lupo'){
+                    for(let i=0;i<lupi;i++){
+                      ruoli_partita.push(ruolo)
+                    }
+                  }
+                  else if(ruolo=='contadino'){
+                    for(let i=0;i<contadini;i++){
+                      ruoli_partita.push(ruolo)
+                    }
+                  }
+                  else{
+                    ruoli_partita.push(ruolo)
+                  }
+                }
+              })
+              if(ruoli_partita.length==ng){
+                document.getElementById("ruoli").style.display="none"
+                consegna_ruoli()
+              }
+              else{
+                alert("numero giocaotri e personaggi deve essere uguale")
+              }
+            }
+            function shuffleArray(array) {
+              for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+              }
+              return array;
+            }
+            function consegna_ruoli(){
+              ruoli_partita=shuffleArray(ruoli_partita)
+              cambia_ruolo()
+              document.getElementById("Ruoli").style.display="block"
+            }
+            function cambia_ruolo(){
+              if(turno==ng){
+                document.getElementById("Ruoli").style.display="none"
+                lista_narratore()
+              }
+              document.getElementById("turno_giocatore").innerHTML="Passa il telefono a "+giocatori[turno]
+              document.getElementById("rivela_ruolo").innerHTML=ruoli_partita[turno]
+              document.getElementById("rivela_ruolo").style.display="none";
+              turno+=1
+            }
+            function mostra(){
+            document.getElementById("rivela_ruolo").style.display="block";
+          }           
+
+          function lista_narratore(){
+            var tabella=document.getElementById("tabella")
+            var riga
+            var nome
+            for(let i=0;i<ng;i++){
+              //aggiungi in una tabella che all'inizio è hidden
+              riga = tabella.insertRow(i);
+              nome= riga.insertCell(0);
+              ruolo=riga.insertCell(1);
+              nome.innerHTML=giocatori[i]
+              ruolo.innerHTML=ruoli_partita[i]
+            }
+            document.getElementById("mosNas").style.display="flex";
+            document.getElementById("inizia").innerHTML="Annulla partita";
+            document.getElementById("inizia").setAttribute("onclick","refresh()");
+          }
+
+            function inserisci_numero_lupi(){
+              if(document.getElementById('lupo').checked==true){
+                document.getElementById("numL").style.display="block"
+              }
+              else{
+                document.getElementById('lupo_2').innerHTML='Lupo'
+                lupi=0
+              }
+            }
+
+            function inserisci_lupi(){
+              document.getElementById("numL").style.display="none"
+              lupi=document.getElementById('numeroL').value
+              document.getElementById('lupo_2').innerHTML='lupi '+lupi
+            }
+
+            function inserisci_numero_contadini(){
+              if(document.getElementById('contadino').checked==true)
+                document.getElementById("numC").style.display="block"
+              else{
+                document.getElementById('lupo_2').innerHTML='Contadino'
+                contadini=0
+              }
+            }
+
+            function inserisci_contadini(){
+              document.getElementById("numC").style.display="none"
+              contadini=document.getElementById('numeroC').value
+              document.getElementById('contadino_2').innerHTML='contadini '+contadini
+            }
+        </script>
+        <style>
+            body{
+                background-color: blueviolet;
+            }
+            .titolo{
+                display: grid;
+                align-items: center;
+                justify-content: center;
+            }
+            .inizia-partita{
+                margin-top: 50%;
+                display: grid;
+                align-items: center;
+                justify-content: center;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="numC" class="modal" style="z-index: 100000;" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title">SCEGLI IL NUMERO</h5>
+                  
+                </div>
+                <div class="modal-body" style="justify-content: center; align-items: center; display: grid;">
+                  <p>Scrivi qui il numero.</p>
+                  <input id="numeroC" type="number" autocomplete="off">
+                  <br><br>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-primary" onclick="inserisci_contadini()">Invio</button>
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="chiudiC()">Chiudi</button>
+                </div>
+              </div>
+            </div>
+        </div>
+        <div id="Ruoli" class="modal" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="turno_giocatore"></h5>
+                  
+                </div>
+                <div class="modal-body" style="justify-content: center; align-items: center; display: grid;">
+                  <p id="rivela_ruolo"></p>
+                  
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-primary" onclick="mostra()">Mostra Ruolo</button>
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="cambia_ruolo()">Prossimo giocatore</button>
+                </div>
+              </div>
+            </div>
+        </div>
+        <div id="numL" class="modal" style="z-index: 100000;" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title">SCEGLI IL NUMERO</h5>
+                  
+                </div>
+                <div class="modal-body" style="justify-content: center; align-items: center; display: grid;">
+                  <p>Scrivi qui il numero.</p>
+                  <input id="numeroL" type="number" autocomplete="off">
+                  <br><br>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-primary" onclick="inserisci_lupi()">Invio</button>
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="chiudiL()">Chiudi</button>
+                </div>
+              </div>
+            </div>
+        </div>
+        <div id="numG" class="modal" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title">SCEGLI IL NUMERO DI GIOCATORI</h5>
+                  
+                </div>
+                <div class="modal-body" style="justify-content: center; align-items: center; display: grid;">
+                  <p>Scrivi qui il numero.</p>
+                  <input id="ng" type="number" autocomplete="off">
+                  <br><br>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-primary" onclick="inserisci_nomi()">Invio</button>
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="refresh()">Annulla partita</button>
+                </div>
+              </div>
+            </div>
+        </div>
+        <div id="nomiG" class="modal" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title">NOMI GIOCATORI</h5>
+                  
+                </div>
+                <div class="modal-body" style="justify-content: center; align-items: center; display: grid;">
+                  <p>Nome giocatore </p><p id="posG">1</p>
+                  <input id="nomeg" type="text" autocomplete="off">
+                  <br><br>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-primary" onclick="leggi_nomi()">Invio</button>
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="refresh()">Annulla partita</button>
+                </div>
+              </div>
+            </div>
+        </div>
+        <div id="ruoli" class="modal" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title">SCEGLI I RUOLI</h5>
+                  
+                </div>
+                <div class="modal-body" style="justify-content: center;
+                display: grid;
+                justify-items: center;
+                grid-template-columns: repeat(3,1fr);">
+                  <input type="checkbox" class="btn-check" id="lupo" onclick="inserisci_numero_lupi()">
+                  <label class="btn btn-outline-primary" for="lupo" id="lupo_2">Lupo</label>
+                  <input type="checkbox" class="btn-check" id="contadino" onclick="inserisci_numero_contadini()">
+                  <label class="btn btn-outline-primary" for="contadino" id="contadino_2">contadino</label>
+                  <input type="checkbox" class="btn-check" id="veggente">
+                  <label class="btn btn-outline-primary" for="veggente">veggente</label>
+                  <input type="checkbox" class="btn-check" id="guardia">
+                  <label class="btn btn-outline-primary" for="guardia">guardia</label>
+                  <input type="checkbox" class="btn-check" id="medium">
+                  <label class="btn btn-outline-primary" for="medium">medium</label>
+                  <input type="checkbox" class="btn-check" id="matto">
+                  <label class="btn btn-outline-primary" for="matto">matto</label>
+                  <input type="checkbox" class="btn-check" id="cacciatore">
+                  <label class="btn btn-outline-primary" for="cacciatore">cacciatore</label>
+                  <input type="checkbox" class="btn-check" id="indemoniato">
+                  <label class="btn btn-outline-primary" for="indemoniato">indemoniato</label>
+                  <input type="checkbox" class="btn-check" id="angelo">
+                  <label class="btn btn-outline-primary" for="angelo">angelo</label>
+                  <input type="checkbox" class="btn-check" id="spaccino">
+                  <label class="btn btn-outline-primary" for="spaccino">spaccino</label>
+                  <input type="checkbox" class="btn-check" id="insinuo">
+                  <label class="btn btn-outline-primary" for="insinuo">insinuo</label>
+                  <input type="checkbox" class="btn-check" id="illusionista">
+                  <label class="btn btn-outline-primary" for="illusionista">illusionista</label>
+                  <input type="checkbox" class="btn-check" id="puttana">
+                  <label class="btn btn-outline-primary" for="puttana">puttana</label>
+                  <input type="checkbox" class="btn-check" id="fantasma">
+                  <label class="btn btn-outline-primary" for="fantasma">fantasma</label>
+                  <input type="checkbox" class="btn-check" id="neomelodico">
+                  <label class="btn btn-outline-primary" for="neomelodico">neomelodico</label>
+                  <input type="checkbox" class="btn-check" id="inquisitore">
+                  <label class="btn btn-outline-primary" for="inquisitore">inquisitore</label>
+                  <input type="checkbox" class="btn-check" id="senzaVolto">
+                  <label class="btn btn-outline-primary" for="senzaVolto">senzaVolto</label>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-primary" onclick="acquisisci_ruoli()">Invio</button>
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="refresh()">Annulla partita</button>
+                </div>
+              </div>
+            </div>
+        </div>
+        <div class="titolo">
+            <p class="fs-1 fw-bold text-warning">Lupus</p>
+        </div>
+        <div style="justify-content:center; display:flex">
+          <button id="mosNas" style="display: none;" class="btn btn-primary" onclick="mostra_ruoli()">Mostra ruoli</button>
+      </div>
+      <table class="table table-dark" style="justify-content:center; display:none" id="tabella">
+
+      </table>
+        <div class="inizia-partita">
+            <button id="inizia" class="btn btn-secondary" onclick="modal_giocatori()">Inizia la partita</button>
+        </div>
+    </body>
+</html>
