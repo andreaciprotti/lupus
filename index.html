@@ -41,7 +41,10 @@
             }
 
             function info(ruolo){
-              alert(info_ruoli[ruolo])
+//              alert(info_ruoli[ruolo])
+              document.getElementById('info_ruoli').style.display="block"
+              document.getElementById('info_ruolo_ruolo').innerHTML=ruolo
+              document.getElementById('info_ruolo_value').innerHTML=info_ruoli[ruolo]
             }
 
             function chiudiC(){
@@ -52,6 +55,10 @@
             function chiudiL(){
               var modal = document.getElementById("numL");
               document.getElementById("lupo").checked=false
+              modal.style.display = "none";
+          }
+            function chiudi_info(){
+              var modal = document.getElementById("info_ruoli");
               modal.style.display = "none";
           }
           function mostra_ruoli(){
@@ -84,6 +91,7 @@
                     giocatori.push(document.getElementById("nomeg").value)
                     document.getElementById("nomiG").style.display="none"
                     document.getElementById("ruoli").style.display="block"
+                    document.getElementById("titolo_ruoli").innerHTML="SCEGLI "+ng+" RUOLI"
                     
                 }
             }
@@ -227,6 +235,23 @@
               </div>
             </div>
         </div>
+        <div id="info_ruoli" class="modal" tabindex="-1" role="dialog" style="z-index: 100000;">
+            <div class="modal-dialog" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="info_ruolo_ruolo"></h5>
+                  
+                </div>
+                <div class="modal-body" style="justify-content: center; align-items: center; display: grid;">
+                  <p id="info_ruolo_value"></p>
+                  
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="chiudi_info()">Chiudi</button>
+                </div>
+              </div>
+            </div>
+        </div>
         <div id="Ruoli" class="modal" tabindex="-1" role="dialog">
             <div class="modal-dialog" role="document">
               <div class="modal-content">
@@ -306,7 +331,7 @@
             <div class="modal-dialog" role="document">
               <div class="modal-content">
                 <div class="modal-header">
-                  <h5 class="modal-title">SCEGLI I RUOLI</h5>
+                  <h5 class="modal-title" id="titolo_ruoli"></h5>
                   
                 </div>
                 <div class="modal-body" style="justify-content: center;
