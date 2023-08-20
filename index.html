@@ -199,8 +199,20 @@
             }
         </script>
         <style>
-            body{
+            /*body{
                 background-color: blueviolet;
+            }*/
+            .animated-background {
+              overflow: hidden;
+            }
+            .animated-background video {
+              position: absolute;
+              top: 0;
+              left: 0;
+              width: 100%;
+              height: 100%;
+              object-fit: cover;
+              z-index: -1;
             }
             .titolo{
                 display: grid;
@@ -449,6 +461,12 @@
               </div>
             </div>
         </div>
+        <div class="animated-background">
+          <video autoplay muted loop>
+              <source src="./sfondo.mp4" type="video/mp4">
+              <!-- Fornisci eventuali alternative per altri formati video -->
+          </video>
+          <!-- Il tuo contenuto qui -->
         <div class="titolo">
             <p class="fs-1 fw-bold text-warning">Lupus</p>
         </div>
@@ -469,6 +487,7 @@
       </table>
         <div class="inizia-partita">
             <button id="inizia" class="btn btn-secondary" onclick="modal_giocatori()">Inizia la partita</button>
+        </div>
         </div>
     </body>
 </html>
