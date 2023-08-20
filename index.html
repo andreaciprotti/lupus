@@ -10,7 +10,26 @@
             var giocatori=[]
             var ruoli_partita=[]
             var ruoli_gioco=['lupo','veggente','medium','guardia','matto',
-            'cacciatore','indemoniato','contadino','angelo','spaccino','insinuo','illusionista','puttana','senzaVolto','inquisitore','neomelodico','fantasma']
+            'cacciatore','indemoniato','contadino','angelo','spaccino','insinuo',
+            'illusionista','puttana','senzaVolto','inquisitore','neomelodico','fantasma']
+            var info_ruoli={'lupo':'I lupi sono giocatori cattivi e durante la notte indicano un abitante del villaggio da ammazzare',
+            'veggente': 'Il veggente è un giocatore buono e durante la notte indica un abitante del villaggio e il narratore gli dice se è buono o cattivo',
+            'medium': 'Il medium è un giocatore buono e durante la notte indica un giocatore morto e il narratore gli dice se era buono, cattivo o se era il matto qualora fosse presente',
+            'guardia':'La guardia è un giocatore buono e durante la notte indica un giocatore da proteggere dall\'attacco dei lupi, se sceglie la stessa persona dei lupi quest\'ultima non muore. Può proteggere anche se stesso ma nessuno per 2 volte di fila',
+            'matto': "Il matto fa parte dei giocatori buoni ma gioca per conto suo. Vince se durante il giorno viene ammazzato dal villaggio",
+            'cacciatore':'Il cacciatore è un giocatore buono, può sparare una volta in tutta la partita durante il giorno per uccidere chiunque lui voglia, se uccide il matto il matto non vince',
+            'indemoniato' :'L\'indemoniato è un ruolo cattivo che però risulta buono agli occhi di veggente e medium. Non ha nessun potere ma gioca dalla parte dei lupi e vince con essi',
+            'contadino' : 'Il contadino è un giocatore buono che non ha alcun potere e deve cercare di eliminare i lupi',
+            'angelo' : 'L\'angelo, o angelo custode, è un ruolo buono che durante la prima notte indica un giocatore. Da quel momento, fino alla morte dell\'angelo, se il giocatore indicato viene ucciso per qualsiasi motivo, al posto suo muore l\'angelo',
+            'spaccino':'Lo spaccino è un ruolo cattivo e i lupi sanno chi è. Ogni notte indica un giocatore al quale viene modificato il ruolo. Per i ruoli che ricevono una risposta, la risposta viene invertita, quindi se il veggente viene indicato dallo spaccino, nel momento in cui chiede di un giocatore, se il giocatore è buono il narratore gli dirà che è cattivo. Se invece lo spaccino indica un ruolo che deve scegliere una persona, il potere viene esercitato sul giocatore alla destra di quello indicato. Quindi se lo spaccino indica la guardia, essa proteggerà la persona alla destra di quella che prova a proteggere.',
+            'insinuo':'L\insinuo è un ruolo cattivo che gioca con i lupi. Di notte indica una persona che viene vista cattiva dal veggente',
+            'illusionista': 'L\'illusionista è un giocatore cattivo che gioca con i lupi e viene visto come tale. Durante la notte indica un giocatore e gli blocca i poteri per quel turno',
+            'puttana':'La puttana è un giocatore buono che ogni notte indica una persona da proteggere dai lupi. Se però viene ammazzata muore sia lei che la persona che ha protetto',
+            'senzaVolto':'Il senzaVolto è un personaggio individuale. Ha il potere di resuscitare un giocatore appena morto a patto che sia contadino o lupo. Se resuscita 3 personaggi vince. Se il veggente lo controlla muore',
+            'inquisitore': 'L\'inquisitore è un giocatore buono che durante il giorno può chiedere ad un giocatore se è un lupo. Il giocatore è costretto a rispondere con la verità. Se il giocaotre a cui ha fatto la domanda risponde, l\'inquisitore perde definitivamente il suo potere, e se il giocatore è buono perde anche il diritto al voto. Se il giocatore indicato è un lupo e non risponde morirà durante la notte seguente e l\'inquisitore manterrà il suo potere',
+            'neomelodico':'Il neomelodico è un ruolo buono che una volta a partita può scegliere una notte in cui non muore nessuno',
+            'fantasma': 'Il fantasma gioca per conto suo. Durante la notte non può essere ucciso dai lupi. L\'obiettivo del fantasma è di possedere un giocatore. Può farlo indicandolo di notte. Per possederlo deve indicarlo per 5 notti di fila. La persona che viene indicata dal fantasma sa che il fantasma sta agendo su di se. Se il fantasma indica o viene indicato dal veggente muore',
+            'narratore':'Area testuale per aiutare il narratore dove può scrivere o che un giocatore è stato ucciso o su chi ha esercitato il potere un giocatore'}
             var ng
             var lupi
             var contadini
@@ -19,6 +38,10 @@
             
             function refresh(){
               window.open("index.html","_self")
+            }
+
+            function info(ruolo){
+              alert(info_ruoli[ruolo])
             }
 
             function chiudiC(){
@@ -38,7 +61,7 @@
           }
           function nascondi_ruoli(){
             document.getElementById("tabella").style.display="none"
-            document.getElementById("mosNas").innerHTML="Mostra_ruoli"
+            document.getElementById("mosNas").innerHTML="Mostra ruoli"
             document.getElementById("mosNas").setAttribute("onclick","mostra_ruoli()")
           }
             function modal_giocatori(){
@@ -120,13 +143,16 @@
             var tabella=document.getElementById("tabella")
             var riga
             var nome
-            for(let i=0;i<ng;i++){
+            var area_testo
+            for(let i=1;i<ng+1;i++){
               //aggiungi in una tabella che all'inizio è hidden
               riga = tabella.insertRow(i);
               nome= riga.insertCell(0);
               ruolo=riga.insertCell(1);
-              nome.innerHTML=giocatori[i]
-              ruolo.innerHTML=ruoli_partita[i]
+              area_testo=riga.insertCell(2)
+              nome.innerHTML=giocatori[i-1]
+              ruolo.innerHTML=ruoli_partita[i-1]
+              area_testo.innerHTML='<input type="text" style="width:100px">'
             }
             document.getElementById("mosNas").style.display="flex";
             document.getElementById("inizia").innerHTML="Annulla partita";
@@ -286,41 +312,110 @@
                 <div class="modal-body" style="justify-content: center;
                 display: grid;
                 justify-items: center;
-                grid-template-columns: repeat(3,1fr);">
+                grid-template-columns: repeat(4,1fr);
+                gap: 3px">
                   <input type="checkbox" class="btn-check" id="lupo" onclick="inserisci_numero_lupi()">
                   <label class="btn btn-outline-primary" for="lupo" id="lupo_2">Lupo</label>
+                  <button class="btn btn-secondary" onclick="info('lupo')"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-info-circle" viewBox="0 0 16 16">
+                    <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"></path>
+                    <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"></path>
+                  </svg></button>
                   <input type="checkbox" class="btn-check" id="contadino" onclick="inserisci_numero_contadini()">
                   <label class="btn btn-outline-primary" for="contadino" id="contadino_2">contadino</label>
+                  <button class="btn btn-secondary" onclick="info('contadino')"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-info-circle" viewBox="0 0 16 16">
+                    <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"></path>
+                    <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"></path>
+                  </svg></button>
                   <input type="checkbox" class="btn-check" id="veggente">
                   <label class="btn btn-outline-primary" for="veggente">veggente</label>
+                  <button class="btn btn-secondary" onclick="info('veggente')"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-info-circle" viewBox="0 0 16 16">
+                    <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"></path>
+                    <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"></path>
+                  </svg></button>
                   <input type="checkbox" class="btn-check" id="guardia">
                   <label class="btn btn-outline-primary" for="guardia">guardia</label>
+                  <button class="btn btn-secondary" onclick="info('guardia')"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-info-circle" viewBox="0 0 16 16">
+                    <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"></path>
+                    <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"></path>
+                  </svg></button>
                   <input type="checkbox" class="btn-check" id="medium">
                   <label class="btn btn-outline-primary" for="medium">medium</label>
+                  <button class="btn btn-secondary" onclick="info('medium')"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-info-circle" viewBox="0 0 16 16">
+                    <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"></path>
+                    <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"></path>
+                  </svg></button>
                   <input type="checkbox" class="btn-check" id="matto">
                   <label class="btn btn-outline-primary" for="matto">matto</label>
+                  <button class="btn btn-secondary" onclick="info('matto')"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-info-circle" viewBox="0 0 16 16">
+                    <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"></path>
+                    <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"></path>
+                  </svg></button>
                   <input type="checkbox" class="btn-check" id="cacciatore">
                   <label class="btn btn-outline-primary" for="cacciatore">cacciatore</label>
+                  <button class="btn btn-secondary" onclick="info('cacciatore')"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-info-circle" viewBox="0 0 16 16">
+                    <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"></path>
+                    <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"></path>
+                  </svg></button>
                   <input type="checkbox" class="btn-check" id="indemoniato">
                   <label class="btn btn-outline-primary" for="indemoniato">indemoniato</label>
+                  <button class="btn btn-secondary" onclick="info('indemoniato')"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-info-circle" viewBox="0 0 16 16">
+                    <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"></path>
+                    <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"></path>
+                  </svg></button>
                   <input type="checkbox" class="btn-check" id="angelo">
                   <label class="btn btn-outline-primary" for="angelo">angelo</label>
+                  <button class="btn btn-secondary" onclick="info('angelo')"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-info-circle" viewBox="0 0 16 16">
+                    <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"></path>
+                    <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"></path>
+                  </svg></button>
                   <input type="checkbox" class="btn-check" id="spaccino">
                   <label class="btn btn-outline-primary" for="spaccino">spaccino</label>
+                  <button class="btn btn-secondary" onclick="info('spaccino')"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-info-circle" viewBox="0 0 16 16">
+                    <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"></path>
+                    <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"></path>
+                  </svg></button>
                   <input type="checkbox" class="btn-check" id="insinuo">
                   <label class="btn btn-outline-primary" for="insinuo">insinuo</label>
+                  <button class="btn btn-secondary" onclick="info('insinuo')"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-info-circle" viewBox="0 0 16 16">
+                    <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"></path>
+                    <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"></path>
+                  </svg></button>
                   <input type="checkbox" class="btn-check" id="illusionista">
                   <label class="btn btn-outline-primary" for="illusionista">illusionista</label>
+                  <button class="btn btn-secondary" onclick="info('illusionista')"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-info-circle" viewBox="0 0 16 16">
+                    <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"></path>
+                    <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"></path>
+                  </svg></button>
                   <input type="checkbox" class="btn-check" id="puttana">
                   <label class="btn btn-outline-primary" for="puttana">puttana</label>
+                  <button class="btn btn-secondary" onclick="info('puttana')"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-info-circle" viewBox="0 0 16 16">
+                    <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"></path>
+                    <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"></path>
+                  </svg></button>
                   <input type="checkbox" class="btn-check" id="fantasma">
                   <label class="btn btn-outline-primary" for="fantasma">fantasma</label>
+                  <button class="btn btn-secondary" onclick="info('fantasma')"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-info-circle" viewBox="0 0 16 16">
+                    <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"></path>
+                    <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"></path>
+                  </svg></button>
                   <input type="checkbox" class="btn-check" id="neomelodico">
                   <label class="btn btn-outline-primary" for="neomelodico">neomelodico</label>
+                  <button class="btn btn-secondary" onclick="info('neomelodico')"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-info-circle" viewBox="0 0 16 16">
+                    <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"></path>
+                    <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"></path>
+                  </svg></button>
                   <input type="checkbox" class="btn-check" id="inquisitore">
                   <label class="btn btn-outline-primary" for="inquisitore">inquisitore</label>
+                  <button class="btn btn-secondary" onclick="info('inquisitore')"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-info-circle" viewBox="0 0 16 16">
+                    <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"></path>
+                    <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"></path>
+                  </svg></button>
                   <input type="checkbox" class="btn-check" id="senzaVolto">
                   <label class="btn btn-outline-primary" for="senzaVolto">senzaVolto</label>
+                  <button class="btn btn-secondary" onclick="info('senzaVolto')"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-info-circle" viewBox="0 0 16 16">
+                    <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"></path>
+                    <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"></path>
+                  </svg></button>
                 </div>
                 <div class="modal-footer">
                   <button type="button" class="btn btn-primary" onclick="acquisisci_ruoli()">Invio</button>
@@ -336,7 +431,16 @@
           <button id="mosNas" style="display: none;" class="btn btn-primary" onclick="mostra_ruoli()">Mostra ruoli</button>
       </div>
       <table class="table table-dark" style="justify-content:center; display:none" id="tabella">
-
+        <thead>
+          <tr>
+            <td>Giocatore</td>
+            <td>Ruolo</td>
+            <td>Area testuale <button class="btn btn-secondary" onclick="info('narratore')"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-info-circle" viewBox="0 0 16 16">
+              <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"></path>
+              <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"></path>
+            </svg></button></td>
+          </tr>
+        </thead>
       </table>
         <div class="inizia-partita">
             <button id="inizia" class="btn btn-secondary" onclick="modal_giocatori()">Inizia la partita</button>
