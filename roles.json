@@ -1,0 +1,197 @@
+{
+  "ruoli": [
+    {
+      "id": "lupo",
+      "nome": "Lupo",
+      "squadra": "cattivi",
+      "immagine": "assets/cards/lupo.png",
+      "sveglia": {
+        "tipo": "sempre"
+      },
+      "descrizione": "I lupi sono giocatori cattivi e durante la notte indicano un abitante del villaggio da ammazzare.",
+      "ordine_notte": 10
+    },
+    {
+      "id": "veggente",
+      "nome": "Veggente",
+      "squadra": "buoni",
+      "immagine": "assets/cards/veggente.png",
+      "sveglia": {
+        "tipo": "sempre"
+      },
+      "descrizione": "Il veggente è un giocatore buono e durante la notte indica un abitante del villaggio: il narratore gli dice se è buono o cattivo.",
+      "ordine_notte": 20
+    },
+    {
+      "id": "medium",
+      "nome": "Medium",
+      "squadra": "buoni",
+      "immagine": "assets/cards/medium.png",
+      "sveglia": {
+        "tipo": "dopo_morte"
+      },
+      "descrizione": "Il medium è un giocatore buono e durante la notte indica un giocatore morto: il narratore gli dice se era buono, cattivo o se era il matto qualora fosse presente.",
+      "ordine_notte": 30
+    },
+    {
+      "id": "guardia",
+      "nome": "Guardia",
+      "squadra": "buoni",
+      "immagine": "assets/cards/guardia.png",
+      "sveglia": {
+        "tipo": "sempre"
+      },
+      "descrizione": "La guardia è un giocatore buono e durante la notte indica un giocatore da proteggere dall'attacco dei lupi; se sceglie la stessa persona dei lupi quest'ultima non muore. Può proteggere anche se stesso ma non lo stesso giocatore per 2 volte di fila.",
+      "ordine_notte": 40
+    },
+    {
+      "id": "matto",
+      "nome": "Matto",
+      "squadra": "neutrali",
+      "immagine": "assets/cards/matto.png",
+      "sveglia": {
+        "tipo": "mai"
+      },
+      "descrizione": "Il matto fa parte dei giocatori buoni ma gioca per conto suo. Vince se durante il giorno viene ammazzato dal villaggio.",
+      "ordine_notte": 50
+    },
+    {
+      "id": "cacciatore",
+      "nome": "Cacciatore",
+      "squadra": "buoni",
+      "immagine": "assets/cards/cacciatore.png",
+      "sveglia": {
+        "tipo": "mai"
+      },
+      "descrizione": "Il cacciatore è un giocatore buono: può sparare una volta in tutta la partita durante il giorno per uccidere chiunque voglia. Se uccide il matto, il matto non vince.",
+      "ordine_notte": 60
+    },
+    {
+      "id": "indemoniato",
+      "nome": "Indemoniato",
+      "squadra": "cattivi",
+      "immagine": "assets/cards/indemoniato.png",
+      "sveglia": {
+        "tipo": "mai"
+      },
+      "descrizione": "L'indemoniato è un ruolo cattivo che però risulta buono agli occhi di veggente e medium. Non ha poteri ma gioca dalla parte dei lupi e vince con essi.",
+      "ordine_notte": 70
+    },
+    {
+      "id": "contadino",
+      "nome": "Contadino",
+      "squadra": "buoni",
+      "immagine": "assets/cards/contadino.png",
+      "sveglia": {
+        "tipo": "mai"
+      },
+      "descrizione": "Il contadino è un giocatore buono che non ha alcun potere e deve cercare di eliminare i lupi.",
+      "ordine_notte": 80
+    },
+    {
+      "id": "angelo",
+      "nome": "Angelo",
+      "squadra": "buoni",
+      "immagine": "assets/cards/angelo.png",
+      "sveglia": {
+        "tipo": "solo_prima"
+      },
+      "descrizione": "L'angelo, o angelo custode, è un ruolo buono che durante la prima notte indica un giocatore. Da quel momento, fino alla morte dell'angelo, se il giocatore indicato viene ucciso per qualsiasi motivo, al posto suo muore l'angelo.",
+      "ordine_notte": 90
+    },
+    {
+      "id": "spaccino",
+      "nome": "Spaccino",
+      "squadra": "cattivi",
+      "immagine": "assets/cards/spaccino.png",
+      "sveglia": {
+        "tipo": "sempre"
+      },
+      "descrizione": "Lo spaccino è un ruolo cattivo e i lupi sanno chi è. Ogni notte indica un giocatore al quale viene modificato l'esito del potere: le risposte vengono invertite, mentre i poteri esercitati su un giocatore vengono spostati sulla persona alla sua destra.",
+      "ordine_notte": 100
+    },
+    {
+      "id": "insinuo",
+      "nome": "Insinuo",
+      "squadra": "cattivi",
+      "immagine": "assets/cards/insinuo.png",
+      "sveglia": {
+        "tipo": "sempre"
+      },
+      "descrizione": "L'insinuo è un ruolo cattivo che gioca con i lupi. Di notte indica una persona che verrà vista come cattiva dal veggente.",
+      "ordine_notte": 110
+    },
+    {
+      "id": "illusionista",
+      "nome": "Illusionista",
+      "squadra": "cattivi",
+      "immagine": "assets/cards/illusionista.png",
+      "sveglia": {
+        "tipo": "sempre"
+      },
+      "descrizione": "L'illusionista è un giocatore cattivo che gioca con i lupi e viene visto come tale. Durante la notte indica un giocatore e gli blocca i poteri per quel turno.",
+      "ordine_notte": 120
+    },
+    {
+      "id": "puttana",
+      "nome": "Puttana",
+      "squadra": "buoni",
+      "immagine": "assets/cards/puttana.png",
+      "sveglia": {
+        "tipo": "sempre"
+      },
+      "descrizione": "La puttana è un giocatore buono che ogni notte indica una persona da proteggere dai lupi. Se però viene ammazzata, muore sia lei che la persona che ha protetto.",
+      "ordine_notte": 130
+    },
+    {
+      "id": "senzaVolto",
+      "nome": "Senza Volto",
+      "squadra": "neutrali",
+      "immagine": "assets/cards/senza_volto.png",
+      "sveglia": {
+        "tipo": "dopo_morte"
+      },
+      "descrizione": "Il senzaVolto è un personaggio individuale. Ha il potere di resuscitare un giocatore appena morto, a patto che sia contadino o lupo. Se resuscita 3 personaggi vince. Se il veggente lo controlla, muore.",
+      "ordine_notte": 140
+    },
+    {
+      "id": "inquisitore",
+      "nome": "Inquisitore",
+      "squadra": "buoni",
+      "immagine": "assets/cards/inquisitore.png",
+      "sveglia": {
+        "tipo": "mai"
+      },
+      "descrizione": "L'inquisitore è un giocatore buono che durante il giorno può chiedere ad un giocatore se è un lupo, e questi è costretto a rispondere con la verità. Se il giocatore interrogato risponde, l'inquisitore perde il suo potere (e se era buono perde anche il diritto al voto). Se il giocatore indicato è un lupo e non risponde, morirà la notte seguente e l'inquisitore mantiene il potere.",
+      "ordine_notte": 150
+    },
+    {
+      "id": "neomelodico",
+      "nome": "Neomelodico",
+      "squadra": "buoni",
+      "immagine": "assets/cards/neomelodico.png",
+      "sveglia": {
+        "tipo": "finche_non_usato"
+      },
+      "descrizione": "Il neomelodico è un ruolo buono che, una volta a partita, può scegliere una notte in cui non muore nessuno.",
+      "ordine_notte": 160
+    },
+    {
+      "id": "fantasma",
+      "nome": "Fantasma",
+      "squadra": "neutrali",
+      "immagine": "assets/cards/fantasma.png",
+      "sveglia": {
+        "tipo": "sempre"
+      },
+      "descrizione": "Il fantasma gioca per conto suo. Durante la notte non può essere ucciso dai lupi. Il suo obiettivo è possedere un giocatore, indicandolo per 5 notti di fila (chi viene indicato se ne accorge). Se il fantasma indica o viene indicato dal veggente, muore.",
+      "ordine_notte": 170
+    }
+  ],
+  "extra": {
+    "narratore": {
+      "nome": "Narratore",
+      "descrizione": "Area testuale per aiutare il narratore, dove può annotare ad esempio che un giocatore è stato ucciso o su chi un giocatore ha esercitato il proprio potere."
+    }
+  }
+}

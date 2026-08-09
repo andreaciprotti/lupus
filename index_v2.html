@@ -1,0 +1,1427 @@
+<!DOCTYPE html>
+<html lang="it">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Lupus</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Cinzel+Decorative:wght@700&family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+        <style>
+            /* ==========================================================
+               TOKEN DI DESIGN — Lupus, notte del villaggio
+               ========================================================== */
+            :root{
+                --ink:#05060b;
+                --ink-2:#0b0e18;
+                --panel:#10131f;
+                --panel-2:#171b2b;
+                --line: rgba(210,214,230,.14);
+                --moon:#f2efe3;
+                --moon-dim:#b9bcc9;
+                --moon-fioco:#7d8094;
+
+                --buoni:#6fb3d9;
+                --buoni-glow: rgba(111,179,217,.55);
+                --cattivi:#c15b50;
+                --cattivi-glow: rgba(193,91,80,.55);
+                --neutrali:#a08ed6;
+                --neutrali-glow: rgba(160,142,214,.5);
+
+                --oro:#d8c48a;
+                --oro-glow: rgba(216,196,138,.55);
+
+                --parchment:#e9e3d0;
+                --parchment-ink:#1c1a14;
+
+                --font-display:'Cinzel', serif;
+                --font-deco:'Cinzel Decorative', serif;
+                --font-body:'EB Garamond', serif;
+                --font-ui:'Inter', sans-serif;
+            }
+
+            *{ box-sizing: border-box; }
+
+            html,body{ min-height:100%; }
+            body{
+                margin:0;
+                position:relative;
+                overflow-x:hidden;
+                background: var(--ink);
+                color: var(--moon);
+                font-family: var(--font-ui);
+            }
+
+            body::before{
+                content:"";
+                position:fixed; inset:0; z-index:-2;
+                background:
+                    radial-gradient(1.5px 1.5px at 10% 20%, rgba(255,255,255,.55), transparent),
+                    radial-gradient(1.5px 1.5px at 80% 10%, rgba(255,255,255,.4), transparent),
+                    radial-gradient(1px 1px at 60% 70%, rgba(255,255,255,.5), transparent),
+                    radial-gradient(1.5px 1.5px at 30% 85%, rgba(255,255,255,.35), transparent),
+                    radial-gradient(1px 1px at 90% 60%, rgba(255,255,255,.45), transparent),
+                    radial-gradient(1.5px 1.5px at 45% 35%, rgba(255,255,255,.4), transparent),
+                    radial-gradient(1px 1px at 15% 55%, rgba(255,255,255,.3), transparent),
+                    radial-gradient(1px 1px at 68% 42%, rgba(255,255,255,.3), transparent);
+                animation: twinkle 6s ease-in-out infinite alternate;
+            }
+            @keyframes twinkle{ from{ opacity:.55; } to{ opacity:1; } }
+
+            @media (prefers-reduced-motion: reduce){
+                *{ animation-duration: .001s !important; transition-duration: .001s !important; }
+            }
+
+            button{ font-family: inherit; cursor:pointer; }
+            input{ font-family: inherit; }
+
+            h1,h2,h3{ margin:0; }
+
+            /* ==========================================================
+               SCENE — un solo passo visibile alla volta
+               ========================================================== */
+            .scena{
+                display:none;
+                min-height:100vh;
+                width:100%;
+                padding: 2.4rem 1.2rem 3rem;
+                flex-direction:column;
+                align-items:center;
+            }
+            .scena.scena-attiva{
+                display:flex;
+                animation: comparsa .55s ease;
+            }
+            @keyframes comparsa{
+                from{ opacity:0; transform: translateY(16px); }
+                to{ opacity:1; transform: translateY(0); }
+            }
+
+            /* ---------- pulsanti ---------- */
+            .btn{
+                font-family: var(--font-ui);
+                font-weight: 600;
+                letter-spacing: .03em;
+                border-radius: 10px;
+                border: 1px solid var(--line);
+                background: transparent;
+                color: var(--moon-dim);
+                padding: .7rem 1.5rem;
+                font-size: .95rem;
+                transition: all .25s ease;
+            }
+            .btn:hover{ color: var(--moon); border-color: var(--moon-dim); background: rgba(255,255,255,.05); }
+            .btn-primary{
+                background: linear-gradient(180deg, #2a3550, #1a2135);
+                border-color: rgba(111,179,217,.55);
+                color: var(--moon);
+            }
+            .btn-primary:hover{
+                background: linear-gradient(180deg, #33405e, #202942);
+                border-color: var(--buoni);
+                box-shadow: 0 0 20px var(--buoni-glow);
+            }
+            .btn-primary.pronto{
+                border-color: var(--oro);
+                box-shadow: 0 0 22px var(--oro-glow);
+            }
+            .btn:focus-visible{ outline: 2px solid var(--buoni); outline-offset: 2px; }
+            .btn-testo{
+                background:none; border:none; color: var(--moon-fioco);
+                font-size:.82rem; text-decoration: underline;
+                text-underline-offset: 3px;
+            }
+            .btn-testo:hover{ color: var(--moon-dim); }
+
+            .azioni-scena{
+                display:flex; gap: .8rem; justify-content:center; flex-wrap:wrap;
+                margin-top: 2rem;
+            }
+
+            /* ==========================================================
+               INTRO
+               ========================================================== */
+            #scena-intro{ justify-content:center; text-align:center; }
+            .luna{
+                width: 96px; height: 96px; border-radius:50%;
+                margin-bottom: 1.2rem;
+                background: radial-gradient(circle at 35% 32%, #fffdf6 0%, #f2efe3 38%, #cfcbb8 70%, #9b967f 100%);
+                box-shadow: 0 0 55px 10px rgba(242,239,227,.35), 0 0 120px 30px rgba(111,179,217,.12);
+                position:relative;
+            }
+            .luna::after{
+                content:""; position:absolute; inset:0; border-radius:50%;
+                background:
+                    radial-gradient(10px 8px at 30% 30%, rgba(0,0,0,.18), transparent 60%),
+                    radial-gradient(14px 10px at 60% 55%, rgba(0,0,0,.14), transparent 60%),
+                    radial-gradient(8px 6px at 70% 25%, rgba(0,0,0,.12), transparent 60%);
+            }
+            .titolo-principale{
+                font-family: var(--font-deco);
+                font-size: clamp(2.8rem, 9vw, 5rem);
+                letter-spacing: .12em;
+                text-shadow: 0 0 30px rgba(242,239,227,.35);
+            }
+            .sottotitolo{
+                font-family: var(--font-display);
+                font-size: .95rem; letter-spacing: .34em; text-transform: uppercase;
+                color: var(--moon-dim); margin-top: .7rem;
+            }
+            .divisore{
+                width: 220px; max-width: 70vw; height:1px; margin: 1.8rem auto 0;
+                background: linear-gradient(90deg, transparent, var(--line), transparent);
+                position:relative;
+            }
+            .divisore::after{
+                content:"✦"; position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);
+                background: var(--ink); padding:0 .6rem; color: var(--moon-dim); font-size:.8rem;
+            }
+            #scena-intro .btn-primary{
+                margin-top: 2.6rem;
+                font-family: var(--font-display);
+                font-size: 1.05rem; letter-spacing:.08em; padding: .9rem 2.4rem;
+            }
+
+            /* ==========================================================
+               PANNELLO (numero giocatori / nomi)
+               ========================================================== */
+            .pannello{
+                width: 100%; max-width: 420px;
+                text-align:center;
+                margin-top: 3vh;
+            }
+            .pannello h2{
+                font-family: var(--font-display);
+                letter-spacing: .08em; text-transform:uppercase;
+                font-size: 1.4rem; color: var(--moon);
+                margin-bottom: 2.2rem;
+            }
+            .hint{
+                font-family: var(--font-body);
+                color: var(--moon-dim); font-size: 1.05rem;
+                margin: 1rem 0 0;
+            }
+
+            /* stepper numero giocatori */
+            .stepper{
+                display:flex; align-items:center; justify-content:center; gap: 1.6rem;
+            }
+            .stepper-btn{
+                width: 52px; height:52px; border-radius:50%;
+                border: 1px solid var(--line); background: var(--ink-2);
+                color: var(--moon); font-size: 1.5rem; line-height:1;
+                display:flex; align-items:center; justify-content:center;
+                transition: all .2s ease;
+            }
+            .stepper-btn:hover{ border-color: var(--buoni); box-shadow: 0 0 16px var(--buoni-glow); }
+            .stepper-valore{
+                font-family: var(--font-deco);
+                font-size: 3.6rem; min-width: 90px;
+                color: var(--moon); text-shadow: 0 0 24px rgba(242,239,227,.25);
+            }
+
+            /* nomi giocatori */
+            .progress-dots{
+                display:flex; gap:.5rem; justify-content:center; flex-wrap:wrap;
+                margin-bottom: .6rem;
+            }
+            .progress-dots .dot{
+                width:9px; height:9px; border-radius:50%;
+                background: var(--line);
+                transition: all .3s ease;
+            }
+            .progress-dots .dot.fatto{
+                background: var(--buoni); box-shadow: 0 0 8px var(--buoni-glow);
+            }
+            .progress-dots .dot.attuale{
+                background: var(--moon); transform: scale(1.4);
+            }
+            .input-grande{
+                width: 100%; margin-top: 1.6rem;
+                background: var(--ink-2); border: 1px solid var(--line); border-radius: 10px;
+                color: var(--moon); text-align:center;
+                font-family: var(--font-display); font-size: 1.3rem; letter-spacing:.03em;
+                padding: .8rem 1rem;
+            }
+            .input-grande:focus{
+                outline:none; border-color: var(--buoni); box-shadow: 0 0 0 3px var(--buoni-glow);
+            }
+
+            /* ==========================================================
+               SCELTA RUOLI
+               ========================================================== */
+            #scena-ruoli{ width:100%; max-width: 900px; margin: 0 auto; align-items:stretch; }
+            .ruoli-header{
+                position: sticky; top:0; z-index: 30;
+                background: rgba(5,6,11,.9);
+                backdrop-filter: blur(6px);
+                padding: .6rem 0 1.1rem;
+                text-align:center;
+                border-bottom: 1px solid var(--line);
+                margin-bottom: 1.4rem;
+            }
+            .ruoli-header h2{
+                font-family: var(--font-display); letter-spacing:.08em; text-transform:uppercase;
+                font-size: 1.3rem; margin-bottom: .9rem;
+            }
+            .contatore-ruoli{
+                display:flex; align-items:baseline; justify-content:center; gap: .3rem;
+                font-family: var(--font-deco);
+            }
+            .contatore-numero{ font-size: 2.4rem; color: var(--moon-dim); transition: color .3s ease; }
+            .contatore-separatore{ font-size: 1.4rem; color: var(--moon-fioco); }
+            .contatore-totale{ font-size: 1.4rem; color: var(--moon-fioco); }
+            .contatore-etichetta{
+                font-family: var(--font-ui); font-size: .75rem; letter-spacing: .08em;
+                text-transform: uppercase; color: var(--moon-fioco); margin-left:.5rem; align-self:center;
+            }
+            .contatore-ruoli-wrap.completo .contatore-numero{ color: var(--oro); text-shadow: 0 0 16px var(--oro-glow); }
+            .contatore-ruoli-wrap.eccesso .contatore-numero{ color: var(--cattivi); text-shadow: 0 0 16px var(--cattivi-glow); }
+
+            .riepilogo-squadre{
+                display:flex; gap: 1rem; justify-content:center; flex-wrap:wrap;
+                font-family: var(--font-ui); font-size: .8rem; color: var(--moon-dim);
+                margin-top: .7rem;
+            }
+            .riepilogo-squadre span{ display:flex; align-items:center; gap:.35rem; }
+            .riepilogo-squadre i{ width:8px; height:8px; border-radius:50%; display:inline-block; }
+            .buoni-dot{ background: var(--buoni); box-shadow: 0 0 6px var(--buoni-glow); }
+            .cattivi-dot{ background: var(--cattivi); box-shadow: 0 0 6px var(--cattivi-glow); }
+            .neutrali-dot{ background: var(--neutrali); box-shadow: 0 0 6px var(--neutrali-glow); }
+
+            .ruoli-grid{
+                display:grid; grid-template-columns: repeat(3, 1fr); gap: .6rem;
+                width:100%; padding: 0 .2rem;
+            }
+            @media (max-width: 560px){ .ruoli-grid{ grid-template-columns: repeat(2, 1fr); } }
+
+            .ruolo-chip{
+                position:relative;
+                display:flex; align-items:center; gap:.55rem;
+                background: var(--ink-2); border: 1px solid var(--line); border-radius: 10px;
+                padding: .5rem .55rem;
+                transition: all .25s ease;
+                --acc: var(--moon-fioco);
+                --acc-glow: rgba(0,0,0,0);
+            }
+            .ruolo-chip[data-squadra="buoni"]{ --acc: var(--buoni); --acc-glow: var(--buoni-glow); box-shadow: inset 3px 0 0 var(--buoni); }
+            .ruolo-chip[data-squadra="cattivi"]{ --acc: var(--cattivi); --acc-glow: var(--cattivi-glow); box-shadow: inset 3px 0 0 var(--cattivi); }
+            .ruolo-chip[data-squadra="neutrali"]{ --acc: var(--neutrali); --acc-glow: var(--neutrali-glow); box-shadow: inset 3px 0 0 var(--neutrali); }
+            .ruolo-chip.selezionato{
+                background: rgba(255,255,255,.06);
+                border-color: var(--acc);
+            }
+            .ruolo-chip.selezionato{ animation: chip-pop .3s ease; }
+            @keyframes chip-pop{
+                0%{ transform: scale(1); }
+                45%{ transform: scale(1.035); }
+                100%{ transform: scale(1); }
+            }
+
+            .ruolo-input{
+                position:absolute; opacity:0; width:1px; height:1px; pointer-events:none;
+            }
+            .ruolo-label{
+                flex:1; display:flex; align-items:center; gap:.55rem;
+                cursor:pointer; margin:0;
+            }
+
+            /* sigillo: cerchio vuoto = ruolo non scelto, luna piena luminosa = ruolo scelto */
+            .ruolo-sigillo{
+                width: 24px; height: 24px; border-radius: 50%; flex-shrink:0;
+                border: 1.5px solid var(--line);
+                background: transparent;
+                transition: all .35s ease;
+                position:relative;
+            }
+            .ruolo-sigillo::after{
+                content:"";
+                position:absolute; inset:0; border-radius:50%;
+                background: radial-gradient(6px 5px at 68% 32%, rgba(0,0,0,.16), transparent 60%);
+                opacity:0; transition: opacity .35s ease;
+            }
+            .ruolo-chip.selezionato .ruolo-sigillo{
+                border-color: var(--acc);
+                background: radial-gradient(circle at 35% 30%, #fffdf6 0%, #f2efe3 45%, #cfcbb8 85%);
+                box-shadow: 0 0 12px var(--acc-glow);
+            }
+            .ruolo-chip.selezionato .ruolo-sigillo::after{ opacity:1; }
+            .ruolo-input:focus-visible ~ .ruolo-label .ruolo-sigillo{
+                outline: 2px solid var(--buoni); outline-offset: 2px;
+            }
+
+            .ruolo-testo{
+                font-size: .82rem; font-weight:500; text-transform:capitalize;
+                color: var(--moon-dim); transition: color .25s ease;
+            }
+            .ruolo-chip.selezionato .ruolo-testo{ color: var(--moon); }
+            .ruolo-chip:hover{ background: rgba(255,255,255,.04); }
+
+            .ruolo-chip .info-btn{
+                background:none; border:none; color: var(--moon-fioco); padding: 0 .15rem; display:flex; flex-shrink:0;
+            }
+            .ruolo-chip .info-btn:hover{ color: var(--moon); }
+
+            .azioni-sticky{
+                position: sticky; bottom:0; z-index:30;
+                width:100%; padding: 1.1rem 0 .3rem;
+                margin-top: 1.8rem;
+                background: linear-gradient(180deg, transparent, var(--ink) 40%);
+            }
+
+            /* ==========================================================
+               CARTA — reveal
+               ========================================================== */
+            #scena-carta{ justify-content:flex-start; padding-top: 2rem; }
+            .progresso-bar{
+                width: min(420px, 86vw); height: 3px; border-radius: 3px;
+                background: rgba(255,255,255,.08); overflow:hidden; margin-bottom: .7rem;
+            }
+            .progresso-riempimento{
+                height:100%; width:0%;
+                background: linear-gradient(90deg, var(--buoni), var(--neutrali));
+                transition: width .5s ease;
+            }
+            .progresso-testo{
+                font-family: var(--font-ui); font-size:.75rem; letter-spacing:.1em; text-transform:uppercase;
+                color: var(--moon-fioco); margin-bottom: 1.3rem;
+            }
+            .turno-giocatore{
+                font-family: var(--font-display); letter-spacing: .08em; text-transform: uppercase;
+                font-size: clamp(1.15rem, 3.6vw, 1.6rem);
+                text-align:center; margin-bottom: 1.8rem;
+            }
+
+            .card-scene-wrap{ position:relative; }
+            .card-scene{
+                width: min(290px, 78vw); height: min(450px, 62vh);
+                perspective: 1400px; position:relative;
+                --accent: var(--moon-fioco);
+                --accent-glow: rgba(0,0,0,0);
+            }
+            .card-scene.entra{ animation: carta-entra .55s ease; }
+            @keyframes carta-entra{
+                from{ opacity:0; transform: scale(.93) translateY(12px); }
+                to{ opacity:1; transform: none; }
+            }
+            .card-scene.rivelata[data-squadra="buoni"]{ --accent: var(--buoni); --accent-glow: var(--buoni-glow); }
+            .card-scene.rivelata[data-squadra="cattivi"]{ --accent: var(--cattivi); --accent-glow: var(--cattivi-glow); }
+            .card-scene.rivelata[data-squadra="neutrali"]{ --accent: var(--neutrali); --accent-glow: var(--neutrali-glow); }
+
+            .card-flip{
+                position:relative; width:100%; height:100%;
+                transform-style: preserve-3d;
+                transition: transform .85s cubic-bezier(.22,.8,.28,1);
+                cursor:pointer;
+            }
+            .card-flip.flipped{ transform: rotateY(180deg); }
+
+            .card-face{
+                position:absolute; inset:0; backface-visibility:hidden;
+                border-radius: 16px; overflow:hidden;
+                background: var(--panel);
+                border: 2px solid var(--accent);
+                box-shadow: 0 0 34px var(--accent-glow), 0 18px 40px rgba(0,0,0,.55);
+                transition: border-color .6s ease, box-shadow .6s ease;
+            }
+            .card-front{ display:flex; flex-direction:column; }
+            .card-illustrazione{
+                flex:1; position:relative;
+                background: linear-gradient(180deg, #12131c, #05060b);
+            }
+            .card-illustrazione img{ width:100%; height:100%; object-fit:cover; display:block; }
+            .card-illustrazione .segnaposto{
+                position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+                background:
+                    radial-gradient(circle at 50% 38%, rgba(242,239,227,.9) 0%, rgba(242,239,227,.55) 16%, transparent 40%),
+                    linear-gradient(180deg,#0d1018,#05060b 75%);
+            }
+            .card-illustrazione .segnaposto span{
+                font-family: var(--font-deco); font-size: 3.4rem; color: var(--ink);
+            }
+            .card-nome-banda{
+                text-align:center; padding: .7rem .5rem .8rem;
+                background: linear-gradient(180deg, var(--panel-2), var(--panel));
+                border-top: 1px solid var(--line);
+            }
+            .card-nome-banda .nome{
+                font-family: var(--font-display); letter-spacing:.1em; text-transform:uppercase;
+                font-size: 1.15rem; color: var(--moon);
+            }
+            .card-nome-banda .suggerimento{
+                display:block; font-family: var(--font-ui); font-size:.68rem;
+                letter-spacing:.06em; color: var(--moon-fioco); margin-top:.25rem;
+            }
+            .card-back{
+                transform: rotateY(180deg);
+                background: radial-gradient(circle at 50% 0%, rgba(242,239,227,.06), transparent 60%), var(--parchment);
+                color: var(--parchment-ink);
+                padding: 1.6rem 1.4rem; display:flex; flex-direction:column; gap:.7rem; overflow-y:auto;
+            }
+            .card-back .nome{
+                font-family: var(--font-display); text-transform:uppercase; letter-spacing:.08em;
+                font-size: 1.05rem; text-align:center;
+                border-bottom: 1px solid rgba(28,26,20,.25); padding-bottom:.5rem;
+            }
+            .card-back .descrizione{ font-family: var(--font-body); font-size: 1.02rem; line-height:1.5; }
+            .card-back .suggerimento{
+                margin-top:auto; text-align:center; font-family: var(--font-ui); font-size:.68rem;
+                letter-spacing:.06em; text-transform:uppercase; color: rgba(28,26,20,.55);
+            }
+
+            .carta-coperta{
+                position:absolute; inset:0; z-index:5; border-radius:16px;
+                display:flex; align-items:center; justify-content:center;
+                background: radial-gradient(circle at 50% 40%, #171b2b, #05060b 75%);
+                border: 2px solid var(--line);
+                opacity: 1;
+            }
+            .carta-coperta.dissolvi{ transition: opacity .6s ease; }
+            .carta-coperta.nascosta{ opacity:0; pointer-events:none; }
+            .carta-coperta .sigillo{
+                width:74px; height:74px; border-radius:50%;
+                border: 1px solid rgba(242,239,227,.4);
+                display:flex; align-items:center; justify-content:center;
+                font-family: var(--font-deco); font-size: 1.7rem; color: rgba(242,239,227,.75);
+                box-shadow: 0 0 26px rgba(242,239,227,.15);
+            }
+
+            .carta-azioni{ display:flex; gap:.8rem; flex-wrap:wrap; justify-content:center; margin-top: 1.8rem; }
+
+            /* ==========================================================
+               NARRATORE
+               ========================================================== */
+            #scena-narratore{ width:100%; max-width: 960px; margin:0 auto; text-align:center; }
+            #scena-narratore h2{
+                font-family: var(--font-display); letter-spacing:.08em; text-transform:uppercase;
+                font-size: 1.5rem; margin-bottom: .5rem;
+            }
+            #scena-narratore .hint{ margin-bottom: 1.6rem; }
+            table.tabella-narratore{
+                width:100%; border-collapse: collapse; margin: 0 auto 2rem;
+                border: 1px solid var(--line); border-radius: 10px; overflow:hidden;
+            }
+            table.tabella-narratore thead td{
+                font-family: var(--font-display); letter-spacing:.06em; text-transform:uppercase;
+                font-size:.78rem; color: var(--moon-dim); border-bottom: 1px solid var(--line);
+                padding: .7rem .8rem; text-align:left;
+            }
+            table.tabella-narratore td{
+                padding: .55rem .8rem; border-top: 1px solid var(--line); color: var(--moon); text-align:left;
+            }
+            .input-annotazione{
+                background: var(--ink-2); border: 1px solid var(--line); color: var(--moon);
+                border-radius: 6px; padding: .35rem .5rem; width: 100%;
+                font-family: var(--font-ui); font-size: .85rem;
+            }
+            .input-annotazione:focus{
+                outline:none; border-color: var(--buoni); box-shadow: 0 0 0 2px var(--buoni-glow);
+            }
+            .squadra-dot{ display:inline-block; width:9px; height:9px; border-radius:50%; margin-right:.4rem; vertical-align:middle; }
+            .squadra-dot[data-squadra="buoni"]{ background: var(--buoni); }
+            .squadra-dot[data-squadra="cattivi"]{ background: var(--cattivi); }
+            .squadra-dot[data-squadra="neutrali"]{ background: var(--neutrali); }
+
+            /* ==========================================================
+               REGIA NOTTURNA — chi svegliare, notte per notte
+               ========================================================== */
+            #scena-notte{ width:100%; max-width: 640px; margin:0 auto; }
+            .notte-header{ text-align:center; margin-bottom: 1.8rem; }
+            .notte-luna-mini{
+                width:56px; height:56px; border-radius:50%; margin: 0 auto .8rem;
+                background: radial-gradient(circle at 35% 32%, #fffdf6 0%, #f2efe3 38%, #cfcbb8 70%, #9b967f 100%);
+                box-shadow: 0 0 30px rgba(242,239,227,.3);
+            }
+            #scena-notte h2, #scena-morti h2{
+                font-family: var(--font-display); letter-spacing:.08em; text-transform:uppercase; font-size:1.5rem;
+            }
+            .notte-lista{ display:flex; flex-direction:column; gap:.7rem; width:100%; }
+            .notte-riga{
+                display:flex; align-items:flex-start; gap:.8rem;
+                background: var(--panel); border:1px solid var(--line); border-radius:12px;
+                padding: .8rem 1rem;
+            }
+            .notte-riga[data-squadra="buoni"]{ box-shadow: inset 3px 0 0 var(--buoni); }
+            .notte-riga[data-squadra="cattivi"]{ box-shadow: inset 3px 0 0 var(--cattivi); }
+            .notte-riga[data-squadra="neutrali"]{ box-shadow: inset 3px 0 0 var(--neutrali); }
+            .notte-numero{
+                font-family: var(--font-deco); font-size:1.3rem; color: var(--moon-fioco);
+                width:28px; text-align:center; flex-shrink:0; padding-top:.1rem;
+            }
+            .notte-corpo{ flex:1; text-align:left; }
+            .notte-corpo .nome-ruolo{
+                font-family: var(--font-display); letter-spacing:.04em; text-transform:uppercase;
+                font-size:1rem; color: var(--moon);
+            }
+            .notte-corpo .nome-giocatori{
+                font-family: var(--font-ui); font-size:.85rem; color: var(--moon-dim); margin-top:.15rem;
+            }
+            .notte-corpo .usato-toggle{
+                display:flex; align-items:center; gap:.4rem; margin-top:.5rem;
+                font-family: var(--font-ui); font-size:.78rem; color: var(--moon-fioco);
+            }
+            .notte-corpo .usato-toggle input{ accent-color: var(--oro); width:15px; height:15px; }
+            .notte-riga .info-btn{ background:none; border:none; color: var(--moon-fioco); flex-shrink:0; padding-top:.15rem; }
+            .notte-riga .info-btn:hover{ color: var(--moon); }
+            .nota-morto{
+                font-family: var(--font-ui); font-size:.72rem; font-style: italic;
+                color: var(--cattivi); margin-top:.4rem; line-height:1.4;
+            }
+            .notte-vuota{
+                text-align:center; font-family: var(--font-body); color: var(--moon-dim); padding: 2.5rem 0;
+                font-size: 1.05rem;
+            }
+
+            .lista-vivi{ display:flex; flex-direction:column; gap:.5rem; margin-top:1.4rem; text-align:left; width:100%; }
+            .vivo-riga{
+                display:flex; align-items:center; gap:.6rem;
+                background: var(--ink-2); border:1px solid var(--line); border-radius:8px; padding:.55rem .8rem;
+            }
+            .vivo-riga input{ accent-color: var(--buoni); width:17px; height:17px; flex-shrink:0; }
+            .vivo-riga label{ flex:1; font-family: var(--font-ui); font-size:.92rem; color: var(--moon); cursor:pointer; }
+            .vivo-riga .ruolo-piccolo{ font-size:.78rem; color: var(--moon-fioco); }
+
+            .sveglia-info{
+                font-family: var(--font-ui); font-size:.7rem; letter-spacing:.04em; text-transform:uppercase;
+                color: rgba(28,26,20,.55); text-align:center;
+            }
+            .sveglia-info-popup{
+                font-family: var(--font-ui); font-size:.75rem; letter-spacing:.04em; text-transform:uppercase;
+                color: var(--moon-fioco); margin-top: -.6rem;
+            }
+
+            /* ==========================================================
+               POPUP (info ruolo / conteggio lupi-contadini)
+               ========================================================== */
+            .popup-overlay{
+                display:none; position:fixed; inset:0; z-index: 90000;
+                background: rgba(3,4,8,.75); backdrop-filter: blur(2px);
+                align-items:center; justify-content:center; padding: 1.2rem;
+            }
+            .popup-overlay.aperta{ display:flex; }
+            .popup-box{
+                width: 100%; max-width: 380px;
+                background: linear-gradient(180deg, var(--panel-2), var(--panel));
+                border: 1px solid var(--line); border-radius: 12px;
+                box-shadow: 0 20px 60px rgba(0,0,0,.6);
+                padding: 1.6rem 1.5rem;
+                text-align:center;
+                animation: comparsa .3s ease;
+            }
+            .popup-box h3{
+                font-family: var(--font-display); letter-spacing:.06em; text-transform:uppercase;
+                font-size: 1.05rem; margin-bottom: 1rem;
+            }
+            .popup-box p{ font-family: var(--font-body); font-size: 1.08rem; color: var(--moon-dim); line-height:1.5; }
+            .popup-box input[type="number"]{
+                width: 100%; margin: .8rem 0 1.4rem;
+                background: var(--ink-2); border: 1px solid var(--line); border-radius: 8px;
+                color: var(--moon); text-align:center; font-size: 1.2rem; padding: .6rem;
+            }
+            .popup-box input[type="number"]:focus{ outline:none; border-color: var(--buoni); box-shadow: 0 0 0 3px var(--buoni-glow); }
+            .popup-box .azioni-scena{ margin-top: 1rem; }
+        </style>
+    </head>
+    <body>
+
+        <!-- ================= SCENA: intro ================= -->
+        <div class="scena scena-attiva" id="scena-intro">
+            <div class="luna"></div>
+            <h1 class="titolo-principale">Lupus</h1>
+            <p class="sottotitolo">il villaggio dorme, il male veglia</p>
+            <div class="divisore"></div>
+            <button class="btn btn-primary" onclick="vaiA('scena-numero')">Inizia la partita</button>
+        </div>
+
+        <!-- ================= SCENA: numero giocatori ================= -->
+        <div class="scena" id="scena-numero">
+            <div class="pannello">
+                <h2>Quanti siete?</h2>
+                <div class="stepper">
+                    <button class="stepper-btn" onclick="cambia_numero(-1)" aria-label="Un giocatore in meno">−</button>
+                    <div class="stepper-valore" id="valore-numero">5</div>
+                    <button class="stepper-btn" onclick="cambia_numero(1)" aria-label="Un giocatore in più">+</button>
+                </div>
+                <p class="hint">Servono almeno 3 giocatori</p>
+                <div class="azioni-scena">
+                    <button class="btn btn-secondary" onclick="vaiA('scena-intro')">Indietro</button>
+                    <button class="btn btn-primary" onclick="conferma_numero()">Continua</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= SCENA: nomi giocatori ================= -->
+        <div class="scena" id="scena-nomi">
+            <div class="pannello">
+                <h2>Nomi dei giocatori</h2>
+                <div class="progress-dots" id="dots-nomi"></div>
+                <p class="hint" id="etichetta-nomi"></p>
+                <input type="text" id="nomeg" class="input-grande" autocomplete="off" placeholder="Scrivi il nome...">
+                <div class="azioni-scena">
+                    <button class="btn btn-secondary" onclick="indietro_nome()">Indietro</button>
+                    <button class="btn btn-primary" onclick="leggi_nomi()">Avanti</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= SCENA: scelta ruoli ================= -->
+        <div class="scena" id="scena-ruoli">
+            <div class="ruoli-header">
+                <h2 id="titolo_ruoli">Scegli i ruoli</h2>
+                <div class="contatore-ruoli-wrap" id="contatore-ruoli-wrap">
+                    <div class="contatore-ruoli">
+                        <span class="contatore-numero" id="contatore-numero">0</span>
+                        <span class="contatore-separatore">/</span>
+                        <span class="contatore-totale" id="contatore-totale">0</span>
+                        <span class="contatore-etichetta">ruoli scelti</span>
+                    </div>
+                    <div class="riepilogo-squadre" id="riepilogo-squadre"></div>
+                </div>
+            </div>
+
+            <div class="ruoli-grid" id="ruoli-grid"><!-- generata da roles.json --></div>
+
+            <div class="azioni-sticky">
+                <div class="azioni-scena" style="margin-top:0;">
+                    <button class="btn btn-secondary" onclick="vai_a_nomi_da_ruoli()">Indietro</button>
+                    <button class="btn btn-primary" id="btn-componi" onclick="acquisisci_ruoli()">Componi la partita</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= SCENA: rivelazione carta ================= -->
+        <div class="scena" id="scena-carta">
+            <div class="progresso-bar"><div class="progresso-riempimento" id="progresso-riempimento"></div></div>
+            <p class="progresso-testo" id="progresso-testo"></p>
+            <p class="turno-giocatore" id="turno_giocatore"></p>
+
+            <div class="card-scene-wrap">
+                <div class="card-scene" id="card-scene" data-squadra="">
+                    <div class="card-flip" id="card-flip" onclick="flip_carta()">
+                        <div class="card-face card-front">
+                            <div class="card-illustrazione" id="card-illustrazione"></div>
+                            <div class="card-nome-banda">
+                                <span class="nome" id="card-nome-fronte"></span>
+                                <span class="suggerimento">tocca la carta per la descrizione</span>
+                            </div>
+                        </div>
+                        <div class="card-face card-back">
+                            <span class="nome" id="card-nome-retro"></span>
+                            <p class="descrizione" id="card-descrizione"></p>
+                            <p class="sveglia-info" id="card-sveglia"></p>
+                            <span class="suggerimento">tocca per tornare al fronte</span>
+                        </div>
+                    </div>
+                    <div class="carta-coperta" id="carta-coperta">
+                        <div class="sigillo">?</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="carta-azioni">
+                <button type="button" class="btn btn-primary" id="btn-mostra" onclick="mostra()">Mostra ruolo</button>
+                <button type="button" class="btn btn-secondary" id="btn-prossimo" onclick="cambia_ruolo()">Prossimo giocatore</button>
+            </div>
+        </div>
+
+        <!-- ================= SCENA: narratore ================= -->
+        <div class="scena" id="scena-narratore">
+            <h2>Il villaggio è pronto</h2>
+            <p class="hint">Passa il dispositivo al narratore per iniziare la partita.</p>
+            <button id="mosNas" class="btn btn-secondary" onclick="mostra_ruoli()">Mostra ruoli</button>
+            <table class="tabella-narratore" id="tabella" style="display:none; margin-top:1.4rem;">
+                <thead>
+                    <tr>
+                        <td>Giocatore</td>
+                        <td>Ruolo</td>
+                        <td>
+                            Annotazioni
+                            <button class="btn-testo" style="margin-left:.4rem;" onclick="info('narratore')">(i)</button>
+                        </td>
+                    </tr>
+                </thead>
+            </table>
+            <div class="azioni-scena">
+                <button class="btn btn-primary" id="btn-inizia-notte" onclick="avvia_notte()">Inizia la notte</button>
+                <button class="btn btn-secondary" onclick="refresh()">Nuova partita</button>
+            </div>
+        </div>
+
+        <!-- ================= SCENA: regia notturna ================= -->
+        <div class="scena" id="scena-notte">
+            <div class="notte-header">
+                <div class="notte-luna-mini"></div>
+                <h2 id="notte-titolo">Notte 1</h2>
+                <p class="hint">Segui l'ordine e sveglia chi vedi qui sotto — chiama ogni ruolo elencato anche se chi lo interpreta è morto, per non far capire nulla dal tuo comportamento.</p>
+            </div>
+            <div class="notte-lista" id="notte-lista"><!-- generata da roles.json + stato di gioco --></div>
+            <div class="azioni-scena">
+                <button class="btn-testo" onclick="apri_lista_popup()">Vedi lista ruoli</button>
+                <button class="btn btn-primary" onclick="prepara_morti()">Notte conclusa</button>
+            </div>
+            <div class="azioni-scena" style="margin-top:.6rem;">
+                <button class="btn-testo" onclick="refresh()">Termina partita</button>
+            </div>
+        </div>
+
+        <!-- ================= SCENA: chi è sopravvissuto ================= -->
+        <div class="scena" id="scena-morti">
+            <div class="pannello" style="max-width:480px;">
+                <h2 id="morti-titolo">Chi è sopravvissuto?</h2>
+                <p class="hint">Lascia la spunta a chi è ancora vivo, togli la spunta a chi è morto (di notte o per il voto del giorno).</p>
+                <div class="lista-vivi" id="lista-vivi"></div>
+                <div class="azioni-scena">
+                    <button class="btn-testo" onclick="apri_lista_popup()">Vedi lista ruoli</button>
+                </div>
+                <div class="azioni-scena">
+                    <button class="btn btn-secondary" onclick="vaiA('scena-notte')">Indietro</button>
+                    <button class="btn btn-primary" onclick="conferma_morti()">Conferma e continua</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= POPUP: lista ruoli (consultabile in ogni momento) ================= -->
+        <div class="popup-overlay" id="popup-lista">
+            <div class="popup-box" style="max-width:640px;">
+                <h3>Lista ruoli</h3>
+                <div id="popup-lista-contenuto" style="max-height:60vh; overflow-y:auto; text-align:left;"></div>
+                <div class="azioni-scena">
+                    <button class="btn btn-secondary" onclick="chiudi_lista_popup()">Chiudi</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= POPUP: info ruolo ================= -->
+        <div class="popup-overlay" id="info_ruoli">
+            <div class="popup-box">
+                <h3 id="info_ruolo_ruolo"></h3>
+                <p id="info_ruolo_value"></p>
+                <p class="sveglia-info-popup" id="info_ruolo_sveglia"></p>
+                <div class="azioni-scena">
+                    <button class="btn btn-secondary" onclick="chiudi_info()">Chiudi</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= POPUP: numero lupi ================= -->
+        <div class="popup-overlay" id="numL">
+            <div class="popup-box">
+                <h3>Quanti lupi?</h3>
+                <input id="numeroL" type="number" min="1" autocomplete="off">
+                <div class="azioni-scena">
+                    <button class="btn btn-secondary" onclick="chiudiL()">Annulla</button>
+                    <button class="btn btn-primary" onclick="inserisci_lupi()">Conferma</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= POPUP: numero contadini ================= -->
+        <div class="popup-overlay" id="numC">
+            <div class="popup-box">
+                <h3>Quanti contadini?</h3>
+                <input id="numeroC" type="number" min="1" autocomplete="off">
+                <div class="azioni-scena">
+                    <button class="btn btn-secondary" onclick="chiudiC()">Annulla</button>
+                    <button class="btn btn-primary" onclick="inserisci_contadini()">Conferma</button>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            /* ==========================================================
+               STATO GLOBALE
+               ========================================================== */
+            var giocatori=[]
+            var ruoli_partita=[]
+            var ROLES={}
+            var ROLE_ORDER=[]
+            var EXTRA={}
+            var ng=5
+            var lupi=0
+            var contadini=0
+            var turno=0
+
+            // stato della regia notturna
+            var playerAlive=[]
+            var notte=1
+            var usatoRuolo={}
+            var pendingUsato={}
+            var notteIniziata=false
+            var annotazioni=[]
+
+            var ETICHETTE_SVEGLIA={
+                sempre: 'Si sveglia ogni notte',
+                mai: 'Non si sveglia mai di notte',
+                solo_prima: 'Si sveglia solo la prima notte',
+                dopo_morte: 'Si sveglia dalla notte successiva alla prima morte',
+                finche_non_usato: 'Si sveglia ogni notte finché non usa il potere'
+            }
+            function etichetta_sveglia(ruolo){
+                var tipo=(ruolo.sveglia && ruolo.sveglia.tipo) || 'sempre';
+                return ETICHETTE_SVEGLIA[tipo] || '';
+            }
+
+            /* ==========================================================
+               CARICAMENTO DATI RUOLI
+               ========================================================== */
+            fetch('./roles.json')
+                .then(function(res){ return res.json(); })
+                .then(function(data){
+                    data.ruoli.forEach(function(r){
+                        ROLES[r.id]=r;
+                        ROLE_ORDER.push(r.id);
+                    });
+                    EXTRA=data.extra || {};
+                    costruisci_griglia_ruoli();
+                })
+                .catch(function(err){
+                    console.error('Impossibile caricare roles.json', err);
+                    alert('Non riesco a caricare roles.json. Se hai aperto il file con un doppio click, avvialo invece con un piccolo server locale (es. estensione "Live Server" oppure "python3 -m http.server"): i browser bloccano le richieste fetch su file:// per motivi di sicurezza.');
+                });
+
+            /* ==========================================================
+               NAVIGAZIONE TRA SCENE
+               ========================================================== */
+            function vaiA(id){
+                document.querySelectorAll('.scena').forEach(function(s){ s.classList.remove('scena-attiva'); });
+                document.getElementById(id).classList.add('scena-attiva');
+            }
+
+            function refresh(){
+                window.open("index_v2.html","_self")
+            }
+
+            /* ==========================================================
+               NUMERO GIOCATORI
+               ========================================================== */
+            function cambia_numero(delta){
+                ng = Math.max(3, Math.min(20, ng + delta));
+                document.getElementById('valore-numero').innerText = ng;
+            }
+
+            function conferma_numero(){
+                giocatori = [];
+                aggiorna_dots_nomi();
+                aggiorna_etichetta_nome();
+                document.getElementById('nomeg').value='';
+                vaiA('scena-nomi');
+                setTimeout(function(){ document.getElementById('nomeg').focus(); }, 300);
+            }
+
+            /* ==========================================================
+               NOMI GIOCATORI
+               ========================================================== */
+            function aggiorna_dots_nomi(){
+                var wrap=document.getElementById('dots-nomi');
+                wrap.innerHTML='';
+                for(var i=0;i<ng;i++){
+                    var d=document.createElement('span');
+                    d.className='dot';
+                    if(i<giocatori.length) d.className+=' fatto';
+                    else if(i===giocatori.length) d.className+=' attuale';
+                    wrap.appendChild(d);
+                }
+            }
+
+            function aggiorna_etichetta_nome(){
+                document.getElementById('etichetta-nomi').innerText =
+                    'Giocatore ' + (giocatori.length+1) + ' di ' + ng;
+            }
+
+            function leggi_nomi(){
+                var campo=document.getElementById('nomeg');
+                var valore=campo.value.trim();
+                if(valore===''){ campo.focus(); return; }
+                giocatori.push(valore);
+                campo.value='';
+                if(giocatori.length>=ng){
+                    document.getElementById('titolo_ruoli').innerText = 'Scegli ' + ng + ' ruoli';
+                    aggiorna_contatore_ruoli();
+                    vaiA('scena-ruoli');
+                    return;
+                }
+                aggiorna_dots_nomi();
+                aggiorna_etichetta_nome();
+                campo.focus();
+            }
+
+            function indietro_nome(){
+                if(giocatori.length>0){
+                    giocatori.pop();
+                    aggiorna_dots_nomi();
+                    aggiorna_etichetta_nome();
+                    document.getElementById('nomeg').value='';
+                    document.getElementById('nomeg').focus();
+                } else {
+                    vaiA('scena-numero');
+                }
+            }
+
+            document.addEventListener('DOMContentLoaded', function(){
+                document.getElementById('nomeg').addEventListener('keydown', function(e){
+                    if(e.key==='Enter'){ leggi_nomi(); }
+                });
+            });
+
+            function vai_a_nomi_da_ruoli(){
+                if(giocatori.length>0) giocatori.pop();
+                aggiorna_dots_nomi();
+                aggiorna_etichetta_nome();
+                document.getElementById('nomeg').value='';
+                vaiA('scena-nomi');
+            }
+
+            /* ==========================================================
+               SCELTA RUOLI
+               ========================================================== */
+            function costruisci_griglia_ruoli(){
+                var griglia=document.getElementById('ruoli-grid');
+                griglia.innerHTML='';
+                ROLE_ORDER.forEach(function(id){
+                    var ruolo=ROLES[id];
+                    var chip=document.createElement('div');
+                    chip.className='ruolo-chip';
+                    chip.setAttribute('data-squadra', ruolo.squadra);
+                    chip.id='chip-'+id;
+
+                    var extraClick='';
+                    if(id==='lupo') extraClick=' onclick="inserisci_numero_lupi()"';
+                    else if(id==='contadino') extraClick=' onclick="inserisci_numero_contadini()"';
+
+                    chip.innerHTML =
+                        '<input type="checkbox" class="ruolo-input" id="'+id+'"'+extraClick+'>' +
+                        '<label for="'+id+'" class="ruolo-label">' +
+                            '<span class="ruolo-sigillo" aria-hidden="true"></span>' +
+                            '<span class="ruolo-testo" id="'+id+'_2">'+ruolo.nome+'</span>' +
+                        '</label>' +
+                        '<button type="button" class="info-btn" onclick="info(\''+id+'\')" aria-label="Informazioni su '+ruolo.nome+'">' +
+                        '<svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="currentColor" viewBox="0 0 16 16">' +
+                        '<path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"></path>' +
+                        '<path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"></path>' +
+                        '</svg></button>';
+                    griglia.appendChild(chip);
+
+                    chip.querySelector('input').addEventListener('change', function(){
+                        chip.classList.toggle('selezionato', this.checked);
+                        aggiorna_contatore_ruoli();
+                    });
+                });
+                aggiorna_contatore_ruoli();
+            }
+
+            function aggiorna_contatore_ruoli(){
+                var totale=0, buoni=0, cattivi=0, neutrali=0;
+                ROLE_ORDER.forEach(function(id){
+                    var el=document.getElementById(id);
+                    if(el && el.checked){
+                        var n=1;
+                        if(id==='lupo') n=parseInt(lupi)||0;
+                        else if(id==='contadino') n=parseInt(contadini)||0;
+                        totale+=n;
+                        var sq=ROLES[id].squadra;
+                        if(sq==='buoni') buoni+=n;
+                        else if(sq==='cattivi') cattivi+=n;
+                        else neutrali+=n;
+                    }
+                });
+                document.getElementById('contatore-numero').innerText=totale;
+                document.getElementById('contatore-totale').innerText=ng;
+                document.getElementById('riepilogo-squadre').innerHTML =
+                    '<span><i class="buoni-dot"></i>'+buoni+' buoni</span>' +
+                    '<span><i class="cattivi-dot"></i>'+cattivi+' cattivi</span>' +
+                    '<span><i class="neutrali-dot"></i>'+neutrali+' neutrali</span>';
+
+                var wrap=document.getElementById('contatore-ruoli-wrap');
+                wrap.classList.remove('completo','eccesso');
+                if(totale===ng) wrap.classList.add('completo');
+                else if(totale>ng) wrap.classList.add('eccesso');
+
+                document.getElementById('btn-componi').classList.toggle('pronto', totale===ng);
+            }
+
+            function acquisisci_ruoli(){
+                ruoli_partita=[]
+                ROLE_ORDER.forEach(function(ruolo){
+                    if(document.getElementById(ruolo).checked===true){
+                        if(ruolo==='lupo'){
+                            for(var i=0;i<lupi;i++) ruoli_partita.push(ruolo);
+                        } else if(ruolo==='contadino'){
+                            for(var j=0;j<contadini;j++) ruoli_partita.push(ruolo);
+                        } else {
+                            ruoli_partita.push(ruolo);
+                        }
+                    }
+                });
+                if(ruoli_partita.length===ng){
+                    turno=0;
+                    vaiA('scena-carta');
+                    consegna_ruoli();
+                } else {
+                    alert('Hai scelto ' + ruoli_partita.length + ' ruoli, ma i giocatori sono ' + ng + '. Usa il contatore in alto per pareggiare i due numeri.');
+                }
+            }
+
+            function shuffleArray(array){
+                for(var i=array.length-1;i>0;i--){
+                    var j=Math.floor(Math.random()*(i+1));
+                    var tmp=array[i]; array[i]=array[j]; array[j]=tmp;
+                }
+                return array;
+            }
+
+            function consegna_ruoli(){
+                ruoli_partita=shuffleArray(ruoli_partita);
+                cambia_ruolo();
+            }
+
+            /* ==========================================================
+               RIVELAZIONE CARTA
+               ========================================================== */
+            function cambia_ruolo(){
+                if(turno===ng){
+                    lista_narratore();
+                    vaiA('scena-narratore');
+                    return;
+                }
+
+                var idRuolo = ruoli_partita[turno];
+                var ruolo = ROLES[idRuolo];
+
+                document.getElementById('turno_giocatore').innerText = 'Passa il telefono a ' + giocatori[turno];
+                document.getElementById('progresso-testo').innerText = 'Giocatore ' + (turno+1) + ' di ' + ng;
+                document.getElementById('progresso-riempimento').style.width = (100*turno/ng) + '%';
+
+                // La copertura torna opaca ISTANTANEAMENTE (nessuna transizione),
+                // così il ruolo del prossimo giocatore non appare mai per un istante.
+                var coperta=document.getElementById('carta-coperta');
+                coperta.classList.remove('dissolvi');
+                coperta.classList.remove('nascosta');
+
+                var scena=document.getElementById('card-scene');
+                scena.classList.remove('rivelata'); // niente alone colorato finché non viene mostrato
+                document.getElementById('card-flip').classList.remove('flipped');
+                scena.setAttribute('data-squadra', ruolo.squadra);
+
+                document.getElementById('card-nome-fronte').innerText = ruolo.nome;
+                document.getElementById('card-nome-retro').innerText = ruolo.nome;
+                document.getElementById('card-descrizione').innerText = ruolo.descrizione;
+
+                document.getElementById('card-sveglia').innerText = etichetta_sveglia(ruolo);
+
+                var illustrazione=document.getElementById('card-illustrazione');
+                illustrazione.innerHTML='';
+                if(ruolo.immagine){
+                    var img=document.createElement('img');
+                    img.alt='Illustrazione '+ruolo.nome;
+                    img.onerror=function(){
+                        // se l'immagine non esiste ancora, ripiego sul segnaposto senza rompere la carta
+                        illustrazione.innerHTML='<div class="segnaposto"><span>'+ruolo.nome.charAt(0).toUpperCase()+'</span></div>';
+                    };
+                    img.src=ruolo.immagine;
+                    illustrazione.appendChild(img);
+                } else {
+                    illustrazione.innerHTML = '<div class="segnaposto"><span>'+ruolo.nome.charAt(0).toUpperCase()+'</span></div>';
+                }
+
+                document.getElementById('btn-mostra').style.display='';
+                document.getElementById('btn-prossimo').innerText = (turno===ng-1) ? 'Concludi la distribuzione' : 'Prossimo giocatore';
+
+                // piccola animazione di ingresso della carta (coperta compresa, nessuna fuga di informazioni)
+                scena.classList.remove('entra');
+                void scena.offsetWidth;
+                scena.classList.add('entra');
+
+                turno+=1;
+            }
+
+            function mostra(){
+                document.getElementById('card-scene').classList.add('rivelata');
+                var coperta=document.getElementById('carta-coperta');
+                coperta.classList.add('dissolvi');
+                // doppio requestAnimationFrame per garantire che la transizione venga applicata
+                requestAnimationFrame(function(){
+                    requestAnimationFrame(function(){
+                        coperta.classList.add('nascosta');
+                    });
+                });
+            }
+
+            function flip_carta(){
+                var coperta=document.getElementById('carta-coperta');
+                if(!coperta.classList.contains('nascosta')) return; // non flippare finché è coperta
+                document.getElementById('card-flip').classList.toggle('flipped');
+            }
+
+            /* ==========================================================
+               NARRATORE
+               ========================================================== */
+            function lista_narratore(){
+                annotazioni = giocatori.map(function(){ return ''; });
+                var tabella=document.getElementById('tabella');
+                for(var i=1;i<ng+1;i++){
+                    var idx=i-1;
+                    var riga=tabella.insertRow(i);
+                    var cellaNome=riga.insertCell(0);
+                    var cellaRuolo=riga.insertCell(1);
+                    var cellaNote=riga.insertCell(2);
+                    var idRuolo=ruoli_partita[idx];
+                    cellaNome.innerText=giocatori[idx];
+                    cellaRuolo.innerHTML='<span class="squadra-dot" data-squadra="'+ROLES[idRuolo].squadra+'"></span>'+ROLES[idRuolo].nome;
+                    cellaNote.innerHTML='<input type="text" class="input-annotazione" data-idx="'+idx+'" placeholder="annotazioni..." oninput="sincronizza_annotazione('+idx+', this.value)">';
+                }
+                document.getElementById('btn-inizia-notte').innerText = notteIniziata ? 'Continua la notte' : 'Inizia la notte';
+            }
+
+            function sincronizza_annotazione(idx, valore){
+                annotazioni[idx]=valore;
+                document.querySelectorAll('.input-annotazione[data-idx="'+idx+'"]').forEach(function(el){
+                    if(el.value !== valore) el.value = valore;
+                });
+            }
+
+            function apri_lista_popup(){
+                var contenitore=document.getElementById('popup-lista-contenuto');
+                var html='<table class="tabella-popup" style="width:100%; border-collapse:collapse;">' +
+                    '<thead><tr>' +
+                        '<td style="padding:.4rem .3rem; font-size:.72rem; letter-spacing:.06em; text-transform:uppercase; color:var(--moon-fioco); border-bottom:1px solid var(--line);">Giocatore</td>' +
+                        '<td style="padding:.4rem .3rem; font-size:.72rem; letter-spacing:.06em; text-transform:uppercase; color:var(--moon-fioco); border-bottom:1px solid var(--line);">Ruolo</td>' +
+                        '<td style="padding:.4rem .3rem; font-size:.72rem; letter-spacing:.06em; text-transform:uppercase; color:var(--moon-fioco); border-bottom:1px solid var(--line);">Annotazioni</td>' +
+                    '</tr></thead>';
+                giocatori.forEach(function(nome, idx){
+                    var ruolo=ROLES[ruoli_partita[idx]];
+                    var vivo = notteIniziata ? (playerAlive[idx]!==false) : true;
+                    var nomeHtml = vivo ? nome : '<span style="text-decoration:line-through; opacity:.6;">'+nome+'</span> <span style="font-size:.72rem; color:var(--cattivi);">(morto)</span>';
+                    html +=
+                        '<tr style="border-top:1px solid var(--line);">' +
+                            '<td style="padding:.5rem .3rem; color:var(--moon); vertical-align:middle;">'+nomeHtml+'</td>' +
+                            '<td style="padding:.5rem .3rem; color:var(--moon-dim); vertical-align:middle; white-space:nowrap;">' +
+                                '<span class="squadra-dot" data-squadra="'+ruolo.squadra+'"></span>'+ruolo.nome +
+                            '</td>' +
+                            '<td style="padding:.5rem .3rem;">' +
+                                '<input type="text" class="input-annotazione" data-idx="'+idx+'" value="'+(annotazioni[idx]||'').replace(/"/g,'&quot;')+'" placeholder="annotazioni..." oninput="sincronizza_annotazione('+idx+', this.value)">' +
+                            '</td>' +
+                        '</tr>';
+                });
+                html+='</table>';
+                contenitore.innerHTML=html;
+                document.getElementById('popup-lista').classList.add('aperta');
+            }
+            function chiudi_lista_popup(){
+                document.getElementById('popup-lista').classList.remove('aperta');
+            }
+
+            function mostra_ruoli(){
+                var tabella=document.getElementById('tabella');
+                var visibile = tabella.style.display==='table';
+                tabella.style.display = visibile ? 'none' : 'table';
+                document.getElementById('mosNas').innerText = visibile ? 'Mostra ruoli' : 'Nascondi ruoli';
+            }
+
+            /* ==========================================================
+               REGIA NOTTURNA
+               ========================================================== */
+            function avvia_notte(){
+                if(!notteIniziata){
+                    playerAlive = giocatori.map(function(){ return true; });
+                    notte=1;
+                    usatoRuolo={};
+                    notteIniziata=true;
+                }
+                render_notte();
+                vaiA('scena-notte');
+            }
+
+            function morto_storico(){
+                return playerAlive.some(function(v){ return v===false; });
+            }
+
+            function ruolo_sveglia_stanotte(ruolo){
+                var tipo=(ruolo.sveglia && ruolo.sveglia.tipo) || 'sempre';
+                switch(tipo){
+                    case 'sempre': return true;
+                    case 'mai': return false;
+                    case 'solo_prima': return notte===1;
+                    case 'dopo_morte': return notte>1 && morto_storico();
+                    case 'finche_non_usato': return !usatoRuolo[ruolo.id];
+                    default: return true;
+                }
+            }
+
+            function render_notte(){
+                document.getElementById('notte-titolo').innerText='Notte '+notte;
+                var lista=document.getElementById('notte-lista');
+                lista.innerHTML='';
+                pendingUsato={};
+
+                // per ogni ruolo presente in partita, elenco di chi lo interpreta (vivo o morto)
+                var presenti={};
+                ruoli_partita.forEach(function(id, idx){
+                    if(!presenti[id]) presenti[id]=[];
+                    presenti[id].push({ nome: giocatori[idx], vivo: playerAlive[idx]!==false });
+                });
+
+                // il ruolo va chiamato se il momento è quello giusto, A PRESCINDERE dal fatto
+                // che chi lo interpreta sia vivo o morto: se il narratore smette di chiamarlo
+                // quando muore, il silenzio da solo rivela che è morto.
+                var idsOrdinati = Object.keys(presenti).filter(function(id){
+                    return ruolo_sveglia_stanotte(ROLES[id]);
+                }).sort(function(a,b){
+                    var oa = (ROLES[a].ordine_notte!==undefined) ? ROLES[a].ordine_notte : 9999;
+                    var ob = (ROLES[b].ordine_notte!==undefined) ? ROLES[b].ordine_notte : 9999;
+                    return oa-ob;
+                });
+
+                var numero=1;
+
+                idsOrdinati.forEach(function(id){
+                    var ruolo=ROLES[id];
+                    var elenco=presenti[id];
+                    var tuttiMorti = elenco.every(function(p){ return !p.vivo; });
+
+                    var nomiHtml = elenco.map(function(p){
+                        return p.vivo ? p.nome : '<span style="opacity:.5; text-decoration:line-through;">'+p.nome+'</span>';
+                    }).join(', ');
+
+                    var riga=document.createElement('div');
+                    riga.className='notte-riga';
+                    riga.setAttribute('data-squadra', ruolo.squadra);
+
+                    var corpo =
+                        '<div class="notte-numero">'+(numero++)+'</div>' +
+                        '<div class="notte-corpo">' +
+                            '<div class="nome-ruolo">'+ruolo.nome+'</div>' +
+                            '<div class="nome-giocatori">'+nomiHtml+'</div>';
+                    if(tuttiMorti){
+                        corpo += '<div class="nota-morto">Nessuno vivo con questo ruolo — chiamalo comunque per non far intuire che è morto.</div>';
+                    }
+                    if(ruolo.sveglia && ruolo.sveglia.tipo==='finche_non_usato' && !tuttiMorti){
+                        corpo += '<label class="usato-toggle"><input type="checkbox" data-ruolo="'+id+'" onchange="segna_usato(this)"> Ha usato il potere stanotte</label>';
+                    }
+                    corpo += '</div>' +
+                        '<button type="button" class="info-btn" onclick="info(\''+id+'\')" aria-label="Informazioni su '+ruolo.nome+'">' +
+                        '<svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="currentColor" viewBox="0 0 16 16">' +
+                        '<path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"></path>' +
+                        '<path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"></path>' +
+                        '</svg></button>';
+
+                    riga.innerHTML=corpo;
+                    lista.appendChild(riga);
+                });
+
+                if(idsOrdinati.length===0){
+                    lista.innerHTML='<p class="notte-vuota">Nessuno da svegliare questa notte.</p>';
+                }
+            }
+
+            function segna_usato(checkbox){
+                pendingUsato[checkbox.getAttribute('data-ruolo')] = checkbox.checked;
+            }
+
+            function prepara_morti(){
+                // applico i poteri "usati" segnati questa notte, prima di passare oltre
+                Object.keys(pendingUsato).forEach(function(id){
+                    if(pendingUsato[id]) usatoRuolo[id]=true;
+                });
+
+                document.getElementById('morti-titolo').innerText = 'Chi è sopravvissuto alla notte '+notte+'?';
+                var lista=document.getElementById('lista-vivi');
+                lista.innerHTML='';
+                giocatori.forEach(function(nome, idx){
+                    if(!playerAlive[idx]) return; // già morto prima, non lo richiedo di nuovo
+                    var riga=document.createElement('div');
+                    riga.className='vivo-riga';
+                    riga.innerHTML =
+                        '<input type="checkbox" id="vivo-'+idx+'" data-idx="'+idx+'" checked>' +
+                        '<label for="vivo-'+idx+'">'+nome+' <span class="ruolo-piccolo">('+ROLES[ruoli_partita[idx]].nome+')</span></label>';
+                    lista.appendChild(riga);
+                });
+                vaiA('scena-morti');
+            }
+
+            function conferma_morti(){
+                document.querySelectorAll('#lista-vivi input[type=checkbox]').forEach(function(cb){
+                    var idx=parseInt(cb.getAttribute('data-idx'));
+                    playerAlive[idx] = cb.checked;
+                });
+                notte+=1;
+                render_notte();
+                vaiA('scena-notte');
+            }
+
+            /* ==========================================================
+               POPUP INFO
+               ========================================================== */
+            function info(ruoloId){
+                var dati = ROLES[ruoloId] || EXTRA[ruoloId];
+                if(!dati) return;
+                document.getElementById('info_ruolo_ruolo').innerText = dati.nome;
+                document.getElementById('info_ruolo_value').innerText = dati.descrizione;
+                var etichettaEl=document.getElementById('info_ruolo_sveglia');
+                if(dati.sveglia){
+                    etichettaEl.innerText = etichetta_sveglia(dati);
+                    etichettaEl.style.display='block';
+                } else {
+                    etichettaEl.style.display='none';
+                }
+                document.getElementById('info_ruoli').classList.add('aperta');
+            }
+            function chiudi_info(){
+                document.getElementById('info_ruoli').classList.remove('aperta');
+            }
+
+            /* ==========================================================
+               CONTEGGIO LUPI / CONTADINI
+               ========================================================== */
+            function inserisci_numero_lupi(){
+                if(document.getElementById('lupo').checked===true){
+                    document.getElementById('numeroL').value = lupi>0 ? lupi : '';
+                    document.getElementById('numL').classList.add('aperta');
+                    setTimeout(function(){ document.getElementById('numeroL').focus(); }, 50);
+                } else {
+                    document.getElementById('lupo_2').innerText='Lupo';
+                    lupi=0;
+                    aggiorna_contatore_ruoli();
+                }
+            }
+            function inserisci_lupi(){
+                var val=parseInt(document.getElementById('numeroL').value);
+                if(!val || val<1){ document.getElementById('numeroL').focus(); return; }
+                lupi=val;
+                document.getElementById('numL').classList.remove('aperta');
+                document.getElementById('lupo_2').innerText='Lupi ('+lupi+')';
+                aggiorna_contatore_ruoli();
+            }
+            function chiudiL(){
+                document.getElementById('numL').classList.remove('aperta');
+                if(lupi===0) document.getElementById('lupo').checked=false;
+                aggiorna_contatore_ruoli();
+            }
+
+            function inserisci_numero_contadini(){
+                if(document.getElementById('contadino').checked===true){
+                    document.getElementById('numeroC').value = contadini>0 ? contadini : '';
+                    document.getElementById('numC').classList.add('aperta');
+                    setTimeout(function(){ document.getElementById('numeroC').focus(); }, 50);
+                } else {
+                    document.getElementById('contadino_2').innerText='Contadino';
+                    contadini=0;
+                    aggiorna_contatore_ruoli();
+                }
+            }
+            function inserisci_contadini(){
+                var val=parseInt(document.getElementById('numeroC').value);
+                if(!val || val<1){ document.getElementById('numeroC').focus(); return; }
+                contadini=val;
+                document.getElementById('numC').classList.remove('aperta');
+                document.getElementById('contadino_2').innerText='Contadini ('+contadini+')';
+                aggiorna_contatore_ruoli();
+            }
+            function chiudiC(){
+                document.getElementById('numC').classList.remove('aperta');
+                if(contadini===0) document.getElementById('contadino').checked=false;
+                aggiorna_contatore_ruoli();
+            }
+        </script>
+    </body>
+</html>
