@@ -129,7 +129,7 @@
       "sveglia": {
         "tipo": "sempre"
       },
-      "descrizione": "L'illusionista è un giocatore cattivo che gioca con i lupi e viene visto come tale. Durante la notte indica un giocatore e gli blocca i poteri per quel turno.",
+      "descrizione": "L'illusionista è un giocatore cattivo che gioca con i lupi e viene visto come tale. Durante la notte può indicare un giocatore e bloccargli i poteri per quel turno.",
       "ordine_notte": 120
     },
     {
@@ -186,6 +186,39 @@
       },
       "descrizione": "Il fantasma gioca per conto suo. Durante la notte non può essere ucciso dai lupi. Il suo obiettivo è possedere un giocatore, indicandolo per 5 notti di fila (chi viene indicato se ne accorge). Se il fantasma indica o viene indicato dal veggente, muore.",
       "ordine_notte": 170
+    },
+ {
+      "id": "mitomane",
+      "nome": "Mitomane",
+      "squadra": "neutrali",
+      "immagine": "assets/cards/mitomane.png",
+      "sveglia": {
+        "tipo": "solo_seconda"
+      },
+      "descrizione": "Il Mitomane non ha uno schieramento iniziale. Viene svegliato alla seconda notte, ed è tenuto ad indicare un altro giocatore. Se quest'ultimo è lupo, il mitomane diventa lupo, se è veggente diventa veggente, altrimenti resta un semplice contadino. ",
+      "ordine_notte": 5
+    },
+ {
+      "id": "druido",
+      "nome": "Druido",
+      "squadra": "buoni",
+      "immagine": "assets/cards/druido.png",
+      "sveglia": {
+        "tipo": "mai"
+      },
+      "descrizione": "Il Druido è un ruolo buono. È un semplice contadino che ha due vite, solo se attaccato dai lupi.",
+      "ordine_notte": 180
+    },
+ {
+      "id": "sindaco",
+      "nome": "Sindaco",
+      "squadra": "buoni",
+      "immagine": "assets/cards/sindaco.png",
+      "sveglia": {
+        "tipo": "mai"
+      },
+      "descrizione": "Il Sindaco gioca con i buoni. È un semplice contadino la cui votazione vale doppio. Il narratore non deve però dichiarare nulla a riguardo esplicitamente, starà a lui fare i calcoli per decretare il giocatore destinato a morire in base al voto doppio del sindaco.",
+      "ordine_notte": 190
     }
   ],
   "extra": {
