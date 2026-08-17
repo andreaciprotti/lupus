@@ -1242,6 +1242,7 @@
                     case 'sempre': return true;
                     case 'mai': return false;
                     case 'solo_prima': return notte===1;
+                    case 'solo_seconda': return notte===2;
                     case 'dopo_morte': return notte>1 && morto_storico();
                     case 'finche_non_usato': return !usatoRuolo[ruolo.id];
                     default: return true;
