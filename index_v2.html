@@ -112,6 +112,11 @@
                 transition: all .25s ease;
             }
             .btn:hover{ color: var(--moon); border-color: var(--moon-dim); background: rgba(255,255,255,.05); }
+            .btn:disabled{
+                opacity:.35; cursor: not-allowed;
+                box-shadow:none !important; background: transparent !important; border-color: var(--line) !important;
+            }
+            .btn:disabled:hover{ color: var(--moon-dim); background: transparent; border-color: var(--line); }
             .btn-primary{
                 background: linear-gradient(180deg, #2a3550, #1a2135);
                 border-color: rgba(111,179,217,.55);
@@ -603,6 +608,7 @@
             .vivo-riga input{ accent-color: var(--buoni); width:17px; height:17px; flex-shrink:0; }
             .vivo-riga label{ flex:1; font-family: var(--font-ui); font-size:.92rem; color: var(--moon); cursor:pointer; }
             .vivo-riga .ruolo-piccolo{ font-size:.78rem; color: var(--moon-fioco); }
+            .vivo-riga.morto{ opacity:.75; }
 
             .sveglia-info{
                 font-family: var(--font-ui); font-size:.7rem; letter-spacing:.04em; text-transform:uppercase;
@@ -780,7 +786,7 @@
 
             <div class="carta-azioni">
                 <button type="button" class="btn btn-primary" id="btn-mostra" onclick="mostra()">Mostra ruolo</button>
-                <button type="button" class="btn btn-secondary" id="btn-prossimo" onclick="cambia_ruolo()">Prossimo giocatore</button>
+                <button type="button" class="btn btn-secondary" id="btn-prossimo" onclick="cambia_ruolo()" disabled>Prossimo giocatore</button>
             </div>
         </div>
 
@@ -1490,6 +1496,7 @@
 
                 document.getElementById('btn-mostra').style.display='';
                 document.getElementById('btn-prossimo').innerText = (turno===ng-1) ? 'Concludi la distribuzione' : 'Prossimo giocatore';
+                document.getElementById('btn-prossimo').disabled = true;
 
                 // piccola animazione di ingresso della carta (coperta compresa, nessuna fuga di informazioni)
                 scena.classList.remove('entra');
@@ -1501,6 +1508,7 @@
 
             function mostra(){
                 document.getElementById('card-scene').classList.add('rivelata');
+                document.getElementById('btn-prossimo').disabled = false;
                 var coperta=document.getElementById('carta-coperta');
                 coperta.classList.add('dissolvi');
                 // doppio requestAnimationFrame per garantire che la transizione venga applicata
@@ -1699,19 +1707,21 @@
                 var lista=document.getElementById('lista-vivi');
                 lista.innerHTML='';
                 giocatori.forEach(function(nome, idx){
-                    // if(!playerAlive[idx]) return; // già morto prima, non lo richiedo di nuovo
+                    var vivo = playerAlive[idx];
                     var riga=document.createElement('div');
-                    riga.className='vivo-riga';
-                    if(!playerAlive[idx]){
+                    riga.className='vivo-riga' + (vivo ? '' : ' morto');
+                    if(vivo){
                         riga.innerHTML =
-                        '<input type="checkbox" id="vivo-'+idx+'" data-idx="'+idx+'" unchecked>' +
-                        '<label for="vivo-'+idx+'">'+nome+' <span class="ruolo-piccolo">('+ROLES[ruoli_partita[idx]].nome+')</span></label>';
-                    }
-                    else{
-                    riga.innerHTML =
-                        '<input type="checkbox" id="vivo-'+idx+'" data-idx="'+idx+'" checked>' +
-                        '<label for="vivo-'+idx+'">'+nome+' <span class="ruolo-piccolo">('+ROLES[ruoli_partita[idx]].nome+')</span></label>';
-                    
+                            '<input type="checkbox" id="vivo-'+idx+'" data-idx="'+idx+'" checked>' +
+                            '<label for="vivo-'+idx+'">'+nome+' <span class="ruolo-piccolo">('+ROLES[ruoli_partita[idx]].nome+')</span></label>';
+                    } else {
+                        // già morto in una notte precedente: resta visibile e SPUNTABILE,
+                        // per permettere di segnarlo di nuovo vivo in caso di resurrezione (es. Senza Volto)
+                        riga.innerHTML =
+                            '<input type="checkbox" id="vivo-'+idx+'" data-idx="'+idx+'">' +
+                            '<label for="vivo-'+idx+'"><span style="text-decoration:line-through;">'+nome+'</span> ' +
+                            '<span style="font-size:.72rem; color:var(--cattivi);">(morto)</span> ' +
+                            '<span class="ruolo-piccolo">('+ROLES[ruoli_partita[idx]].nome+')</span></label>';
                     }
                     lista.appendChild(riga);
                 });
