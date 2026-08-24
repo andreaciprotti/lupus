@@ -592,6 +592,38 @@
             }
 
             /* ==========================================================
+               RUOLI PERSONALIZZATI — form e pulsante di aggiunta
+               ========================================================== */
+            .campo-form{ margin-bottom: 1rem; text-align:left; }
+            .campo-form label{
+                display:block; font-family: var(--font-ui); font-size:.72rem; letter-spacing:.05em;
+                text-transform:uppercase; color: var(--moon-fioco); margin-bottom:.35rem;
+            }
+            .input-form{
+                width:100%; background: var(--ink-2); border:1px solid var(--line); color: var(--moon);
+                border-radius:8px; padding:.55rem .7rem; font-family: var(--font-ui); font-size:.9rem;
+            }
+            .input-form:focus{ outline:none; border-color: var(--buoni); box-shadow: 0 0 0 3px var(--buoni-glow); }
+            textarea.input-form{ resize: vertical; }
+            select.input-form{ cursor:pointer; }
+            input[type="file"].input-form{ padding:.4rem; font-size:.8rem; }
+
+            .ruolo-chip-nuovo{
+                display:flex; align-items:center; justify-content:center; gap:.4rem;
+                background: transparent; border: 1.5px dashed var(--line); border-radius:10px;
+                padding:.5rem .55rem; color: var(--moon-fioco); cursor:pointer;
+                font-family: var(--font-ui); font-size:.82rem; transition: all .25s ease;
+            }
+            .ruolo-chip-nuovo:hover{ border-color: var(--buoni); color: var(--moon); background: rgba(255,255,255,.04); }
+            .ruolo-chip-nuovo .segno-piu{ font-size:1.15rem; line-height:1; }
+
+            .ruolo-elimina{
+                background:none; border:none; color: var(--cattivi); font-size:1.1rem; line-height:1;
+                padding: 0 .15rem; flex-shrink:0; opacity:.7;
+            }
+            .ruolo-elimina:hover{ opacity:1; }
+
+            /* ==========================================================
                POPUP (info ruolo / conteggio lupi-contadini)
                ========================================================== */
             .popup-overlay{
@@ -797,9 +829,86 @@
             <div class="popup-box">
                 <h3 id="info_ruolo_ruolo"></h3>
                 <p id="info_ruolo_value"></p>
+                <textarea id="info_ruolo_textarea" class="input-form" style="display:none;" rows="4"></textarea>
                 <p class="sveglia-info-popup" id="info_ruolo_sveglia"></p>
+                <div class="azioni-scena" id="info_azioni_normali">
+                    <button class="btn-testo" id="info_btn_modifica" onclick="modifica_descrizione_inizio()">Modifica descrizione</button>
+                    <button class="btn-testo" id="info_btn_ripristina" onclick="ripristina_descrizione()" style="display:none;">Ripristina originale</button>
+                </div>
+                <div class="azioni-scena" id="info_azioni_modifica" style="display:none;">
+                    <button class="btn btn-secondary" onclick="annulla_modifica_descrizione()">Annulla</button>
+                    <button class="btn btn-primary" onclick="salva_modifica_descrizione()">Salva per questa partita</button>
+                </div>
                 <div class="azioni-scena">
                     <button class="btn btn-secondary" onclick="chiudi_info()">Chiudi</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= POPUP: nuovo ruolo personalizzato ================= -->
+        <div class="popup-overlay" id="popup-nuovo-ruolo">
+            <div class="popup-box" style="max-width:480px; text-align:left;">
+                <h3 style="text-align:center;">Nuovo ruolo personalizzato</h3>
+
+                <div class="campo-form">
+                    <label for="nr-nome">Nome del ruolo</label>
+                    <input type="text" id="nr-nome" class="input-form" placeholder="es. Sciamano" autocomplete="off">
+                </div>
+
+                <div class="campo-form">
+                    <label for="nr-squadra">Squadra</label>
+                    <select id="nr-squadra" class="input-form">
+                        <option value="buoni">Buoni</option>
+                        <option value="cattivi">Cattivi</option>
+                        <option value="neutrali">Neutrali</option>
+                    </select>
+                </div>
+
+                <div class="campo-form">
+                    <label for="nr-descrizione">Breve descrizione</label>
+                    <textarea id="nr-descrizione" class="input-form" rows="3" placeholder="Cosa fa questo ruolo..."></textarea>
+                </div>
+
+                <div class="campo-form">
+                    <label for="nr-immagine">Illustrazione (opzionale)</label>
+                    <input type="file" id="nr-immagine" class="input-form" accept="image/*">
+                </div>
+
+                <div class="campo-form">
+                    <label for="nr-criterio">Quando si sveglia</label>
+                    <select id="nr-criterio" class="input-form" onchange="aggiorna_campi_criterio()">
+                        <option value="sempre">Ogni notte</option>
+                        <option value="mai">Mai (potere diurno o passivo)</option>
+                        <option value="intervallo">In un intervallo di notti</option>
+                        <option value="notti_specifiche">Solo in notti specifiche</option>
+                        <option value="dopo_morte">Dalla notte dopo la prima morte</option>
+                        <option value="finche_non_usato">Ogni notte finché non usa il potere</option>
+                    </select>
+                </div>
+
+                <div class="campo-form" id="nr-campo-intervallo" style="display:none;">
+                    <label>Da che notte a che notte (lascia vuoto "a" per non finire mai)</label>
+                    <div style="display:flex; gap:.6rem;">
+                        <input type="number" id="nr-da" class="input-form" min="1" value="1" placeholder="da">
+                        <input type="number" id="nr-a" class="input-form" min="1" placeholder="a">
+                    </div>
+                </div>
+
+                <div class="campo-form" id="nr-campo-notti" style="display:none;">
+                    <label for="nr-notti">Elenco notti (separate da virgola)</label>
+                    <input type="text" id="nr-notti" class="input-form" placeholder="es. 1, 3, 5">
+                </div>
+
+                <div class="campo-form">
+                    <label for="nr-ordine">Posizione nell'ordine di chiamata notturna (più basso = chiamato prima)</label>
+                    <input type="number" id="nr-ordine" class="input-form" placeholder="es. 180">
+                </div>
+
+                <p class="hint" id="nr-errore" style="display:none; color: var(--cattivi); margin-top:0;"></p>
+
+                <div class="azioni-scena">
+                    <button class="btn btn-secondary" onclick="chiudi_nuovo_ruolo()">Annulla</button>
+                    <button class="btn btn-primary" onclick="crea_ruolo_personalizzato()">Crea ruolo</button>
                 </div>
             </div>
         </div>
@@ -849,6 +958,8 @@
             var pendingUsato={}
             var notteIniziata=false
             var annotazioni=[]
+            var descrizioniPartita={}   // override di descrizione validi solo per la partita in corso
+            var infoRuoloCorrente=null  // id del ruolo attualmente aperto nel popup informativo
 
             var ETICHETTE_SVEGLIA={
                 sempre: 'Si sveglia ogni notte',
@@ -859,8 +970,20 @@
                 finche_non_usato: 'Si sveglia ogni notte finché non usa il potere'
             }
             function etichetta_sveglia(ruolo){
-                var tipo=(ruolo.sveglia && ruolo.sveglia.tipo) || 'sempre';
-                return ETICHETTE_SVEGLIA[tipo] || '';
+                var s=(ruolo && ruolo.sveglia) || {tipo:'sempre'};
+                switch(s.tipo){
+                    case 'intervallo':
+                        var da=s.da||1;
+                        if(s.a===undefined || s.a===null || s.a===''){
+                            return da<=1 ? 'Si sveglia ogni notte' : 'Si sveglia dalla notte '+da+' in poi';
+                        }
+                        return 'Si sveglia dalla notte '+da+' alla notte '+s.a;
+                    case 'notti_specifiche':
+                        var elenco=(s.notti||[]).join(', ');
+                        return 'Si sveglia solo nelle notti: '+(elenco||'—');
+                    default:
+                        return ETICHETTE_SVEGLIA[s.tipo] || '';
+                }
             }
 
             /* ==========================================================
@@ -874,6 +997,7 @@
                         ROLE_ORDER.push(r.id);
                     });
                     EXTRA=data.extra || {};
+                    carica_ruoli_personalizzati();
                     costruisci_griglia_ruoli();
                 })
                 .catch(function(err){
@@ -990,6 +1114,12 @@
                     if(id==='lupo') extraClick=' onclick="inserisci_numero_lupi()"';
                     else if(id==='contadino') extraClick=' onclick="inserisci_numero_contadini()"';
 
+                    var bottoneElimina='';
+                    if(ruolo.personalizzato){
+                        bottoneElimina =
+                            '<button type="button" class="ruolo-elimina" onclick="rimuovi_ruolo_personalizzato(\''+id+'\')" aria-label="Elimina ruolo '+ruolo.nome+'">×</button>';
+                    }
+
                     chip.innerHTML =
                         '<input type="checkbox" class="ruolo-input" id="'+id+'"'+extraClick+'>' +
                         '<label for="'+id+'" class="ruolo-label">' +
@@ -1000,7 +1130,7 @@
                         '<svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="currentColor" viewBox="0 0 16 16">' +
                         '<path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"></path>' +
                         '<path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"></path>' +
-                        '</svg></button>';
+                        '</svg></button>' + bottoneElimina;
                     griglia.appendChild(chip);
 
                     chip.querySelector('input').addEventListener('change', function(){
@@ -1008,7 +1138,199 @@
                         aggiorna_contatore_ruoli();
                     });
                 });
+
+                var nuovoBtn=document.createElement('button');
+                nuovoBtn.type='button';
+                nuovoBtn.className='ruolo-chip-nuovo';
+                nuovoBtn.innerHTML='<span class="segno-piu">+</span> Nuovo ruolo';
+                nuovoBtn.onclick=function(){ apri_nuovo_ruolo(); };
+                griglia.appendChild(nuovoBtn);
+
                 aggiorna_contatore_ruoli();
+            }
+
+            /* ==========================================================
+               RUOLI PERSONALIZZATI — creazione, salvataggio, eliminazione
+               ========================================================== */
+            function apri_nuovo_ruolo(){
+                document.getElementById('nr-nome').value='';
+                document.getElementById('nr-squadra').value='buoni';
+                document.getElementById('nr-descrizione').value='';
+                document.getElementById('nr-immagine').value='';
+                document.getElementById('nr-criterio').value='sempre';
+                document.getElementById('nr-da').value=1;
+                document.getElementById('nr-a').value='';
+                document.getElementById('nr-notti').value='';
+                document.getElementById('nr-errore').style.display='none';
+
+                var massimo=0;
+                ROLE_ORDER.forEach(function(id){
+                    var o=ROLES[id].ordine_notte;
+                    if(typeof o==='number' && o>massimo) massimo=o;
+                });
+                document.getElementById('nr-ordine').value = massimo+10;
+
+                aggiorna_campi_criterio();
+                document.getElementById('popup-nuovo-ruolo').classList.add('aperta');
+            }
+            function chiudi_nuovo_ruolo(){
+                document.getElementById('popup-nuovo-ruolo').classList.remove('aperta');
+            }
+            function aggiorna_campi_criterio(){
+                var val=document.getElementById('nr-criterio').value;
+                document.getElementById('nr-campo-intervallo').style.display = (val==='intervallo') ? 'block' : 'none';
+                document.getElementById('nr-campo-notti').style.display = (val==='notti_specifiche') ? 'block' : 'none';
+            }
+
+            function genera_id_ruolo(nome){
+                var base = nome.toLowerCase()
+                    .normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+                    .replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'');
+                if(!base) base='ruolo';
+                var id=base, n=2;
+                while(ROLES[id]){ id=base+'-'+n; n++; }
+                return id;
+            }
+
+            function crea_ruolo_personalizzato(){
+                var nome=document.getElementById('nr-nome').value.trim();
+                var descrizione=document.getElementById('nr-descrizione').value.trim();
+                var squadra=document.getElementById('nr-squadra').value;
+                var criterio=document.getElementById('nr-criterio').value;
+                var erroreEl=document.getElementById('nr-errore');
+                erroreEl.style.display='none';
+
+                if(!nome || !descrizione){
+                    erroreEl.innerText='Inserisci almeno un nome e una breve descrizione.';
+                    erroreEl.style.display='block';
+                    return;
+                }
+
+                var sveglia={tipo:criterio};
+                if(criterio==='intervallo'){
+                    var da=parseInt(document.getElementById('nr-da').value)||1;
+                    var aVal=document.getElementById('nr-a').value.trim();
+                    sveglia.da=da;
+                    if(aVal!=='') sveglia.a=parseInt(aVal);
+                } else if(criterio==='notti_specifiche'){
+                    var testoNotti=document.getElementById('nr-notti').value;
+                    var elenco=testoNotti.split(',').map(function(s){ return parseInt(s.trim()); }).filter(function(n){ return !isNaN(n) && n>0; });
+                    if(elenco.length===0){
+                        erroreEl.innerText='Indica almeno una notte valida, ad esempio: 1, 3, 5.';
+                        erroreEl.style.display='block';
+                        return;
+                    }
+                    sveglia.notti=elenco;
+                }
+
+                var ordineNotte=parseInt(document.getElementById('nr-ordine').value);
+                if(isNaN(ordineNotte)) ordineNotte=999;
+
+                var id=genera_id_ruolo(nome);
+                var nuovoRuolo={
+                    id:id, nome:nome, squadra:squadra, immagine:null,
+                    sveglia:sveglia, descrizione:descrizione,
+                    ordine_notte:ordineNotte, personalizzato:true
+                };
+
+                var fileInput=document.getElementById('nr-immagine');
+                var file=fileInput.files && fileInput.files[0];
+
+                function finalizza(){
+                    ROLES[id]=nuovoRuolo;
+                    ROLE_ORDER.push(id);
+                    salva_ruoli_personalizzati();
+                    costruisci_griglia_ruoli();
+                    chiudi_nuovo_ruolo();
+                }
+
+                if(file){
+                    var reader=new FileReader();
+                    reader.onload=function(e){
+                        nuovoRuolo.immagine = e.target.result; // data URL, autosufficiente e salvabile
+                        finalizza();
+                    };
+                    reader.onerror=function(){ finalizza(); };
+                    reader.readAsDataURL(file);
+                } else {
+                    finalizza();
+                }
+            }
+
+            function salva_ruoli_personalizzati(){
+                var personalizzati = ROLE_ORDER
+                    .filter(function(id){ return ROLES[id].personalizzato; })
+                    .map(function(id){ return ROLES[id]; });
+                try{
+                    localStorage.setItem('lupus_ruoli_personalizzati', JSON.stringify(personalizzati));
+                } catch(e){
+                    console.warn('Non riesco a salvare i ruoli personalizzati nel browser (spazio insufficiente o storage disabilitato).', e);
+                }
+            }
+
+            function carica_ruoli_personalizzati(){
+                try{
+                    var salvati = JSON.parse(localStorage.getItem('lupus_ruoli_personalizzati') || '[]');
+                    salvati.forEach(function(r){
+                        if(!ROLES[r.id]){
+                            ROLES[r.id]=r;
+                            ROLE_ORDER.push(r.id);
+                        }
+                    });
+                } catch(e){
+                    console.warn('Non riesco a leggere i ruoli personalizzati salvati.', e);
+                }
+            }
+
+            function rimuovi_ruolo_personalizzato(id){
+                if(!confirm('Vuoi eliminare definitivamente questo ruolo personalizzato? Non potrai recuperarlo.')) return;
+                delete ROLES[id];
+                ROLE_ORDER = ROLE_ORDER.filter(function(x){ return x!==id; });
+                delete descrizioniPartita[id];
+                salva_ruoli_personalizzati();
+                costruisci_griglia_ruoli();
+            }
+
+            /* ==========================================================
+               DESCRIZIONE MODIFICABILE PER LA PARTITA IN CORSO
+               ========================================================== */
+            function descrizione_effettiva(id){
+                if(descrizioniPartita[id]!==undefined) return descrizioniPartita[id];
+                return ROLES[id] ? ROLES[id].descrizione : '';
+            }
+
+            function modifica_descrizione_inizio(){
+                if(!infoRuoloCorrente) return;
+                document.getElementById('info_ruolo_textarea').value = document.getElementById('info_ruolo_value').innerText;
+                document.getElementById('info_ruolo_value').style.display='none';
+                document.getElementById('info_ruolo_textarea').style.display='block';
+                document.getElementById('info_azioni_normali').style.display='none';
+                document.getElementById('info_azioni_modifica').style.display='flex';
+                document.getElementById('info_ruolo_textarea').focus();
+            }
+
+            function annulla_modifica_descrizione(){
+                document.getElementById('info_ruolo_textarea').style.display='none';
+                document.getElementById('info_ruolo_value').style.display='block';
+                document.getElementById('info_azioni_normali').style.display='flex';
+                document.getElementById('info_azioni_modifica').style.display='none';
+            }
+
+            function salva_modifica_descrizione(){
+                if(!infoRuoloCorrente) return;
+                var nuovoTesto=document.getElementById('info_ruolo_textarea').value.trim();
+                if(nuovoTesto===''){ return; }
+                descrizioniPartita[infoRuoloCorrente]=nuovoTesto;
+                document.getElementById('info_ruolo_value').innerText=nuovoTesto;
+                annulla_modifica_descrizione();
+                document.getElementById('info_btn_ripristina').style.display='inline';
+            }
+
+            function ripristina_descrizione(){
+                if(!infoRuoloCorrente) return;
+                delete descrizioniPartita[infoRuoloCorrente];
+                document.getElementById('info_ruolo_value').innerText = ROLES[infoRuoloCorrente].descrizione;
+                document.getElementById('info_btn_ripristina').style.display='none';
             }
 
             function aggiorna_contatore_ruoli(){
@@ -1106,7 +1428,7 @@
 
                 document.getElementById('card-nome-fronte').innerText = ruolo.nome;
                 document.getElementById('card-nome-retro').innerText = ruolo.nome;
-                document.getElementById('card-descrizione').innerText = ruolo.descrizione;
+                document.getElementById('card-descrizione').innerText = descrizione_effettiva(idRuolo);
 
                 document.getElementById('card-sveglia').innerText = etichetta_sveglia(ruolo);
 
@@ -1238,14 +1560,20 @@
             }
 
             function ruolo_sveglia_stanotte(ruolo){
-                var tipo=(ruolo.sveglia && ruolo.sveglia.tipo) || 'sempre';
-                switch(tipo){
+                var s=ruolo.sveglia || {tipo:'sempre'};
+                switch(s.tipo){
                     case 'sempre': return true;
                     case 'mai': return false;
                     case 'solo_prima': return notte===1;
                     case 'solo_seconda': return notte===2;
                     case 'dopo_morte': return notte>1 && morto_storico();
                     case 'finche_non_usato': return !usatoRuolo[ruolo.id];
+                    case 'intervallo':
+                        var da = s.da || 1;
+                        var a = (s.a===undefined || s.a===null || s.a==='') ? Infinity : s.a;
+                        return notte>=da && notte<=a;
+                    case 'notti_specifiche':
+                        return (s.notti||[]).indexOf(notte) !== -1;
                     default: return true;
                 }
             }
@@ -1330,12 +1658,20 @@
                 var lista=document.getElementById('lista-vivi');
                 lista.innerHTML='';
                 giocatori.forEach(function(nome, idx){
-                    if(!playerAlive[idx]) return; // già morto prima, non lo richiedo di nuovo
+                    // if(!playerAlive[idx]) return; // già morto prima, non lo richiedo di nuovo
                     var riga=document.createElement('div');
                     riga.className='vivo-riga';
-                    riga.innerHTML =
+                    if(!playerAlive[idx]){
+                        riga.innerHTML =
+                        '<input type="checkbox" id="vivo-'+idx+'" data-idx="'+idx+'" unchecked>' +
+                        '<label for="vivo-'+idx+'">'+nome+' <span class="ruolo-piccolo">('+ROLES[ruoli_partita[idx]].nome+')</span></label>';
+                    }
+                    else{
+                        riga.innerHTML =
                         '<input type="checkbox" id="vivo-'+idx+'" data-idx="'+idx+'" checked>' +
                         '<label for="vivo-'+idx+'">'+nome+' <span class="ruolo-piccolo">('+ROLES[ruoli_partita[idx]].nome+')</span></label>';
+                    
+                    }
                     lista.appendChild(riga);
                 });
                 vaiA('scena-morti');
@@ -1357,8 +1693,19 @@
             function info(ruoloId){
                 var dati = ROLES[ruoloId] || EXTRA[ruoloId];
                 if(!dati) return;
+
+                infoRuoloCorrente = ROLES[ruoloId] ? ruoloId : null;
+
                 document.getElementById('info_ruolo_ruolo').innerText = dati.nome;
-                document.getElementById('info_ruolo_value').innerText = dati.descrizione;
+                document.getElementById('info_ruolo_value').innerText = infoRuoloCorrente ? descrizione_effettiva(infoRuoloCorrente) : dati.descrizione;
+                document.getElementById('info_ruolo_value').style.display='block';
+                document.getElementById('info_ruolo_textarea').style.display='none';
+                document.getElementById('info_azioni_normali').style.display='flex';
+                document.getElementById('info_azioni_modifica').style.display='none';
+                document.getElementById('info_btn_modifica').style.display = infoRuoloCorrente ? 'inline' : 'none';
+                document.getElementById('info_btn_ripristina').style.display =
+                    (infoRuoloCorrente && descrizioniPartita[infoRuoloCorrente]!==undefined) ? 'inline' : 'none';
+
                 var etichettaEl=document.getElementById('info_ruolo_sveglia');
                 if(dati.sveglia){
                     etichettaEl.innerText = etichetta_sveglia(dati);
