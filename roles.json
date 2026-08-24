@@ -9,7 +9,7 @@
         "tipo": "sempre"
       },
       "descrizione": "I lupi sono giocatori cattivi e durante la notte indicano un abitante del villaggio da ammazzare.",
-      "ordine_notte": 10
+      "ordine_notte": 40
     },
     {
       "id": "veggente",
@@ -20,7 +20,7 @@
         "tipo": "sempre"
       },
       "descrizione": "Il veggente è un giocatore buono e durante la notte indica un abitante del villaggio: il narratore gli dice se è buono o cattivo.",
-      "ordine_notte": 20
+      "ordine_notte": 60
     },
     {
       "id": "medium",
@@ -31,7 +31,7 @@
         "tipo": "dopo_morte"
       },
       "descrizione": "Il medium è un giocatore buono e durante la notte indica un giocatore morto: il narratore gli dice se era buono, cattivo o se era il matto qualora fosse presente.",
-      "ordine_notte": 30
+      "ordine_notte": 80
     },
     {
       "id": "guardia",
@@ -42,7 +42,7 @@
         "tipo": "sempre"
       },
       "descrizione": "La guardia è un giocatore buono e durante la notte indica un giocatore da proteggere dall'attacco dei lupi; se sceglie la stessa persona dei lupi quest'ultima non muore. Può proteggere anche se stesso ma non lo stesso giocatore per 2 volte di fila.",
-      "ordine_notte": 40
+      "ordine_notte": 70
     },
     {
       "id": "matto",
@@ -53,7 +53,7 @@
         "tipo": "mai"
       },
       "descrizione": "Il matto fa parte dei giocatori buoni ma gioca per conto suo. Vince se durante il giorno viene ammazzato dal villaggio.",
-      "ordine_notte": 50
+      "ordine_notte": null
     },
     {
       "id": "cacciatore",
@@ -64,7 +64,7 @@
         "tipo": "mai"
       },
       "descrizione": "Il cacciatore è un giocatore buono: può sparare una volta in tutta la partita durante il giorno per uccidere chiunque voglia. Se uccide il matto, il matto non vince.",
-      "ordine_notte": 60
+      "ordine_notte": null
     },
     {
       "id": "indemoniato",
@@ -75,7 +75,7 @@
         "tipo": "mai"
       },
       "descrizione": "L'indemoniato è un ruolo cattivo che però risulta buono agli occhi di veggente e medium. Non ha poteri ma gioca dalla parte dei lupi e vince con essi.",
-      "ordine_notte": 70
+      "ordine_notte": null
     },
     {
       "id": "contadino",
@@ -86,7 +86,7 @@
         "tipo": "mai"
       },
       "descrizione": "Il contadino è un giocatore buono che non ha alcun potere e deve cercare di eliminare i lupi.",
-      "ordine_notte": 80
+      "ordine_notte": null
     },
     {
       "id": "angelo",
@@ -107,8 +107,8 @@
       "sveglia": {
         "tipo": "sempre"
       },
-      "descrizione": "Lo spaccino è un ruolo cattivo e i lupi sanno chi è. Ogni notte indica un giocatore al quale viene modificato l'esito del potere: le risposte vengono invertite, mentre i poteri esercitati su un giocatore vengono spostati sulla persona alla sua destra.",
-      "ordine_notte": 100
+      "descrizione": "Lo spaccino è un ruolo cattivo e i lupi sanno chi è. Ogni notte indica un giocatore al quale viene modificato l'esito del potere: le risposte vengono invertite, mentre i poteri esercitati su un giocatore vengono spostati sulla persona alla sua destra, vale anche per i lupi.",
+      "ordine_notte": 20
     },
     {
       "id": "insinuo",
@@ -119,7 +119,7 @@
         "tipo": "sempre"
       },
       "descrizione": "L'insinuo è un ruolo cattivo che gioca con i lupi. Di notte indica una persona che verrà vista come cattiva dal veggente.",
-      "ordine_notte": 110
+      "ordine_notte": 50
     },
     {
       "id": "illusionista",
@@ -130,7 +130,7 @@
         "tipo": "sempre"
       },
       "descrizione": "L'illusionista è un giocatore cattivo che gioca con i lupi e viene visto come tale. Durante la notte può indicare un giocatore e bloccargli i poteri per quel turno.",
-      "ordine_notte": 120
+      "ordine_notte": 10
     },
     {
       "id": "puttana",
@@ -141,7 +141,7 @@
         "tipo": "sempre"
       },
       "descrizione": "La puttana è un giocatore buono che ogni notte indica una persona da proteggere dai lupi. Se però viene ammazzata, muore sia lei che la persona che ha protetto.",
-      "ordine_notte": 130
+      "ordine_notte": 100
     },
     {
       "id": "senzaVolto",
@@ -151,8 +151,8 @@
       "sveglia": {
         "tipo": "dopo_morte"
       },
-      "descrizione": "Il senzaVolto è un personaggio individuale. Ha il potere di resuscitare un giocatore appena morto, a patto che sia contadino o lupo. Se resuscita 3 personaggi vince. Se il veggente lo controlla, muore.",
-      "ordine_notte": 140
+      "descrizione": "Il SenzaVolto è un personaggio individuale. Ha il potere di resuscitare un giocatore appena morto, a patto che sia contadino o lupo. Se resuscita 3 personaggi distinti vince. Se il veggente lo controlla, muore.",
+      "ordine_notte": 110
     },
     {
       "id": "inquisitore",
@@ -163,7 +163,7 @@
         "tipo": "mai"
       },
       "descrizione": "L'inquisitore è un giocatore buono che durante il giorno può chiedere ad un giocatore se è un lupo, e questi è costretto a rispondere con la verità. Se il giocatore interrogato risponde, l'inquisitore perde il suo potere (e se era buono perde anche il diritto al voto). Se il giocatore indicato è un lupo e non risponde, morirà la notte seguente e l'inquisitore mantiene il potere.",
-      "ordine_notte": 150
+      "ordine_notte": null
     },
     {
       "id": "neomelodico",
@@ -174,7 +174,7 @@
         "tipo": "finche_non_usato"
       },
       "descrizione": "Il neomelodico è un ruolo buono che, una volta a partita, può scegliere una notte in cui non muore nessuno.",
-      "ordine_notte": 160
+      "ordine_notte": 120
     },
     {
       "id": "fantasma",
@@ -185,7 +185,7 @@
         "tipo": "sempre"
       },
       "descrizione": "Il fantasma gioca per conto suo. Durante la notte non può essere ucciso dai lupi. Il suo obiettivo è possedere un giocatore, indicandolo per 5 notti di fila (chi viene indicato se ne accorge). Se il fantasma indica o viene indicato dal veggente, muore.",
-      "ordine_notte": 170
+      "ordine_notte": 130
     },
  {
       "id": "mitomane",
@@ -196,7 +196,7 @@
         "tipo": "solo_seconda"
       },
       "descrizione": "Il Mitomane non ha uno schieramento iniziale. Viene svegliato alla seconda notte, ed è tenuto ad indicare un altro giocatore. Se quest'ultimo è lupo, il mitomane diventa lupo, se è veggente diventa veggente, altrimenti resta un semplice contadino. ",
-      "ordine_notte": 5
+      "ordine_notte": 30
     },
  {
       "id": "druido",
@@ -207,7 +207,7 @@
         "tipo": "mai"
       },
       "descrizione": "Il Druido è un ruolo buono. È un semplice contadino che ha due vite, solo se attaccato dai lupi.",
-      "ordine_notte": 180
+      "ordine_notte": null
     },
  {
       "id": "sindaco",
@@ -218,7 +218,7 @@
         "tipo": "mai"
       },
       "descrizione": "Il Sindaco gioca con i buoni. È un semplice contadino la cui votazione vale doppio. Il narratore non deve però dichiarare nulla a riguardo esplicitamente, starà a lui fare i calcoli per decretare il giocatore destinato a morire in base al voto doppio del sindaco.",
-      "ordine_notte": 190
+      "ordine_notte": null
     }
   ],
   "extra": {

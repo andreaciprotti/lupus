@@ -221,6 +221,28 @@
                 color: var(--moon); text-shadow: 0 0 24px rgba(242,239,227,.25);
             }
 
+            /* stepper in miniatura, per correggere il numero di giocatori durante l'inserimento nomi */
+            #scena-nomi{ position:relative; }
+            .stepper-mini{
+                position:absolute; top:1.1rem; right:1.1rem;
+                display:flex; align-items:center; gap:.4rem;
+                background: var(--ink-2); border:1px solid var(--line); border-radius:20px;
+                padding:.25rem .45rem;
+                z-index: 5;
+            }
+            .stepper-mini-btn{
+                width:24px; height:24px; border-radius:50%;
+                border: 1px solid var(--line); background: var(--panel);
+                color: var(--moon); font-size:.9rem; line-height:1;
+                display:flex; align-items:center; justify-content:center;
+                transition: all .2s ease;
+            }
+            .stepper-mini-btn:hover{ border-color: var(--buoni); box-shadow: 0 0 10px var(--buoni-glow); }
+            .stepper-mini-valore{
+                font-family: var(--font-display); font-size:.95rem; min-width:18px;
+                text-align:center; color: var(--moon);
+            }
+
             /* nomi giocatori */
             .progress-dots{
                 display:flex; gap:.5rem; justify-content:center; flex-wrap:wrap;
@@ -685,6 +707,11 @@
 
         <!-- ================= SCENA: nomi giocatori ================= -->
         <div class="scena" id="scena-nomi">
+            <div class="stepper-mini" id="stepper-mini-nomi" aria-label="Cambia il numero di giocatori">
+                <button class="stepper-mini-btn" onclick="cambia_numero_durante_nomi(-1)" aria-label="Un giocatore in meno">−</button>
+                <span class="stepper-mini-valore" id="valore-numero-mini">5</span>
+                <button class="stepper-mini-btn" onclick="cambia_numero_durante_nomi(1)" aria-label="Un giocatore in più">+</button>
+            </div>
             <div class="pannello">
                 <h2>Nomi dei giocatori</h2>
                 <div class="progress-dots" id="dots-nomi"></div>
@@ -1025,8 +1052,22 @@
                 document.getElementById('valore-numero').innerText = ng;
             }
 
+            // stepper in miniatura: consente di correggere il numero di giocatori
+            // senza dover tornare indietro, mentre si stanno ancora scrivendo i nomi.
+            // Non si può scendere sotto ai nomi già inseriti, per non perderne nessuno per sbaglio.
+            function cambia_numero_durante_nomi(delta){
+                var minimo = Math.max(3, giocatori.length);
+                ng = Math.max(minimo, Math.min(20, ng + delta));
+                document.getElementById('valore-numero').innerText = ng;
+                document.getElementById('valore-numero-mini').innerText = ng;
+                aggiorna_dots_nomi();
+                aggiorna_etichetta_nome();
+                document.getElementById('nomeg').focus();
+            }
+
             function conferma_numero(){
                 giocatori = [];
+                document.getElementById('valore-numero-mini').innerText = ng;
                 aggiorna_dots_nomi();
                 aggiorna_etichetta_nome();
                 document.getElementById('nomeg').value='';
@@ -1667,7 +1708,7 @@
                         '<label for="vivo-'+idx+'">'+nome+' <span class="ruolo-piccolo">('+ROLES[ruoli_partita[idx]].nome+')</span></label>';
                     }
                     else{
-                        riga.innerHTML =
+                    riga.innerHTML =
                         '<input type="checkbox" id="vivo-'+idx+'" data-idx="'+idx+'" checked>' +
                         '<label for="vivo-'+idx+'">'+nome+' <span class="ruolo-piccolo">('+ROLES[ruoli_partita[idx]].nome+')</span></label>';
                     
