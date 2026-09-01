@@ -5,6 +5,14 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Lupus</title>
+        <link rel="manifest" href="./manifest.json">
+        <meta name="theme-color" content="#05060b">
+        <link rel="icon" type="image/png" sizes="192x192" href="./assets/icons/icon-192.png">
+        <link rel="apple-touch-icon" href="./assets/icons/apple-touch-icon.png">
+        <meta name="mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+        <meta name="apple-mobile-web-app-title" content="Lupus">
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Cinzel+Decorative:wght@700&family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -692,6 +700,7 @@
             <p class="sottotitolo">il villaggio dorme, il male veglia</p>
             <div class="divisore"></div>
             <button class="btn btn-primary" onclick="vaiA('scena-numero')">Inizia la partita</button>
+            <button class="btn-testo" id="btn-installa" style="display:none; margin-top:1.2rem;" onclick="installa_app()">Installa l'app sul telefono</button>
         </div>
 
         <!-- ================= SCENA: numero giocatori ================= -->
@@ -971,6 +980,36 @@
         </div>
 
         <script>
+            /* ==========================================================
+               PWA — service worker e prompt di installazione
+               ========================================================== */
+            if('serviceWorker' in navigator){
+                window.addEventListener('load', function(){
+                    navigator.serviceWorker.register('./service-worker.js')
+                        .catch(function(err){ console.warn('Registrazione service worker fallita', err); });
+                });
+            }
+
+            var promptInstallazione=null;
+            window.addEventListener('beforeinstallprompt', function(e){
+                e.preventDefault();
+                promptInstallazione=e;
+                var btn=document.getElementById('btn-installa');
+                if(btn) btn.style.display='inline-block';
+            });
+            function installa_app(){
+                if(!promptInstallazione) return;
+                promptInstallazione.prompt();
+                promptInstallazione.userChoice.then(function(){
+                    promptInstallazione=null;
+                    document.getElementById('btn-installa').style.display='none';
+                });
+            }
+            window.addEventListener('appinstalled', function(){
+                var btn=document.getElementById('btn-installa');
+                if(btn) btn.style.display='none';
+            });
+
             /* ==========================================================
                STATO GLOBALE
                ========================================================== */
