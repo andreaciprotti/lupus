@@ -888,6 +888,21 @@
         </div>
 
         <!-- ================= POPUP: nuovo ruolo personalizzato ================= -->
+        <!-- ================= POPUP: istruzioni installazione iPhone ================= -->
+        <div class="popup-overlay" id="popup-installa-ios">
+            <div class="popup-box">
+                <h3>Installa su iPhone</h3>
+                <p style="margin-bottom:1rem;">Safari non permette un'installazione con un tasto automatico, ma bastano due passaggi:</p>
+                <ol style="text-align:left; font-family:var(--font-body); font-size:1.05rem; color:var(--moon-dim); padding-left:1.3rem; margin:0 0 .5rem;">
+                    <li style="margin-bottom:.5rem;">Tocca l'icona <strong style="color:var(--moon);">Condividi</strong> (il quadrato con la freccia verso l'alto) nella barra di Safari.</li>
+                    <li>Scorri il menu e tocca <strong style="color:var(--moon);">"Aggiungi alla schermata Home"</strong>.</li>
+                </ol>
+                <div class="azioni-scena">
+                    <button class="btn btn-secondary" onclick="document.getElementById('popup-installa-ios').classList.remove('aperta')">Ho capito</button>
+                </div>
+            </div>
+        </div>
+
         <div class="popup-overlay" id="popup-nuovo-ruolo">
             <div class="popup-box" style="max-width:480px; text-align:left;">
                 <h3 style="text-align:center;">Nuovo ruolo personalizzato</h3>
@@ -991,19 +1006,36 @@
             }
 
             var promptInstallazione=null;
+            var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+            var giaInstallata = window.navigator.standalone === true ||
+                (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches);
+
             window.addEventListener('beforeinstallprompt', function(e){
                 e.preventDefault();
                 promptInstallazione=e;
                 var btn=document.getElementById('btn-installa');
                 if(btn) btn.style.display='inline-block';
             });
+
+            document.addEventListener('DOMContentLoaded', function(){
+                // Safari su iPhone non genera mai 'beforeinstallprompt': mostro comunque
+                // il pulsante, ma porterà alle istruzioni manuali invece che a un prompt nativo
+                if(isIOS && !giaInstallata){
+                    var btn=document.getElementById('btn-installa');
+                    if(btn) btn.style.display='inline-block';
+                }
+            });
+
             function installa_app(){
-                if(!promptInstallazione) return;
-                promptInstallazione.prompt();
-                promptInstallazione.userChoice.then(function(){
-                    promptInstallazione=null;
-                    document.getElementById('btn-installa').style.display='none';
-                });
+                if(promptInstallazione){
+                    promptInstallazione.prompt();
+                    promptInstallazione.userChoice.then(function(){
+                        promptInstallazione=null;
+                        document.getElementById('btn-installa').style.display='none';
+                    });
+                } else if(isIOS){
+                    document.getElementById('popup-installa-ios').classList.add('aperta');
+                }
             }
             window.addEventListener('appinstalled', function(){
                 var btn=document.getElementById('btn-installa');
