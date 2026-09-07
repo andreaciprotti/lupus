@@ -6,7 +6,7 @@
 const CACHE_NAME = 'lupus-cache-v2';
 
 const APP_SHELL = [
-  './index_v2.html',
+  './index.html',
   './roles.json',
   './manifest.json',
   './assets/icons/icon-192.png',

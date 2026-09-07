@@ -2,7 +2,7 @@
   "name": "Lupus",
   "short_name": "Lupus",
   "description": "Il villaggio dorme, il male veglia — gioco del villaggio da giocare con gli amici, con carte, regia notturna e ruoli personalizzabili.",
-  "start_url": "./index_v2.html",
+  "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
   "orientation": "portrait",

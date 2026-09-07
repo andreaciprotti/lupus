@@ -4,7 +4,28 @@
         <meta charset="UTF-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Lupus</title>
+        <title>Lupus — Gioco del Villaggio online, distribuzione ruoli e regia notturna</title>
+        <meta name="description" content="Lupus è l'assistente digitale gratuito per giocare a Lupus/Werewolf con gli amici: distribuzione ruoli con carte animate, regia notturna guidata e ruoli personalizzabili. Nessuna registrazione, funziona anche offline.">
+        <meta name="keywords" content="lupus gioco, werewolf, mafia party game, gioco del villaggio, gioco lupus online, distribuzione ruoli, regia notturna narratore">
+        <meta name="robots" content="index, follow">
+        <link rel="canonical" href="https://www.lupusonline.it/">
+
+        <!-- Open Graph (anteprime WhatsApp, Facebook, Telegram...) -->
+        <meta property="og:type" content="website">
+        <meta property="og:url" content="https://www.lupusonline.it/">
+        <meta property="og:title" content="Lupus — il villaggio dorme, il male veglia">
+        <meta property="og:description" content="L'assistente digitale gratuito per giocare a Lupus/Werewolf con gli amici: carte animate, regia notturna guidata, ruoli personalizzabili.">
+        <meta property="og:image" content="https://www.lupusonline.it/assets/og-image.jpg">
+        <meta property="og:image:width" content="1200">
+        <meta property="og:image:height" content="630">
+        <meta property="og:locale" content="it_IT">
+
+        <!-- Twitter/X Card -->
+        <meta name="twitter:card" content="summary_large_image">
+        <meta name="twitter:title" content="Lupus — il villaggio dorme, il male veglia">
+        <meta name="twitter:description" content="L'assistente digitale gratuito per giocare a Lupus/Werewolf con gli amici.">
+        <meta name="twitter:image" content="https://www.lupusonline.it/assets/og-image.jpg">
+
         <link rel="manifest" href="./manifest.json">
         <meta name="theme-color" content="#05060b">
         <link rel="icon" type="image/png" sizes="192x192" href="./assets/icons/icon-192.png">
@@ -689,7 +710,43 @@
             }
             .popup-box input[type="number"]:focus{ outline:none; border-color: var(--buoni); box-shadow: 0 0 0 3px var(--buoni-glow); }
             .popup-box .azioni-scena{ margin-top: 1rem; }
+
+            /* ==========================================================
+               FOOTER LEGALE — discreto, sempre presente ma non invasivo
+               ========================================================== */
+            .footer-legale{
+                position: fixed; left:0; right:0; bottom:0;
+                display:flex; justify-content:center; gap:.6rem; align-items:center;
+                padding: .5rem 1rem;
+                font-family: var(--font-ui); font-size: .68rem;
+                color: rgba(125,128,148,.55);
+                background: linear-gradient(0deg, rgba(5,6,11,.85), transparent);
+                z-index: 40;
+                pointer-events: none;
+            }
+            .footer-legale a{
+                color: rgba(125,128,148,.75); text-decoration:none; pointer-events: auto;
+            }
+            .footer-legale a:hover{ color: var(--moon-dim); }
+            .footer-legale span{ opacity:.5; }
         </style>
+        <script type="application/ld+json">
+        {
+          "@context": "https://schema.org",
+          "@type": "WebApplication",
+          "name": "Lupus",
+          "url": "https://www.lupusonline.it/",
+          "description": "Assistente digitale gratuito per giocare a Lupus/Werewolf con gli amici: distribuzione ruoli con carte animate, regia notturna guidata e ruoli personalizzabili.",
+          "applicationCategory": "GameApplication",
+          "operatingSystem": "Any (browser web)",
+          "inLanguage": "it",
+          "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "EUR"
+          }
+        }
+        </script>
     </head>
     <body>
 
@@ -994,6 +1051,13 @@
             </div>
         </div>
 
+        <footer class="footer-legale">
+            <a href="./privacy.html">Privacy</a>
+            <span aria-hidden="true">·</span>
+            <a href="./termini.html">Termini di utilizzo</a>
+        </footer>
+
+        <script src="./js/lupus-engine.js"></script>
         <script>
             /* ==========================================================
                PWA — service worker e prompt di installazione
@@ -1064,31 +1128,6 @@
             var annotazioni=[]
             var descrizioniPartita={}   // override di descrizione validi solo per la partita in corso
             var infoRuoloCorrente=null  // id del ruolo attualmente aperto nel popup informativo
-
-            var ETICHETTE_SVEGLIA={
-                sempre: 'Si sveglia ogni notte',
-                mai: 'Non si sveglia mai di notte',
-                solo_prima: 'Si sveglia solo la prima notte',
-                solo_seconda: 'Si sveglia solo la seconda notte',
-                dopo_morte: 'Si sveglia dalla notte successiva alla prima morte',
-                finche_non_usato: 'Si sveglia ogni notte finché non usa il potere'
-            }
-            function etichetta_sveglia(ruolo){
-                var s=(ruolo && ruolo.sveglia) || {tipo:'sempre'};
-                switch(s.tipo){
-                    case 'intervallo':
-                        var da=s.da||1;
-                        if(s.a===undefined || s.a===null || s.a===''){
-                            return da<=1 ? 'Si sveglia ogni notte' : 'Si sveglia dalla notte '+da+' in poi';
-                        }
-                        return 'Si sveglia dalla notte '+da+' alla notte '+s.a;
-                    case 'notti_specifiche':
-                        var elenco=(s.notti||[]).join(', ');
-                        return 'Si sveglia solo nelle notti: '+(elenco||'—');
-                    default:
-                        return ETICHETTE_SVEGLIA[s.tipo] || '';
-                }
-            }
 
             /* ==========================================================
                CARICAMENTO DATI RUOLI
@@ -1300,16 +1339,6 @@
                 document.getElementById('nr-campo-notti').style.display = (val==='notti_specifiche') ? 'block' : 'none';
             }
 
-            function genera_id_ruolo(nome){
-                var base = nome.toLowerCase()
-                    .normalize('NFD').replace(/[\u0300-\u036f]/g,'')
-                    .replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'');
-                if(!base) base='ruolo';
-                var id=base, n=2;
-                while(ROLES[id]){ id=base+'-'+n; n++; }
-                return id;
-            }
-
             function crea_ruolo_personalizzato(){
                 var nome=document.getElementById('nr-nome').value.trim();
                 var descrizione=document.getElementById('nr-descrizione').value.trim();
@@ -1344,7 +1373,7 @@
                 var ordineNotte=parseInt(document.getElementById('nr-ordine').value);
                 if(isNaN(ordineNotte)) ordineNotte=999;
 
-                var id=genera_id_ruolo(nome);
+                var id=LupusEngine.generaIdRuolo(nome, ROLES);
                 var nuovoRuolo={
                     id:id, nome:nome, squadra:squadra, immagine:null,
                     sveglia:sveglia, descrizione:descrizione,
@@ -1412,11 +1441,6 @@
             /* ==========================================================
                DESCRIZIONE MODIFICABILE PER LA PARTITA IN CORSO
                ========================================================== */
-            function descrizione_effettiva(id){
-                if(descrizioniPartita[id]!==undefined) return descrizioniPartita[id];
-                return ROLES[id] ? ROLES[id].descrizione : '';
-            }
-
             function modifica_descrizione_inizio(){
                 if(!infoRuoloCorrente) return;
                 document.getElementById('info_ruolo_textarea').value = document.getElementById('info_ruolo_value').innerText;
@@ -1482,18 +1506,12 @@
             }
 
             function acquisisci_ruoli(){
-                ruoli_partita=[]
-                ROLE_ORDER.forEach(function(ruolo){
-                    if(document.getElementById(ruolo).checked===true){
-                        if(ruolo==='lupo'){
-                            for(var i=0;i<lupi;i++) ruoli_partita.push(ruolo);
-                        } else if(ruolo==='contadino'){
-                            for(var j=0;j<contadini;j++) ruoli_partita.push(ruolo);
-                        } else {
-                            ruoli_partita.push(ruolo);
-                        }
-                    }
+                var selezionati={}
+                ROLE_ORDER.forEach(function(id){
+                    selezionati[id] = document.getElementById(id).checked===true;
                 });
+                ruoli_partita = LupusEngine.componiRuoliPartita(ROLE_ORDER, selezionati, {lupi:lupi, contadini:contadini});
+
                 if(ruoli_partita.length===ng){
                     turno=0;
                     vaiA('scena-carta');
@@ -1503,16 +1521,8 @@
                 }
             }
 
-            function shuffleArray(array){
-                for(var i=array.length-1;i>0;i--){
-                    var j=Math.floor(Math.random()*(i+1));
-                    var tmp=array[i]; array[i]=array[j]; array[j]=tmp;
-                }
-                return array;
-            }
-
             function consegna_ruoli(){
-                ruoli_partita=shuffleArray(ruoli_partita);
+                ruoli_partita=LupusEngine.shuffleArray(ruoli_partita);
                 cambia_ruolo();
             }
 
@@ -1546,9 +1556,9 @@
 
                 document.getElementById('card-nome-fronte').innerText = ruolo.nome;
                 document.getElementById('card-nome-retro').innerText = ruolo.nome;
-                document.getElementById('card-descrizione').innerText = descrizione_effettiva(idRuolo);
+                document.getElementById('card-descrizione').innerText = LupusEngine.descrizioneEffettiva(idRuolo, ROLES, descrizioniPartita);
 
-                document.getElementById('card-sveglia').innerText = etichetta_sveglia(ruolo);
+                document.getElementById('card-sveglia').innerText = LupusEngine.etichettaSveglia(ruolo);
 
                 var illustrazione=document.getElementById('card-illustrazione');
                 illustrazione.innerHTML='';
@@ -1675,61 +1685,24 @@
                 vaiA('scena-notte');
             }
 
-            function morto_storico(){
-                return playerAlive.some(function(v){ return v===false; });
-            }
-
-            function ruolo_sveglia_stanotte(ruolo){
-                var s=ruolo.sveglia || {tipo:'sempre'};
-                switch(s.tipo){
-                    case 'sempre': return true;
-                    case 'mai': return false;
-                    case 'solo_prima': return notte===1;
-                    case 'solo_seconda': return notte===2;
-                    case 'dopo_morte': return notte>1 && morto_storico();
-                    case 'finche_non_usato': return !usatoRuolo[ruolo.id];
-                    case 'intervallo':
-                        var da = s.da || 1;
-                        var a = (s.a===undefined || s.a===null || s.a==='') ? Infinity : s.a;
-                        return notte>=da && notte<=a;
-                    case 'notti_specifiche':
-                        return (s.notti||[]).indexOf(notte) !== -1;
-                    default: return true;
-                }
-            }
-
             function render_notte(){
                 document.getElementById('notte-titolo').innerText='Notte '+notte;
                 var lista=document.getElementById('notte-lista');
                 lista.innerHTML='';
                 pendingUsato={};
 
-                // per ogni ruolo presente in partita, elenco di chi lo interpreta (vivo o morto)
-                var presenti={};
-                ruoli_partita.forEach(function(id, idx){
-                    if(!presenti[id]) presenti[id]=[];
-                    presenti[id].push({ nome: giocatori[idx], vivo: playerAlive[idx]!==false });
-                });
-
-                // il ruolo va chiamato se il momento è quello giusto, A PRESCINDERE dal fatto
-                // che chi lo interpreta sia vivo o morto: se il narratore smette di chiamarlo
-                // quando muore, il silenzio da solo rivela che è morto.
-                var idsOrdinati = Object.keys(presenti).filter(function(id){
-                    return ruolo_sveglia_stanotte(ROLES[id]);
-                }).sort(function(a,b){
-                    var oa = (ROLES[a].ordine_notte!==undefined) ? ROLES[a].ordine_notte : 9999;
-                    var ob = (ROLES[b].ordine_notte!==undefined) ? ROLES[b].ordine_notte : 9999;
-                    return oa-ob;
-                });
+                // tutto il "cosa mostrare" è calcolato dal motore: qui costruiamo solo l'HTML
+                var stato = { notte: notte, playerAlive: playerAlive, usatoRuolo: usatoRuolo };
+                var righeNotte = LupusEngine.calcolaListaNotte(ruoli_partita, giocatori, playerAlive, ROLES, stato);
 
                 var numero=1;
 
-                idsOrdinati.forEach(function(id){
-                    var ruolo=ROLES[id];
-                    var elenco=presenti[id];
-                    var tuttiMorti = elenco.every(function(p){ return !p.vivo; });
+                righeNotte.forEach(function(voce){
+                    var id=voce.id;
+                    var ruolo=voce.ruolo;
+                    var tuttiMorti=voce.tuttiMorti;
 
-                    var nomiHtml = elenco.map(function(p){
+                    var nomiHtml = voce.giocatori.map(function(p){
                         return p.vivo ? p.nome : '<span style="opacity:.5; text-decoration:line-through;">'+p.nome+'</span>';
                     }).join(', ');
 
@@ -1759,7 +1732,7 @@
                     lista.appendChild(riga);
                 });
 
-                if(idsOrdinati.length===0){
+                if(righeNotte.length===0){
                     lista.innerHTML='<p class="notte-vuota">Nessuno da svegliare questa notte.</p>';
                 }
             }
@@ -1819,7 +1792,7 @@
                 infoRuoloCorrente = ROLES[ruoloId] ? ruoloId : null;
 
                 document.getElementById('info_ruolo_ruolo').innerText = dati.nome;
-                document.getElementById('info_ruolo_value').innerText = infoRuoloCorrente ? descrizione_effettiva(infoRuoloCorrente) : dati.descrizione;
+                document.getElementById('info_ruolo_value').innerText = infoRuoloCorrente ? LupusEngine.descrizioneEffettiva(infoRuoloCorrente, ROLES, descrizioniPartita) : dati.descrizione;
                 document.getElementById('info_ruolo_value').style.display='block';
                 document.getElementById('info_ruolo_textarea').style.display='none';
                 document.getElementById('info_azioni_normali').style.display='flex';
@@ -1830,7 +1803,7 @@
 
                 var etichettaEl=document.getElementById('info_ruolo_sveglia');
                 if(dati.sveglia){
-                    etichettaEl.innerText = etichetta_sveglia(dati);
+                    etichettaEl.innerText = LupusEngine.etichettaSveglia(dati);
                     etichettaEl.style.display='block';
                 } else {
                     etichettaEl.style.display='none';
@@ -1894,5 +1867,16 @@
                 aggiorna_contatore_ruoli();
             }
         </script>
+
+        <!--
+            Statistiche di visita — Cloudflare Web Analytics (gratuito, senza cookie,
+            non richiede banner di consenso). Per attivarlo:
+            1. Crea un account gratuito su dash.cloudflare.com
+            2. Vai su "Web Analytics" (non serve spostare il dominio su Cloudflare)
+            3. Aggiungi il sito "www.lupusonline.it", copia il token che ti danno
+            4. Sostituisci INSERISCI-QUI-IL-TUO-TOKEN qui sotto con quel token
+            Finché il token resta questo segnaposto, lo script semplicemente non fa nulla.
+        -->
+        <!-- Cloudflare Web Analytics --><script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "c613b777601d4e46bc5a1378f43d1dfb"}'></script><!-- End Cloudflare Web Analytics -->
     </body>
 </html>
