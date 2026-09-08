@@ -4,26 +4,26 @@
         <meta charset="UTF-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Lupus — Gioco del Villaggio online, distribuzione ruoli e regia notturna</title>
-        <meta name="description" content="Lupus è l'assistente digitale gratuito per giocare a Lupus/Werewolf con gli amici: distribuzione ruoli con carte animate, regia notturna guidata e ruoli personalizzabili. Nessuna registrazione, funziona anche offline.">
-        <meta name="keywords" content="lupus gioco, werewolf, mafia party game, gioco del villaggio, gioco lupus online, distribuzione ruoli, regia notturna narratore">
+        <title>Lupus in Fabula Online — Gioca al Gioco del Villaggio con gli Amici, dal Browser</title>
+        <meta name="description" content="Gioca a Lupus in fabula (il gioco del villaggio / lupo mannaro) online con i tuoi amici: distribuzione ruoli con carte animate, regia notturna guidata passo passo e ruoli personalizzabili. Gratis, nessuna registrazione, funziona anche offline.">
+        <meta name="keywords" content="lupus in fabula, lupus in fabula online, gioco del lupo mannaro, gioco del villaggio, werewolf party game, mafia party game, distribuzione ruoli, regia notturna narratore">
         <meta name="robots" content="index, follow">
         <link rel="canonical" href="https://www.lupusonline.it/">
 
         <!-- Open Graph (anteprime WhatsApp, Facebook, Telegram...) -->
         <meta property="og:type" content="website">
         <meta property="og:url" content="https://www.lupusonline.it/">
-        <meta property="og:title" content="Lupus — il villaggio dorme, il male veglia">
-        <meta property="og:description" content="L'assistente digitale gratuito per giocare a Lupus/Werewolf con gli amici: carte animate, regia notturna guidata, ruoli personalizzabili.">
-        <meta property="og:image" content="https://www.lupusonline.it/assets/og-image.jpg">
+        <meta property="og:title" content="Lupus in Fabula Online — il villaggio dorme, il male veglia">
+        <meta property="og:description" content="Gioca a Lupus in fabula (il gioco del villaggio) con i tuoi amici, dal browser: carte animate, regia notturna guidata, ruoli personalizzabili. Gratis.">
+        <meta property="og:site_name" content="Lupus in Fabula Online">        <meta property="og:image" content="https://www.lupusonline.it/assets/og-image.jpg">
         <meta property="og:image:width" content="1200">
         <meta property="og:image:height" content="630">
         <meta property="og:locale" content="it_IT">
 
         <!-- Twitter/X Card -->
         <meta name="twitter:card" content="summary_large_image">
-        <meta name="twitter:title" content="Lupus — il villaggio dorme, il male veglia">
-        <meta name="twitter:description" content="L'assistente digitale gratuito per giocare a Lupus/Werewolf con gli amici.">
+        <meta name="twitter:title" content="Lupus in Fabula Online — il villaggio dorme, il male veglia">
+        <meta name="twitter:description" content="Gioca a Lupus in fabula con i tuoi amici, dal browser: carte animate, regia notturna guidata, ruoli personalizzabili.">
         <meta name="twitter:image" content="https://www.lupusonline.it/assets/og-image.jpg">
 
         <link rel="manifest" href="./manifest.json">
@@ -216,6 +216,22 @@
                 font-family: var(--font-display);
                 font-size: 1.05rem; letter-spacing:.08em; padding: .9rem 2.4rem;
             }
+            .intro-testo{
+                max-width: 560px;
+                margin: 3.4rem auto 0;
+                padding-top: 2rem;
+                border-top: 1px solid var(--line);
+                text-align: left;
+            }
+            .intro-testo h2{
+                font-family: var(--font-display); letter-spacing:.05em; text-transform:uppercase;
+                font-size: .95rem; color: var(--moon-dim); margin-bottom: .9rem; text-align:center;
+            }
+            .intro-testo p{
+                font-family: var(--font-body); font-size: .98rem; line-height:1.65;
+                color: var(--moon-fioco); margin: 0 0 .9rem;
+            }
+            .intro-testo p:last-child{ margin-bottom:0; }
 
             /* ==========================================================
                PANNELLO (numero giocatori / nomi)
@@ -734,9 +750,10 @@
         {
           "@context": "https://schema.org",
           "@type": "WebApplication",
-          "name": "Lupus",
+          "name": "Lupus in Fabula Online",
+          "alternateName": ["Lupus", "Lupus in fabula", "il gioco del villaggio"],
           "url": "https://www.lupusonline.it/",
-          "description": "Assistente digitale gratuito per giocare a Lupus/Werewolf con gli amici: distribuzione ruoli con carte animate, regia notturna guidata e ruoli personalizzabili.",
+          "description": "Gioca a Lupus in fabula (il gioco del villaggio) con i tuoi amici, dal browser: distribuzione ruoli con carte animate, regia notturna guidata e ruoli personalizzabili.",
           "applicationCategory": "GameApplication",
           "operatingSystem": "Any (browser web)",
           "inLanguage": "it",
@@ -758,6 +775,12 @@
             <div class="divisore"></div>
             <button class="btn btn-primary" onclick="vaiA('scena-numero')">Inizia la partita</button>
             <button class="btn-testo" id="btn-installa" style="display:none; margin-top:1.2rem;" onclick="installa_app()">Installa l'app sul telefono</button>
+
+            <section class="intro-testo">
+                <h2>Cos'è Lupus in fabula?</h2>
+                <p>Lupus in fabula (conosciuto anche come il gioco del villaggio, o nella versione internazionale Werewolf) è il classico party game di ruoli nascosti: ogni sera qualcuno interpreta un lupo mannaro, gli altri sono abitanti del villaggio, e un narratore guida le fasi di notte e di giorno finché non si scopre chi si nasconde tra i lupi.</p>
+                <p>Questo sito è uno strumento gratuito, pensato per chi fa da narratore in una partita di Lupus in fabula dal vivo: distribuisce i ruoli con carte animate da far girare tra i giocatori, guida la regia notturna passo per passo (dicendoti chi svegliare e quando), e permette di creare ruoli personalizzati oltre a quelli classici. Nessuna registrazione, funziona anche offline una volta aperto.</p>
+            </section>
         </div>
 
         <!-- ================= SCENA: numero giocatori ================= -->
@@ -945,21 +968,6 @@
         </div>
 
         <!-- ================= POPUP: nuovo ruolo personalizzato ================= -->
-        <!-- ================= POPUP: istruzioni installazione iPhone ================= -->
-        <div class="popup-overlay" id="popup-installa-ios">
-            <div class="popup-box">
-                <h3>Installa su iPhone</h3>
-                <p style="margin-bottom:1rem;">Safari non permette un'installazione con un tasto automatico, ma bastano due passaggi:</p>
-                <ol style="text-align:left; font-family:var(--font-body); font-size:1.05rem; color:var(--moon-dim); padding-left:1.3rem; margin:0 0 .5rem;">
-                    <li style="margin-bottom:.5rem;">Tocca l'icona <strong style="color:var(--moon);">Condividi</strong> (il quadrato con la freccia verso l'alto) nella barra di Safari.</li>
-                    <li>Scorri il menu e tocca <strong style="color:var(--moon);">"Aggiungi alla schermata Home"</strong>.</li>
-                </ol>
-                <div class="azioni-scena">
-                    <button class="btn btn-secondary" onclick="document.getElementById('popup-installa-ios').classList.remove('aperta')">Ho capito</button>
-                </div>
-            </div>
-        </div>
-
         <div class="popup-overlay" id="popup-nuovo-ruolo">
             <div class="popup-box" style="max-width:480px; text-align:left;">
                 <h3 style="text-align:center;">Nuovo ruolo personalizzato</h3>
@@ -1070,9 +1078,6 @@
             }
 
             var promptInstallazione=null;
-            var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-            var giaInstallata = window.navigator.standalone === true ||
-                (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches);
 
             window.addEventListener('beforeinstallprompt', function(e){
                 e.preventDefault();
@@ -1081,25 +1086,13 @@
                 if(btn) btn.style.display='inline-block';
             });
 
-            document.addEventListener('DOMContentLoaded', function(){
-                // Safari su iPhone non genera mai 'beforeinstallprompt': mostro comunque
-                // il pulsante, ma porterà alle istruzioni manuali invece che a un prompt nativo
-                if(isIOS && !giaInstallata){
-                    var btn=document.getElementById('btn-installa');
-                    if(btn) btn.style.display='inline-block';
-                }
-            });
-
             function installa_app(){
-                if(promptInstallazione){
-                    promptInstallazione.prompt();
-                    promptInstallazione.userChoice.then(function(){
-                        promptInstallazione=null;
-                        document.getElementById('btn-installa').style.display='none';
-                    });
-                } else if(isIOS){
-                    document.getElementById('popup-installa-ios').classList.add('aperta');
-                }
+                if(!promptInstallazione) return;
+                promptInstallazione.prompt();
+                promptInstallazione.userChoice.then(function(){
+                    promptInstallazione=null;
+                    document.getElementById('btn-installa').style.display='none';
+                });
             }
             window.addEventListener('appinstalled', function(){
                 var btn=document.getElementById('btn-installa');
