@@ -271,6 +271,13 @@
                 color: var(--moon); text-shadow: 0 0 24px rgba(242,239,227,.25);
             }
 
+            .codice-stanza{
+                font-family: var(--font-deco); font-size: 2.6rem; letter-spacing:.28em;
+                text-align:center; color: var(--moon); text-shadow: 0 0 22px rgba(242,239,227,.3);
+                padding: 1rem .5rem; border: 1px dashed var(--line); border-radius: 12px;
+                margin-top: .8rem; user-select: all;
+            }
+
             /* stepper in miniatura, per correggere il numero di giocatori durante l'inserimento nomi */
             #scena-nomi{ position:relative; }
             .stepper-mini{
@@ -773,7 +780,7 @@
             <h1 class="titolo-principale">Lupus</h1>
             <p class="sottotitolo">il villaggio dorme, il male veglia</p>
             <div class="divisore"></div>
-            <button class="btn btn-primary" onclick="vaiA('scena-numero')">Inizia la partita</button>
+            <button class="btn btn-primary" onclick="vaiA('scena-scelta-distanza')">Inizia la partita</button>
             <button class="btn-testo" id="btn-installa" style="display:none; margin-top:1.2rem;" onclick="installa_app()">Installa l'app sul telefono</button>
 
             <section class="intro-testo">
@@ -781,6 +788,139 @@
                 <p>Lupus in fabula (conosciuto anche come il gioco del villaggio, o nella versione internazionale Werewolf) è il classico party game di ruoli nascosti: ogni sera qualcuno interpreta un lupo mannaro, gli altri sono abitanti del villaggio, e un narratore guida le fasi di notte e di giorno finché non si scopre chi si nasconde tra i lupi.</p>
                 <p>Questo sito è uno strumento gratuito, pensato per chi fa da narratore in una partita di Lupus in fabula dal vivo: distribuisce i ruoli con carte animate da far girare tra i giocatori, guida la regia notturna passo per passo (dicendoti chi svegliare e quando), e permette di creare ruoli personalizzati oltre a quelli classici. Nessuna registrazione, funziona anche offline una volta aperto.</p>
             </section>
+        </div>
+
+        <!-- ================= SCENA: in presenza o a distanza ================= -->
+        <div class="scena" id="scena-scelta-distanza">
+            <div class="pannello">
+                <h2>Come volete giocare?</h2>
+                <div class="azioni-scena" style="flex-direction:column; align-items:stretch; margin-top:1.6rem;">
+                    <button class="btn btn-primary" onclick="vaiA('scena-numero')">Tutti nella stessa stanza</button>
+                    <button class="btn btn-secondary" style="margin-top:.9rem;" onclick="vaiA('scena-scelta-ruolo-remoto')">Giocatori a distanza</button>
+                </div>
+                <div class="azioni-scena">
+                    <button class="btn-testo" onclick="vaiA('scena-intro')">Indietro</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= SCENA: narratore o giocatore (modalità a distanza) ================= -->
+        <div class="scena" id="scena-scelta-ruolo-remoto">
+            <div class="pannello">
+                <h2>Chi sei?</h2>
+                <div class="azioni-scena" style="flex-direction:column; align-items:stretch; margin-top:1.6rem;">
+                    <button class="btn btn-primary" onclick="vaiA('scena-crea-stanza')">Gioca come narratore</button>
+                    <button class="btn btn-secondary" style="margin-top:.9rem;" onclick="vai_a_entra_stanza()">Gioca come giocatore</button>
+                </div>
+                <div class="azioni-scena">
+                    <button class="btn-testo" onclick="vaiA('scena-scelta-distanza')">Indietro</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= SCENA: creazione stanza (narratore) ================= -->
+        <div class="scena" id="scena-crea-stanza">
+            <div class="pannello">
+                <h2>Per quanti giocatori?</h2>
+                <div class="stepper">
+                    <button class="stepper-btn" onclick="cambia_numero_stanza(-1)" aria-label="Un giocatore in meno">−</button>
+                    <div class="stepper-valore" id="valore-numero-stanza">5</div>
+                    <button class="stepper-btn" onclick="cambia_numero_stanza(1)" aria-label="Un giocatore in più">+</button>
+                </div>
+                <p class="hint">Potrai comunque procedere anche se non si collegano tutti</p>
+                <div class="azioni-scena">
+                    <button class="btn btn-secondary" onclick="vaiA('scena-scelta-ruolo-remoto')">Indietro</button>
+                    <button class="btn btn-primary" id="btn-crea-stanza" onclick="crea_stanza()">Crea stanza</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= SCENA: lobby del narratore ================= -->
+        <div class="scena" id="scena-lobby-narratore">
+            <div class="pannello" style="max-width:480px;">
+                <h2>La tua stanza</h2>
+                <p class="hint">Condividi questo codice con gli altri giocatori</p>
+                <div class="codice-stanza" id="lobby-codice">-----</div>
+                <div class="contatore-ruoli-wrap" id="lobby-contatore-wrap" style="margin-top:1.8rem; text-align:center;">
+                    <div class="contatore-ruoli" style="justify-content:center;">
+                        <span class="contatore-numero" id="lobby-contatore">0 / 0</span>
+                    </div>
+                    <div class="contatore-etichetta" style="margin-top:.3rem;">giocatori collegati</div>
+                    <div class="stepper-mini" style="position:static; margin:.8rem auto 0; width:fit-content;">
+                        <button class="stepper-mini-btn" onclick="cambia_numero_lobby(-1)" aria-label="Un posto in meno">−</button>
+                        <span class="stepper-mini-valore" id="lobby-ng-valore">5</span>
+                        <button class="stepper-mini-btn" onclick="cambia_numero_lobby(1)" aria-label="Un posto in più">+</button>
+                    </div>
+                    <div class="hint" style="font-size:.75rem; margin-top:.3rem;">posti disponibili nella stanza</div>
+                </div>
+                <div class="lista-vivi" id="lobby-elenco-giocatori" style="margin-top:1.4rem;"></div>
+                <div class="azioni-scena">
+                    <button class="btn-testo" onclick="annulla_stanza()">Annulla stanza</button>
+                </div>
+                <div class="azioni-scena">
+                    <button class="btn btn-primary" id="btn-procedi-ruoli" onclick="procedi_a_scelta_ruoli_remota()" disabled>Procedi alla scelta dei ruoli</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= SCENA: entra in una stanza (giocatore) ================= -->
+        <div class="scena" id="scena-entra-stanza">
+            <div class="pannello">
+                <h2>Entra in una partita</h2>
+                <div class="campo-form">
+                    <label for="entra-codice">Codice partita</label>
+                    <input type="text" id="entra-codice" class="input-form" style="text-transform:uppercase; text-align:center; font-family:var(--font-display); font-size:1.3rem; letter-spacing:.15em;" maxlength="5" autocomplete="off" placeholder="ABCDE">
+                </div>
+                <div class="campo-form">
+                    <label for="entra-nome">Il tuo nome</label>
+                    <input type="text" id="entra-nome" class="input-form" autocomplete="off" placeholder="Scrivi il tuo nome...">
+                </div>
+                <p class="hint" id="entra-errore" style="display:none; color:var(--cattivi); text-align:left;"></p>
+                <div class="azioni-scena">
+                    <button class="btn btn-secondary" onclick="vaiA('scena-scelta-ruolo-remoto')">Indietro</button>
+                    <button class="btn btn-primary" id="btn-entra-stanza" onclick="entra_in_stanza()">Entra nella stanza</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= SCENA: attesa (giocatore collegato, in lobby) ================= -->
+        <div class="scena" id="scena-attesa-giocatore">
+            <div class="luna"></div>
+            <h1 class="titolo-principale" style="font-size:2.2rem;">Sei nella stanza</h1>
+            <p class="sottotitolo" style="text-transform:none; letter-spacing:normal; font-family:var(--font-body); font-size:1.1rem;">In attesa che il narratore avvii la partita...</p>
+            <div class="azioni-scena">
+                <button class="btn-testo" onclick="refresh()">Esci dalla stanza</button>
+            </div>
+        </div>
+
+        <!-- ================= SCENA: carta personale (modalità a distanza) ================= -->
+        <div class="scena" id="scena-carta-remota">
+            <p class="turno-giocatore">La tua carta</p>
+            <div class="card-scene-wrap">
+                <div class="card-scene" id="remota-card-scene" data-squadra="">
+                    <div class="card-flip" id="remota-card-flip" onclick="flip_carta_remota()">
+                        <div class="card-face card-front">
+                            <div class="card-illustrazione" id="remota-card-illustrazione"></div>
+                            <div class="card-nome-banda">
+                                <span class="nome" id="remota-card-nome-fronte"></span>
+                                <span class="suggerimento">tocca la carta per la descrizione</span>
+                            </div>
+                        </div>
+                        <div class="card-face card-back">
+                            <span class="nome" id="remota-card-nome-retro"></span>
+                            <p class="descrizione" id="remota-card-descrizione"></p>
+                            <p class="sveglia-info" id="remota-card-sveglia"></p>
+                            <span class="suggerimento">tocca per tornare al fronte</span>
+                        </div>
+                    </div>
+                    <div class="carta-coperta" id="remota-carta-coperta">
+                        <div class="sigillo">?</div>
+                    </div>
+                </div>
+            </div>
+            <div class="carta-azioni">
+                <button type="button" class="btn btn-primary" id="remota-btn-mostra" onclick="mostra_remota()">Mostra ruolo</button>
+            </div>
         </div>
 
         <!-- ================= SCENA: numero giocatori ================= -->
@@ -1066,6 +1206,10 @@
         </footer>
 
         <script src="./js/lupus-engine.js"></script>
+        <!-- SDK Firebase, solo per la modalità "a distanza" (distribuzione ruoli su più dispositivi) -->
+        <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-database-compat.js"></script>
+        <script src="./js/lupus-sync.js"></script>
         <script>
             /* ==========================================================
                PWA — service worker e prompt di installazione
@@ -1099,6 +1243,34 @@
                 if(btn) btn.style.display='none';
             });
 
+            /*
+                Distribuzione a distanza — richiede un database gratuito (Firebase
+                Realtime Database) per far comunicare i dispositivi tra loro.
+                Per attivarla:
+                1. Vai su https://console.firebase.google.com e crea un progetto gratuito.
+                2. Nel progetto, aggiungi una "app Web" e copia l'oggetto di configurazione
+                   che ti mostra (apiKey, authDomain, databaseURL, ...).
+                3. Nella sezione "Realtime Database" crea un database, poi in
+                   Regole incolla questo (volutamente aperto a chiunque per ora):
+                   { "rules": { "stanze": { ".read": true, ".write": true } } }
+                   ATTENZIONE: con queste regole chiunque conosca l'indirizzo del tuo
+                   database può leggere/modificare le stanze. Andranno sostituite con
+                   regole vere quando ci sarà un server a gestire tutto.
+                4. Sostituisci l'oggetto qui sotto con quello vero, copiato al punto 2.
+                Finché resta questo segnaposto, la modalità "a distanza" mostrerà
+                semplicemente un messaggio d'errore invece di rompersi.
+            */
+            LupusSync.configura({
+                apiKey: "AIzaSyAuHChmGEhytw1hYXA87ps1uHH0zSQH-Io",
+                authDomain: "lupusonline.firebaseapp.com",
+                databaseURL: "https://lupusonline-default-rtdb.europe-west1.firebasedatabase.app/",
+                projectId: "lupusonline",
+                storageBucket: "lupusonline.firebasestorage.app",
+                messagingSenderId: "760699823386",
+                appId: "1:760699823386:web:86e7f8d840b9fc29bd38a3",
+                measurementId: "G-EPPGE1FNJE"
+            });
+
             /* ==========================================================
                STATO GLOBALE
                ========================================================== */
@@ -1106,6 +1278,17 @@
             var ruoli_partita=[]
             var ROLES={}
             var ROLE_ORDER=[]
+
+            // stato della modalità a distanza
+            var modalitaGioco='locale'      // 'locale' | 'remoto'
+            var ruoloUtente=null            // 'narratore' | 'giocatore' (solo se remoto)
+            var codiceStanza=null
+            var mioPlayerId=null            // solo per chi entra come giocatore
+            var giocatoriRemoti={}          // ultimo istantanea giocatori collegati (narratore)
+            var giocatoriIdOrdine=[]        // id Firebase dei giocatori, stesso ordine di "giocatori"/"ruoli_partita"
+            var smettiAscoltoStanza=null
+            var ngStanza=5
+            var ngStanzaAttuale=5
             var EXTRA={}
             var ng=5
             var lupi=0
@@ -1135,6 +1318,7 @@
                     EXTRA=data.extra || {};
                     carica_ruoli_personalizzati();
                     costruisci_griglia_ruoli();
+                    riprendi_sessione_remota();
                 })
                 .catch(function(err){
                     console.error('Impossibile caricare roles.json', err);
@@ -1151,6 +1335,229 @@
 
             function refresh(){
                 window.open("index.html","_self")
+            }
+
+            /* ==========================================================
+               MODALITÀ A DISTANZA — narratore: creazione stanza e lobby
+               ========================================================== */
+            function cambia_numero_stanza(delta){
+                ngStanza = Math.max(3, Math.min(20, ngStanza + delta));
+                document.getElementById('valore-numero-stanza').innerText = ngStanza;
+            }
+
+            function crea_stanza(){
+                var bottone=document.getElementById('btn-crea-stanza');
+                bottone.disabled=true; bottone.innerText='Creazione in corso...';
+                LupusSync.creaStanza(ngStanza).then(function(codice){
+                    modalitaGioco='remoto';
+                    ruoloUtente='narratore';
+                    codiceStanza=codice;
+                    bottone.disabled=false; bottone.innerText='Crea stanza';
+                    avvia_lobby_narratore();
+                }).catch(function(err){
+                    bottone.disabled=false; bottone.innerText='Crea stanza';
+                    alert('Non sono riuscito a creare la stanza.\n\n' + err.message);
+                });
+            }
+
+            function avvia_lobby_narratore(){
+                document.getElementById('lobby-codice').innerText = codiceStanza;
+                document.getElementById('btn-procedi-ruoli').disabled = true;
+                vaiA('scena-lobby-narratore');
+                smettiAscoltoStanza = LupusSync.ascolta(codiceStanza, aggiorna_lobby_narratore);
+            }
+
+            function aggiorna_lobby_narratore(stato){
+                if(!stato) return;
+                giocatoriRemoti = stato.giocatori || {};
+                ngStanzaAttuale = stato.ng;
+                var elencoIds = Object.keys(giocatoriRemoti);
+
+                document.getElementById('lobby-ng-valore').innerText = ngStanzaAttuale;
+
+                var elencoEl = document.getElementById('lobby-elenco-giocatori');
+                elencoEl.innerHTML = '';
+                elencoIds.forEach(function(id){
+                    var g = giocatoriRemoti[id];
+                    var riga=document.createElement('div');
+                    riga.className='vivo-riga';
+                    riga.innerHTML =
+                        '<label style="flex:1; cursor:default;">'+g.nome+'</label>' +
+                        '<button type="button" class="ruolo-elimina" onclick="rimuovi_da_lobby(\''+id+'\')" aria-label="Rimuovi '+g.nome+'">×</button>';
+                    elencoEl.appendChild(riga);
+                });
+
+                document.getElementById('lobby-contatore').innerText = elencoIds.length + ' / ' + ngStanzaAttuale;
+                document.getElementById('lobby-contatore-wrap').classList.toggle('completo', elencoIds.length === ngStanzaAttuale);
+                document.getElementById('btn-procedi-ruoli').disabled = elencoIds.length === 0;
+            }
+
+            function cambia_numero_lobby(delta){
+                var contoAttuale = Object.keys(giocatoriRemoti).length;
+                var minimo = Math.max(3, contoAttuale);
+                var nuovo = Math.max(minimo, Math.min(20, ngStanzaAttuale + delta));
+                LupusSync.impostaNumeroGiocatori(codiceStanza, nuovo);
+            }
+
+            function rimuovi_da_lobby(playerId){
+                LupusSync.rimuoviGiocatore(codiceStanza, playerId);
+            }
+
+            function annulla_stanza(){
+                if(!confirm('Vuoi annullare questa stanza? Chi si è già collegato verrà disconnesso.')) return;
+                if(smettiAscoltoStanza){ smettiAscoltoStanza(); smettiAscoltoStanza=null; }
+                if(codiceStanza){ LupusSync.eliminaStanza(codiceStanza); }
+                refresh();
+            }
+
+            function procedi_a_scelta_ruoli_remota(){
+                var elencoIds = Object.keys(giocatoriRemoti);
+                if(elencoIds.length === 0){
+                    alert('Non c\'è ancora nessun giocatore nella stanza.');
+                    return;
+                }
+                giocatoriIdOrdine = elencoIds;
+                giocatori = elencoIds.map(function(id){ return giocatoriRemoti[id].nome; });
+                ng = giocatori.length;
+
+                if(smettiAscoltoStanza){ smettiAscoltoStanza(); smettiAscoltoStanza=null; }
+                LupusSync.impostaFase(codiceStanza, 'ruoli');
+
+                document.getElementById('titolo_ruoli').innerText = 'Scegli ' + ng + ' ruoli';
+                aggiorna_contatore_ruoli();
+                vaiA('scena-ruoli');
+            }
+
+            function avvia_distribuzione_remota(){
+                ruoli_partita = LupusEngine.shuffleArray(ruoli_partita);
+                var mappa = {};
+                giocatoriIdOrdine.forEach(function(playerId, idx){
+                    mappa[playerId] = ruoli_partita[idx];
+                });
+                LupusSync.assegnaRuoli(codiceStanza, mappa).then(function(){
+                    lista_narratore();
+                    vaiA('scena-narratore');
+                }).catch(function(err){
+                    alert('Errore durante la distribuzione dei ruoli.\n\n' + err.message);
+                });
+            }
+
+            /* ==========================================================
+               MODALITÀ A DISTANZA — giocatore: ingresso e attesa
+               ========================================================== */
+            function vai_a_entra_stanza(){
+                document.getElementById('entra-errore').style.display='none';
+                document.getElementById('entra-codice').value='';
+                document.getElementById('entra-nome').value='';
+                vaiA('scena-entra-stanza');
+            }
+
+            function entra_in_stanza(){
+                var codice = document.getElementById('entra-codice').value.trim().toUpperCase();
+                var nome = document.getElementById('entra-nome').value.trim();
+                var erroreEl = document.getElementById('entra-errore');
+                erroreEl.style.display='none';
+
+                if(!codice || !nome){
+                    erroreEl.innerText='Inserisci sia il codice che il tuo nome.';
+                    erroreEl.style.display='block';
+                    return;
+                }
+
+                var bottone=document.getElementById('btn-entra-stanza');
+                bottone.disabled=true; bottone.innerText='Ingresso in corso...';
+
+                LupusSync.entraStanza(codice, nome).then(function(risultato){
+                    modalitaGioco='remoto';
+                    ruoloUtente='giocatore';
+                    codiceStanza=risultato.codice;
+                    mioPlayerId=risultato.playerId;
+                    try{
+                        sessionStorage.setItem('lupus_stanza', JSON.stringify({
+                            codice: risultato.codice, playerId: risultato.playerId
+                        }));
+                    } catch(e){}
+                    bottone.disabled=false; bottone.innerText='Entra nella stanza';
+                    avvia_attesa_giocatore();
+                }).catch(function(err){
+                    bottone.disabled=false; bottone.innerText='Entra nella stanza';
+                    erroreEl.innerText = err.message;
+                    erroreEl.style.display='block';
+                });
+            }
+
+            function riprendi_sessione_remota(){
+                var salvata=null;
+                try{ salvata = JSON.parse(sessionStorage.getItem('lupus_stanza')||'null'); } catch(e){}
+                if(!salvata) return;
+                modalitaGioco='remoto';
+                ruoloUtente='giocatore';
+                codiceStanza=salvata.codice;
+                mioPlayerId=salvata.playerId;
+                avvia_attesa_giocatore();
+            }
+
+            function avvia_attesa_giocatore(){
+                vaiA('scena-attesa-giocatore');
+                smettiAscoltoStanza = LupusSync.ascolta(codiceStanza, function(stato){
+                    if(!stato || !stato.giocatori || !stato.giocatori[mioPlayerId]){
+                        // rimosso dal narratore, o la stanza non esiste più
+                        if(smettiAscoltoStanza){ smettiAscoltoStanza(); smettiAscoltoStanza=null; }
+                        try{ sessionStorage.removeItem('lupus_stanza'); } catch(e){}
+                        alert('Sei stato rimosso dalla stanza, oppure la partita è stata annullata dal narratore.');
+                        refresh();
+                        return;
+                    }
+                    var mioStato = stato.giocatori[mioPlayerId];
+                    if(mioStato.ruoloId){
+                        if(smettiAscoltoStanza){ smettiAscoltoStanza(); smettiAscoltoStanza=null; }
+                        mostra_carta_remota(mioStato.ruoloId);
+                    }
+                });
+            }
+
+            function mostra_carta_remota(idRuolo){
+                var ruolo = ROLES[idRuolo];
+                if(!ruolo) return;
+
+                document.getElementById('remota-card-scene').setAttribute('data-squadra', ruolo.squadra);
+                document.getElementById('remota-card-nome-fronte').innerText = ruolo.nome;
+                document.getElementById('remota-card-nome-retro').innerText = ruolo.nome;
+                document.getElementById('remota-card-descrizione').innerText = LupusEngine.descrizioneEffettiva(idRuolo, ROLES, descrizioniPartita);
+                document.getElementById('remota-card-sveglia').innerText = LupusEngine.etichettaSveglia(ruolo);
+
+                var illustrazione=document.getElementById('remota-card-illustrazione');
+                illustrazione.innerHTML='';
+                if(ruolo.immagine){
+                    var img=document.createElement('img');
+                    img.alt='Illustrazione '+ruolo.nome;
+                    img.onerror=function(){
+                        illustrazione.innerHTML='<div class="segnaposto"><span>'+ruolo.nome.charAt(0).toUpperCase()+'</span></div>';
+                    };
+                    img.src=ruolo.immagine;
+                    illustrazione.appendChild(img);
+                } else {
+                    illustrazione.innerHTML = '<div class="segnaposto"><span>'+ruolo.nome.charAt(0).toUpperCase()+'</span></div>';
+                }
+
+                vaiA('scena-carta-remota');
+            }
+
+            function mostra_remota(){
+                document.getElementById('remota-card-scene').classList.add('rivelata');
+                var coperta=document.getElementById('remota-carta-coperta');
+                coperta.classList.add('dissolvi');
+                requestAnimationFrame(function(){
+                    requestAnimationFrame(function(){
+                        coperta.classList.add('nascosta');
+                    });
+                });
+            }
+
+            function flip_carta_remota(){
+                var coperta=document.getElementById('remota-carta-coperta');
+                if(!coperta.classList.contains('nascosta')) return;
+                document.getElementById('remota-card-flip').classList.toggle('flipped');
             }
 
             /* ==========================================================
@@ -1240,6 +1647,10 @@
             });
 
             function vai_a_nomi_da_ruoli(){
+                if(modalitaGioco==='remoto'){
+                    avvia_lobby_narratore();
+                    return;
+                }
                 if(giocatori.length>0) giocatori.pop();
                 aggiorna_dots_nomi();
                 aggiorna_etichetta_nome();
@@ -1506,9 +1917,13 @@
                 ruoli_partita = LupusEngine.componiRuoliPartita(ROLE_ORDER, selezionati, {lupi:lupi, contadini:contadini});
 
                 if(ruoli_partita.length===ng){
-                    turno=0;
-                    vaiA('scena-carta');
-                    consegna_ruoli();
+                    if(modalitaGioco==='remoto'){
+                        avvia_distribuzione_remota();
+                    } else {
+                        turno=0;
+                        vaiA('scena-carta');
+                        consegna_ruoli();
+                    }
                 } else {
                     alert('Hai scelto ' + ruoli_partita.length + ' ruoli, ma i giocatori sono ' + ng + '. Usa il contatore in alto per pareggiare i due numeri.');
                 }
