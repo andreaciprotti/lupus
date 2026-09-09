@@ -15,16 +15,16 @@
         <meta property="og:url" content="https://www.lupusonline.it/">
         <meta property="og:title" content="Lupus in Fabula Online — il villaggio dorme, il male veglia">
         <meta property="og:description" content="Gioca a Lupus in fabula (il gioco del villaggio) con i tuoi amici, dal browser: carte animate, regia notturna guidata, ruoli personalizzabili. Gratis.">
-        <meta property="og:site_name" content="Lupus in Fabula Online">        <meta property="og:image" content="https://www.lupusonline.it/assets/og-image.jpg">
-        <meta property="og:image:width" content="1200">
-        <meta property="og:image:height" content="630">
+        <meta property="og:site_name" content="Lupus in Fabula Online">        <meta property="og:image" content="https://www.lupusonline.it/assets/icons/og-image.png">
+        <meta property="og:image:width" content="544">
+        <meta property="og:image:height" content="342">
         <meta property="og:locale" content="it_IT">
 
         <!-- Twitter/X Card -->
         <meta name="twitter:card" content="summary_large_image">
         <meta name="twitter:title" content="Lupus in Fabula Online — il villaggio dorme, il male veglia">
         <meta name="twitter:description" content="Gioca a Lupus in fabula con i tuoi amici, dal browser: carte animate, regia notturna guidata, ruoli personalizzabili.">
-        <meta name="twitter:image" content="https://www.lupusonline.it/assets/og-image.jpg">
+        <meta name="twitter:image" content="https://www.lupusonline.it/assets/icons/og-image.png">
 
         <link rel="manifest" href="./manifest.json">
         <meta name="theme-color" content="#05060b">
@@ -1038,7 +1038,7 @@
             </table>
             <div class="azioni-scena">
                 <button class="btn btn-primary" id="btn-inizia-notte" onclick="avvia_notte()">Inizia la notte</button>
-                <button class="btn btn-secondary" onclick="refresh()">Nuova partita</button>
+                <button class="btn btn-secondary" onclick="fine_partita()">Nuova partita</button>
             </div>
         </div>
 
@@ -1055,7 +1055,7 @@
                 <button class="btn btn-primary" onclick="prepara_morti()">Notte conclusa</button>
             </div>
             <div class="azioni-scena" style="margin-top:.6rem;">
-                <button class="btn-testo" onclick="refresh()">Termina partita</button>
+                <button class="btn-testo" onclick="fine_partita()">Termina partita</button>
             </div>
         </div>
 
@@ -1410,6 +1410,17 @@
                 refresh();
             }
 
+            // Chiude la partita: se il narratore è in modalità a distanza, elimina la
+            // stanza su Firebase così i giocatori collegati tornano automaticamente alla
+            // home, poi ricarica la pagina come farebbe una "nuova partita" locale.
+            function fine_partita(){
+                if(modalitaGioco === 'remoto' && ruoloUtente === 'narratore' && codiceStanza){
+                    if(smettiAscoltoStanza){ smettiAscoltoStanza(); smettiAscoltoStanza=null; }
+                    LupusSync.eliminaStanza(codiceStanza);
+                }
+                refresh();
+            }
+
             function procedi_a_scelta_ruoli_remota(){
                 var elencoIds = Object.keys(giocatoriRemoti);
                 if(elencoIds.length === 0){
@@ -1499,18 +1510,21 @@
 
             function avvia_attesa_giocatore(){
                 vaiA('scena-attesa-giocatore');
+                var cartaMostrata = false;
+                // L'ascolto resta attivo anche dopo la consegna della carta, così quando
+                // il narratore chiude la stanza (fine partita) il giocatore torna alla home.
                 smettiAscoltoStanza = LupusSync.ascolta(codiceStanza, function(stato){
                     if(!stato || !stato.giocatori || !stato.giocatori[mioPlayerId]){
-                        // rimosso dal narratore, o la stanza non esiste più
+                        // rimosso dal narratore, o la stanza non esiste più (partita terminata)
                         if(smettiAscoltoStanza){ smettiAscoltoStanza(); smettiAscoltoStanza=null; }
                         try{ sessionStorage.removeItem('lupus_stanza'); } catch(e){}
-                        alert('Sei stato rimosso dalla stanza, oppure la partita è stata annullata dal narratore.');
+                        alert(cartaMostrata ? 'La partita è terminata. Torni alla home.' : 'Sei stato rimosso dalla stanza, oppure la partita è stata annullata dal narratore.');
                         refresh();
                         return;
                     }
                     var mioStato = stato.giocatori[mioPlayerId];
-                    if(mioStato.ruoloId){
-                        if(smettiAscoltoStanza){ smettiAscoltoStanza(); smettiAscoltoStanza=null; }
+                    if(mioStato.ruoloId && !cartaMostrata){
+                        cartaMostrata = true;
                         mostra_carta_remota(mioStato.ruoloId);
                     }
                 });

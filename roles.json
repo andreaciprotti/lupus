@@ -1,6 +1,39 @@
 {
   "ruoli": [
     {
+      "id": "illusionista",
+      "nome": "Illusionista",
+      "squadra": "cattivi",
+      "immagine": "assets/cards/illusionista.png",
+      "sveglia": {
+        "tipo": "sempre"
+      },
+      "descrizione": "L'illusionista è un giocatore cattivo che gioca con i lupi e viene visto come tale. Durante la notte può indicare un giocatore e bloccargli i poteri per quel turno.",
+      "ordine_notte": 10
+    },
+    {
+      "id": "spaccino",
+      "nome": "Spaccino",
+      "squadra": "cattivi",
+      "immagine": "assets/cards/spaccino.png",
+      "sveglia": {
+        "tipo": "sempre"
+      },
+      "descrizione": "Lo spaccino è un ruolo cattivo e i lupi sanno chi è. Ogni notte indica un giocatore al quale viene modificato l'esito del potere: le risposte vengono invertite, mentre i poteri esercitati su un giocatore vengono spostati sulla persona alla sua destra, vale anche per i lupi.",
+      "ordine_notte": 20
+    },
+    {
+      "id": "mitomane",
+      "nome": "Mitomane",
+      "squadra": "neutrali",
+      "immagine": "assets/cards/mitomane.png",
+      "sveglia": {
+        "tipo": "solo_seconda"
+      },
+      "descrizione": "Il Mitomane non ha uno schieramento iniziale. Viene svegliato alla seconda notte, ed è tenuto ad indicare un altro giocatore. Se quest'ultimo è lupo, il mitomane diventa lupo, se è veggente diventa veggente, altrimenti resta un semplice contadino. ",
+      "ordine_notte": 30
+    },
+    {
       "id": "lupo",
       "nome": "Lupo",
       "squadra": "cattivi",
@@ -10,6 +43,17 @@
       },
       "descrizione": "I lupi sono giocatori cattivi e durante la notte indicano un abitante del villaggio da ammazzare.",
       "ordine_notte": 40
+    },
+    {
+      "id": "insinuo",
+      "nome": "Insinuo",
+      "squadra": "cattivi",
+      "immagine": "assets/cards/insinuo.png",
+      "sveglia": {
+        "tipo": "sempre"
+      },
+      "descrizione": "L'insinuo è un ruolo cattivo che gioca con i lupi. Di notte indica una persona che verrà vista come cattiva dal veggente.",
+      "ordine_notte": 50
     },
     {
       "id": "veggente",
@@ -23,6 +67,17 @@
       "ordine_notte": 60
     },
     {
+      "id": "guardia",
+      "nome": "Guardia",
+      "squadra": "buoni",
+      "immagine": "assets/cards/guardia.png",
+      "sveglia": {
+        "tipo": "sempre"
+      },
+      "descrizione": "La guardia è un giocatore buono e durante la notte indica un giocatore da proteggere dall'attacco dei lupi; se sceglie la stessa persona dei lupi quest'ultima non muore. Può proteggere anche se stesso ma non lo stesso giocatore per 2 volte di fila.",
+      "ordine_notte": 70
+    },
+    {
       "id": "medium",
       "nome": "Medium",
       "squadra": "buoni",
@@ -34,15 +89,70 @@
       "ordine_notte": 80
     },
     {
-      "id": "guardia",
-      "nome": "Guardia",
+      "id": "angelo",
+      "nome": "Angelo",
       "squadra": "buoni",
-      "immagine": "assets/cards/guardia.png",
+      "immagine": "assets/cards/angelo.png",
+      "sveglia": {
+        "tipo": "solo_prima"
+      },
+      "descrizione": "L'angelo, o angelo custode, è un ruolo buono che durante la prima notte indica un giocatore. Da quel momento, fino alla morte dell'angelo, se il giocatore indicato viene ucciso per qualsiasi motivo, al posto suo muore l'angelo.",
+      "ordine_notte": 90
+    },
+    {
+      "id": "puttana",
+      "nome": "Puttana",
+      "squadra": "buoni",
+      "immagine": "assets/cards/puttana.png",
       "sveglia": {
         "tipo": "sempre"
       },
-      "descrizione": "La guardia è un giocatore buono e durante la notte indica un giocatore da proteggere dall'attacco dei lupi; se sceglie la stessa persona dei lupi quest'ultima non muore. Può proteggere anche se stesso ma non lo stesso giocatore per 2 volte di fila.",
-      "ordine_notte": 70
+      "descrizione": "La puttana è un giocatore buono che ogni notte indica una persona da proteggere dai lupi. Se però viene ammazzata, muore sia lei che la persona che ha protetto.",
+      "ordine_notte": 100
+    },
+    {
+      "id": "senzaVolto",
+      "nome": "Senza Volto",
+      "squadra": "neutrali",
+      "immagine": "assets/cards/senza_volto.png",
+      "sveglia": {
+        "tipo": "dopo_morte"
+      },
+      "descrizione": "Il SenzaVolto è un personaggio individuale. Ha il potere di resuscitare un giocatore appena morto, a patto che sia contadino o lupo. Se resuscita 3 personaggi distinti vince. Se il veggente lo controlla, muore.",
+      "ordine_notte": 110
+    },
+    {
+      "id": "neomelodico",
+      "nome": "Neomelodico",
+      "squadra": "buoni",
+      "immagine": "assets/cards/neomelodico.png",
+      "sveglia": {
+        "tipo": "finche_non_usato"
+      },
+      "descrizione": "Il neomelodico è un ruolo buono che, una volta a partita, può scegliere una notte in cui non muore nessuno.",
+      "ordine_notte": 120
+    },
+    {
+      "id": "fantasma",
+      "nome": "Fantasma",
+      "squadra": "neutrali",
+      "immagine": "assets/cards/fantasma.png",
+      "sveglia": {
+        "tipo": "sempre"
+      },
+      "descrizione": "Il fantasma gioca per conto suo. Durante la notte non può essere ucciso dai lupi. Il suo obiettivo è possedere un giocatore, indicandolo per 5 notti di fila (chi viene indicato se ne accorge). Se il fantasma indica o viene indicato dal veggente, muore.",
+      "ordine_notte": 130
+    },
+    {
+      "id": "suicida",
+      "nome": "Suicida",
+      "squadra": "buoni",
+      "immagine": "assets/cards/suicida.png",
+      "sveglia": {
+        "tipo": "sempre"
+      },
+      "descrizione": "Il Suicida è un ruolo buono. Ogni notte si sveglia e può decidere di suicidarsi. Quando si suicida appare morto al resto del villaggio anche se non lo è realmente. Dovrà quindi continuare a dormire ogni notte come se fosse ancora vivo, ma tacere di giorno come se fosse morto. Quando lo riterrà opportuno potrà resuscitare, comunicandolo al narratore quando arriverà il suo turno nella notte. Una volta resuscitato rimane un semplice contadino. Se viene indicato dai lupi la notte in cui si suicida da solo, vale il suo suicidio, quindi non muore realmente.",
+      "ordine_notte": 140
     },
     {
       "id": "matto",
@@ -89,70 +199,15 @@
       "ordine_notte": null
     },
     {
-      "id": "angelo",
-      "nome": "Angelo",
+      "id": "druido",
+      "nome": "Druido",
       "squadra": "buoni",
-      "immagine": "assets/cards/angelo.png",
+      "immagine": "assets/cards/druido.png",
       "sveglia": {
-        "tipo": "solo_prima"
+        "tipo": "mai"
       },
-      "descrizione": "L'angelo, o angelo custode, è un ruolo buono che durante la prima notte indica un giocatore. Da quel momento, fino alla morte dell'angelo, se il giocatore indicato viene ucciso per qualsiasi motivo, al posto suo muore l'angelo.",
-      "ordine_notte": 90
-    },
-    {
-      "id": "spaccino",
-      "nome": "Spaccino",
-      "squadra": "cattivi",
-      "immagine": "assets/cards/spaccino.png",
-      "sveglia": {
-        "tipo": "sempre"
-      },
-      "descrizione": "Lo spaccino è un ruolo cattivo e i lupi sanno chi è. Ogni notte indica un giocatore al quale viene modificato l'esito del potere: le risposte vengono invertite, mentre i poteri esercitati su un giocatore vengono spostati sulla persona alla sua destra, vale anche per i lupi.",
-      "ordine_notte": 20
-    },
-    {
-      "id": "insinuo",
-      "nome": "Insinuo",
-      "squadra": "cattivi",
-      "immagine": "assets/cards/insinuo.png",
-      "sveglia": {
-        "tipo": "sempre"
-      },
-      "descrizione": "L'insinuo è un ruolo cattivo che gioca con i lupi. Di notte indica una persona che verrà vista come cattiva dal veggente.",
-      "ordine_notte": 50
-    },
-    {
-      "id": "illusionista",
-      "nome": "Illusionista",
-      "squadra": "cattivi",
-      "immagine": "assets/cards/illusionista.png",
-      "sveglia": {
-        "tipo": "sempre"
-      },
-      "descrizione": "L'illusionista è un giocatore cattivo che gioca con i lupi e viene visto come tale. Durante la notte può indicare un giocatore e bloccargli i poteri per quel turno.",
-      "ordine_notte": 10
-    },
-    {
-      "id": "puttana",
-      "nome": "Puttana",
-      "squadra": "buoni",
-      "immagine": "assets/cards/puttana.png",
-      "sveglia": {
-        "tipo": "sempre"
-      },
-      "descrizione": "La puttana è un giocatore buono che ogni notte indica una persona da proteggere dai lupi. Se però viene ammazzata, muore sia lei che la persona che ha protetto.",
-      "ordine_notte": 100
-    },
-    {
-      "id": "senzaVolto",
-      "nome": "Senza Volto",
-      "squadra": "neutrali",
-      "immagine": "assets/cards/senza_volto.png",
-      "sveglia": {
-        "tipo": "dopo_morte"
-      },
-      "descrizione": "Il SenzaVolto è un personaggio individuale. Ha il potere di resuscitare un giocatore appena morto, a patto che sia contadino o lupo. Se resuscita 3 personaggi distinti vince. Se il veggente lo controlla, muore.",
-      "ordine_notte": 110
+      "descrizione": "Il Druido è un ruolo buono. È un semplice contadino che ha due vite, solo se attaccato dai lupi.",
+      "ordine_notte": null
     },
     {
       "id": "inquisitore",
@@ -166,50 +221,6 @@
       "ordine_notte": null
     },
     {
-      "id": "neomelodico",
-      "nome": "Neomelodico",
-      "squadra": "buoni",
-      "immagine": "assets/cards/neomelodico.png",
-      "sveglia": {
-        "tipo": "finche_non_usato"
-      },
-      "descrizione": "Il neomelodico è un ruolo buono che, una volta a partita, può scegliere una notte in cui non muore nessuno.",
-      "ordine_notte": 120
-    },
-    {
-      "id": "fantasma",
-      "nome": "Fantasma",
-      "squadra": "neutrali",
-      "immagine": "assets/cards/fantasma.png",
-      "sveglia": {
-        "tipo": "sempre"
-      },
-      "descrizione": "Il fantasma gioca per conto suo. Durante la notte non può essere ucciso dai lupi. Il suo obiettivo è possedere un giocatore, indicandolo per 5 notti di fila (chi viene indicato se ne accorge). Se il fantasma indica o viene indicato dal veggente, muore.",
-      "ordine_notte": 130
-    },
- {
-      "id": "mitomane",
-      "nome": "Mitomane",
-      "squadra": "neutrali",
-      "immagine": "assets/cards/mitomane.png",
-      "sveglia": {
-        "tipo": "solo_seconda"
-      },
-      "descrizione": "Il Mitomane non ha uno schieramento iniziale. Viene svegliato alla seconda notte, ed è tenuto ad indicare un altro giocatore. Se quest'ultimo è lupo, il mitomane diventa lupo, se è veggente diventa veggente, altrimenti resta un semplice contadino. ",
-      "ordine_notte": 30
-    },
- {
-      "id": "druido",
-      "nome": "Druido",
-      "squadra": "buoni",
-      "immagine": "assets/cards/druido.png",
-      "sveglia": {
-        "tipo": "mai"
-      },
-      "descrizione": "Il Druido è un ruolo buono. È un semplice contadino che ha due vite, solo se attaccato dai lupi.",
-      "ordine_notte": null
-    },
- {
       "id": "sindaco",
       "nome": "Sindaco",
       "squadra": "buoni",
@@ -218,6 +229,17 @@
         "tipo": "mai"
       },
       "descrizione": "Il Sindaco gioca con i buoni. È un semplice contadino la cui votazione vale doppio. Il narratore non deve però dichiarare nulla a riguardo esplicitamente, starà a lui fare i calcoli per decretare il giocatore destinato a morire in base al voto doppio del sindaco.",
+      "ordine_notte": null
+    },
+    {
+      "id": "cricetoMannaro",
+      "nome": "Criceto Mannaro",
+      "squadra": "neutrali",
+      "immagine": "assets/cards/criceto_mannaro.png",
+      "sveglia": {
+        "tipo": "mai"
+      },
+      "descrizione": "Il Criceto Mannaro è un personaggio individuale. Non ha alcun potere speciale, vince se è ancora vivo quando finisce la partita. Non può essere ucciso dai Lupi. Il Veggente e il Medium lo vedono buono. Se viene visto dal Veggente muore.",
       "ordine_notte": null
     }
   ],
