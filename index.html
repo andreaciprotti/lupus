@@ -212,9 +212,15 @@
                 background: var(--ink); padding:0 .6rem; color: var(--moon-dim); font-size:.8rem;
             }
             #scena-intro .btn-primary{
-                margin-top: 2.6rem;
+                margin-top: 2.2rem;
                 font-family: var(--font-display);
                 font-size: 1.05rem; letter-spacing:.08em; padding: .9rem 2.4rem;
+            }
+            /* Riga di chiarezza subito visibile, sopra la piega: cosa fa il
+               sito, senza dover scorrere fino al paragrafo esteso. */
+            .tagline-intro{
+                font-family: var(--font-body); font-size: 1rem; line-height:1.55;
+                color: var(--moon-dim); max-width: 380px; margin: 1.6rem auto 0;
             }
             .intro-testo{
                 max-width: 560px;
@@ -227,11 +233,51 @@
                 font-family: var(--font-display); letter-spacing:.05em; text-transform:uppercase;
                 font-size: .95rem; color: var(--moon-dim); margin-bottom: .9rem; text-align:center;
             }
+            .intro-testo h2:not(:first-child){ margin-top: 2rem; }
             .intro-testo p{
                 font-family: var(--font-body); font-size: .98rem; line-height:1.65;
                 color: var(--moon-fioco); margin: 0 0 .9rem;
             }
             .intro-testo p:last-child{ margin-bottom:0; }
+            /* "Cos'è Lupus in fabula?" a comparsa: il testo resta nella
+               pagina (indicizzabile) ma si apre solo al tocco — elemento
+               nativo <details>, nessun JS necessario. */
+            .intro-dettagli summary{
+                cursor: pointer;
+                list-style: none;
+                font-family: var(--font-display); letter-spacing:.05em; text-transform:uppercase;
+                font-size: .95rem; color: var(--moon-dim);
+                display:flex; align-items:center; justify-content:center; gap:.5rem;
+                transition: color .2s ease;
+            }
+            .intro-dettagli summary::-webkit-details-marker{ display:none; }
+            .intro-dettagli summary:hover{ color: var(--moon); }
+            .intro-dettagli summary::after{
+                content:"+"; font-family: var(--font-ui); font-weight:600; font-size:1rem;
+                color: var(--moon-fioco); line-height:1;
+            }
+            .intro-dettagli[open] summary::after{ content:"−"; }
+            .intro-dettagli[open] summary{ margin-bottom:.9rem; }
+            .intro-dettagli p{ margin-bottom:0; }
+            /* I "3 passi": più scannerizzabile di un paragrafo di prosa per
+               spiegare cosa fa concretamente il sito. */
+            .passi-intro{ display:flex; flex-direction:column; gap:1.1rem; }
+            .passo{ display:flex; align-items:flex-start; gap:.9rem; }
+            .passo-numero{
+                flex-shrink:0; width:26px; height:26px; border-radius:50%;
+                display:flex; align-items:center; justify-content:center;
+                font-family: var(--font-display); font-size:.82rem; color: var(--moon);
+                background: var(--ink-2); border:1px solid var(--line); margin-top:.1rem;
+            }
+            .intro-testo .passo-testo{
+                font-family: var(--font-body); font-size:.96rem; line-height:1.6;
+                color: var(--moon-fioco); margin:0;
+            }
+            .passo-testo strong{ color: var(--moon); font-weight:600; }
+            .intro-testo .intro-nota{
+                font-family: var(--font-ui); font-size:.78rem; letter-spacing:.02em;
+                color: var(--moon-fioco); text-align:center; margin:1.3rem 0 0;
+            }
 
             /* ==========================================================
                PANNELLO (numero giocatori / nomi)
@@ -252,6 +298,22 @@
                 color: var(--moon-dim); font-size: 1.05rem;
                 margin: 1rem 0 0;
             }
+
+            /* pulsanti "a due righe" per le scelte iniziali (come giocare,
+               chi sei...): titolo + una riga di spiegazione, per chi apre
+               il sito per la prima volta e non sa ancora cosa significano. */
+            .btn-scelta{
+                display:flex; flex-direction:column; align-items:flex-start; gap:.3rem;
+                width:100%; text-align:left; padding:1rem 1.2rem;
+            }
+            .btn-scelta-titolo{
+                font-family: var(--font-display); font-size:1rem; letter-spacing:.03em;
+            }
+            .btn-scelta-desc{
+                font-family: var(--font-ui); font-weight:400; letter-spacing:normal;
+                font-size:.8rem; line-height:1.4; color: var(--moon-fioco);
+            }
+            .btn-primary .btn-scelta-desc{ color: rgba(242,239,227,.6); }
 
             /* stepper numero giocatori */
             .stepper{
@@ -377,12 +439,32 @@
 
             .ruolo-chip{
                 position:relative;
-                display:flex; align-items:center; gap:.55rem;
+                display:flex; flex-wrap:wrap; align-items:center; gap:.55rem;
                 background: var(--ink-2); border: 1px solid var(--line); border-radius: 10px;
                 padding: .5rem .55rem;
                 transition: all .25s ease;
                 --acc: var(--moon-fioco);
                 --acc-glow: rgba(0,0,0,0);
+            }
+
+            /* Stepper +/- inline per Lupo/Contadino (unici ruoli con più di
+               un giocatore): appare solo da selezionati, su una riga propria. */
+            .ruolo-stepper{
+                display:none; align-items:center; justify-content:center; gap:.5rem;
+                width:100%; margin-top:.35rem; padding-top:.4rem; border-top:1px solid var(--line);
+            }
+            .ruolo-chip.selezionato .ruolo-stepper{ display:flex; }
+            .ruolo-stepper-btn{
+                width:22px; height:22px; border-radius:50%; flex-shrink:0;
+                border:1px solid var(--line); background:var(--panel); color:var(--moon);
+                font-size:.85rem; line-height:1;
+                display:flex; align-items:center; justify-content:center;
+                transition: all .2s ease;
+            }
+            .ruolo-stepper-btn:hover{ border-color: var(--buoni); box-shadow: 0 0 8px var(--buoni-glow); }
+            .ruolo-stepper-valore{
+                font-family: var(--font-display); font-size:.85rem; min-width:1.4em;
+                text-align:center; color: var(--moon);
             }
             .ruolo-chip[data-squadra="buoni"]{ --acc: var(--buoni); --acc-glow: var(--buoni-glow); box-shadow: inset 3px 0 0 var(--buoni); }
             .ruolo-chip[data-squadra="cattivi"]{ --acc: var(--cattivi); --acc-glow: var(--cattivi-glow); box-shadow: inset 3px 0 0 var(--cattivi); }
@@ -641,6 +723,12 @@
                 font-family: var(--font-ui); font-size:.78rem; color: var(--moon-fioco);
             }
             .notte-corpo .usato-toggle input{ accent-color: var(--oro); width:15px; height:15px; }
+            .notte-corpo .notte-risposta{
+                margin-top:.5rem; padding:.5rem .65rem; border-radius:8px;
+                background: var(--buoni-glow); border:1px solid var(--buoni);
+                font-family: var(--font-ui); font-size:.82rem; color: var(--moon); font-weight:600;
+                animation: comparsa .25s ease;
+            }
             .notte-riga .info-btn{ background:none; border:none; color: var(--moon-fioco); flex-shrink:0; padding-top:.15rem; }
             .notte-riga .info-btn:hover{ color: var(--moon); }
             .nota-morto{
@@ -702,6 +790,107 @@
                 padding: 0 .15rem; flex-shrink:0; opacity:.7;
             }
             .ruolo-elimina:hover{ opacity:1; }
+
+            /* ==========================================================
+               NARRATORE AUTOMATICO — turni notturni, voto/chat lupi, giorno
+               ========================================================== */
+            .notte-auto-riga{
+                display:flex; align-items:center; gap:.6rem; width:100%; text-align:left;
+                background: var(--ink-2); border:1px solid var(--line); border-radius:8px; padding:.6rem .8rem;
+                color: var(--moon); font-family: var(--font-ui); font-size:.92rem; cursor:pointer;
+                transition: all .2s ease;
+            }
+            .notte-auto-riga:hover{ border-color: var(--buoni); }
+            .notte-auto-riga.selezionata{ border-color: var(--buoni); background: var(--buoni-glow); }
+            .notte-auto-countdown{
+                font-family: var(--font-ui); font-size:.78rem; letter-spacing:.05em; text-transform:uppercase;
+                color: var(--moon-fioco); text-align:center; margin-top:.6rem;
+            }
+            .chat-lupi-box{
+                background: var(--ink-2); border:1px solid var(--line); border-radius:8px;
+                padding:.6rem .7rem; height:160px; overflow-y:auto; text-align:left; margin-top:.8rem;
+            }
+            .chat-lupi-riga{ font-family: var(--font-ui); font-size:.85rem; color: var(--moon-dim); margin-bottom:.3rem; }
+            .chat-lupi-riga strong{ color: var(--cattivi); }
+            .voti-lupi-box{ margin-top:.8rem; text-align:left; }
+            .voti-lupi-riga{ font-family: var(--font-ui); font-size:.82rem; color: var(--moon-dim); padding:.15rem 0; }
+            .log-pubblico-riga{ font-family: var(--font-ui); font-size:.85rem; color: var(--moon-dim); padding:.3rem 0; border-bottom:1px solid var(--line); }
+            .log-pubblico-riga:last-child{ border-bottom:none; }
+
+            /* ==========================================================
+               POPUP generico di avviso/conferma
+               ========================================================== */
+            .popup-avviso-icona{
+                width:44px; height:44px; margin:0 auto .8rem; border-radius:50%;
+                display:flex; align-items:center; justify-content:center;
+                font-family: var(--font-display); font-size:1.3rem;
+                background: var(--ink-2); border:1.5px solid var(--buoni); color: var(--buoni);
+            }
+            .popup-avviso-icona.attenzione{ border-color: var(--cattivi); color: var(--cattivi); }
+
+            .btn-home-fisso{
+                position: fixed; top: 14px; left: 14px; z-index: 80000;
+                width: 38px; height: 38px; border-radius: 50%;
+                display: flex; align-items: center; justify-content: center;
+                background: var(--ink-2); border: 1px solid var(--line); color: var(--moon-dim);
+                cursor: pointer; transition: all .2s ease;
+            }
+            .btn-home-fisso:hover{ color: var(--moon); border-color: var(--buoni); background: var(--panel); }
+
+            .btn-carta-fissa{
+                position: fixed; top: 14px; right: 14px; z-index: 80000;
+                display:flex; align-items:center; gap:.4rem;
+                padding: .5rem .85rem .5rem .65rem; border-radius: 20px;
+                background: var(--ink-2); border: 1px solid var(--line); color: var(--moon-dim);
+                font-family: var(--font-ui); font-size: .78rem; letter-spacing:.02em;
+                cursor: pointer; transition: all .2s ease;
+            }
+            .btn-carta-fissa:hover{ color: var(--moon); border-color: var(--buoni); background: var(--panel); }
+
+            /* ==========================================================
+               Notizie della notte/giorno — righe con icona ed evidenza
+               per tipo di evento, invece del plaintext piatto
+               ========================================================== */
+            .log-evento{
+                display:flex; align-items:center; gap:.75rem;
+                padding:.65rem .85rem; border-radius:10px; margin-bottom:.55rem;
+                background: linear-gradient(135deg, var(--panel-2), var(--ink-2));
+                border: 1px solid var(--line); border-left-width:3px;
+                box-shadow: 0 2px 8px rgba(0,0,0,.25);
+                animation: comparsa .3s ease;
+            }
+            .log-evento:last-child{ margin-bottom:0; }
+            .log-evento .log-icona{
+                flex-shrink:0; width:2rem; height:2rem; border-radius:50%;
+                display:flex; align-items:center; justify-content:center;
+                font-family: var(--font-display); font-size:1rem;
+                background: var(--ink-2); border: 1.5px solid var(--line);
+            }
+            .log-evento .log-corpo{ flex:1; min-width:0; }
+            .log-evento .log-momento{
+                display:block; font-family: var(--font-ui); font-size:.66rem; letter-spacing:.07em;
+                text-transform:uppercase; color: var(--moon-fioco); margin-bottom:.15rem;
+            }
+            .log-evento .log-testo{ font-family: var(--font-ui); font-size:.9rem; color: var(--moon); line-height:1.42; }
+            .log-evento.morte{ border-left-color: var(--cattivi); }
+            .log-evento.morte .log-icona{ color: var(--cattivi); background: var(--cattivi-glow); border-color: var(--cattivi); }
+            .log-evento.resurrezione{ border-left-color: var(--buoni); }
+            .log-evento.resurrezione .log-icona{ color: var(--buoni); background: var(--buoni-glow); border-color: var(--buoni); }
+            .log-evento.rivelazione{ border-left-color: var(--neutrali); }
+            .log-evento.rivelazione .log-icona{ color: var(--neutrali); background: var(--neutrali-glow); border-color: var(--neutrali); }
+            .log-evento.privato{ border-left-color: var(--buoni); background: linear-gradient(135deg, var(--buoni-glow), var(--ink-2)); }
+            .log-evento.privato .log-icona{ color: var(--buoni); background: var(--buoni-glow); border-color: var(--buoni); }
+            .log-evento.pace{ border-left-color: var(--moon-fioco); }
+            .log-evento.pace .log-icona{ color: var(--moon-dim); }
+            .log-evento.vittoria{ border-left-color: var(--oro); background: linear-gradient(135deg, var(--oro-glow), var(--ink-2)); }
+            .log-evento.vittoria .log-icona{ color: var(--oro); background: var(--oro-glow); border-color: var(--oro); }
+
+            /* Schermata dello spettatore morto: leggero alone rossastro sul
+               fondo scuro consueto, a ricordare lo stato di "fuori gioco". */
+            #scena-morto-auto{
+                background: radial-gradient(ellipse 70% 50% at 50% 0%, var(--cattivi-glow), transparent 65%);
+            }
+            #scena-morto-auto .titolo-principale{ color: var(--cattivi); }
 
             /* ==========================================================
                POPUP (info ruolo / conteggio lupi-contadini)
@@ -774,19 +963,56 @@
     </head>
     <body>
 
+        <!-- ================= Bottone fisso "torna alla home" ================= -->
+        <button type="button" class="btn-home-fisso" id="btn-home-fisso" style="display:none;" onclick="vai_alla_home()" aria-label="Torna alla home" title="Torna alla home">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 16 16" fill="currentColor">
+                <path d="M8.354 1.146a.5.5 0 0 0-.708 0l-6 6A.5.5 0 0 0 1.5 7.5v7a.5.5 0 0 0 .5.5h4.5a.5.5 0 0 0 .5-.5v-4h2v4a.5.5 0 0 0 .5.5H14a.5.5 0 0 0 .5-.5v-7a.5.5 0 0 0-.146-.354L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293z"/>
+            </svg>
+        </button>
+
+        <!-- ================= Bottone fisso "il mio ruolo" ================= -->
+        <button type="button" class="btn-carta-fissa" id="btn-mia-carta-fisso" style="display:none;" onclick="mostra_mia_carta_di_nuovo()" aria-label="Rivedi la tua carta">
+            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 16 16" fill="currentColor">
+                <path d="M14 3a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V3zM4 2h8a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1z"/>
+                <path d="M8 5a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3zm-3 6c0-1 1-2.5 3-2.5s3 1.5 3 2.5H5z"/>
+            </svg>
+            <span id="btn-mia-carta-testo">Il mio ruolo</span>
+        </button>
+
         <!-- ================= SCENA: intro ================= -->
         <div class="scena scena-attiva" id="scena-intro">
             <div class="luna"></div>
             <h1 class="titolo-principale">Lupus</h1>
             <p class="sottotitolo">il villaggio dorme, il male veglia</p>
-            <div class="divisore"></div>
+            <!-- <div class="divisore"></div> -->
+            <section class="intro-testo">
+                <details class="intro-dettagli">
+                    <summary>Cos'è Lupus in fabula?</summary>
+                    <p>Lupus in fabula (conosciuto anche come il gioco del villaggio, o nella versione internazionale Werewolf) è il classico party game di ruoli nascosti: ogni sera qualcuno interpreta un lupo mannaro, gli altri sono abitanti del villaggio, e un narratore guida le fasi di notte e di giorno finché non si scopre chi si nasconde tra i lupi.</p>
+                </details>
+            </section>
+        
+            <p class="tagline-intro">Distribuisce i ruoli e guida le notti al posto tuo — dal vivo o a distanza, come preferite.</p>
             <button class="btn btn-primary" onclick="vaiA('scena-scelta-distanza')">Inizia la partita</button>
-            <button class="btn-testo" id="btn-installa" style="display:none; margin-top:1.2rem;" onclick="installa_app()">Installa l'app sul telefono</button>
 
             <section class="intro-testo">
-                <h2>Cos'è Lupus in fabula?</h2>
-                <p>Lupus in fabula (conosciuto anche come il gioco del villaggio, o nella versione internazionale Werewolf) è il classico party game di ruoli nascosti: ogni sera qualcuno interpreta un lupo mannaro, gli altri sono abitanti del villaggio, e un narratore guida le fasi di notte e di giorno finché non si scopre chi si nasconde tra i lupi.</p>
-                <p>Questo sito è uno strumento gratuito, pensato per chi fa da narratore in una partita di Lupus in fabula dal vivo: distribuisce i ruoli con carte animate da far girare tra i giocatori, guida la regia notturna passo per passo (dicendoti chi svegliare e quando), e permette di creare ruoli personalizzati oltre a quelli classici. Nessuna registrazione, funziona anche offline una volta aperto.</p>
+                
+                <h2>Come funziona questo sito</h2>
+                <div class="passi-intro">
+                    <div class="passo">
+                        <span class="passo-numero">1</span>
+                        <p class="passo-testo"><strong>Scegli come giocare</strong> — tutti insieme con un telefono solo, oppure a distanza, ognuno dal proprio.</p>
+                    </div>
+                    <div class="passo">
+                        <span class="passo-numero">2</span>
+                        <p class="passo-testo"><strong>Distribuisci i ruoli</strong> — con carte animate, quelli classici o creati da te.</p>
+                    </div>
+                    <div class="passo">
+                        <span class="passo-numero">3</span>
+                        <p class="passo-testo"><strong>Lascia guidare la notte</strong> — il sito ti dice chi svegliare, oppure conduce tutto in automatico.</p>
+                    </div>
+                </div>
+                <p class="intro-nota">Gratuito, senza registrazione. Funziona anche offline una volta aperto.</p>
             </section>
         </div>
 
@@ -794,9 +1020,16 @@
         <div class="scena" id="scena-scelta-distanza">
             <div class="pannello">
                 <h2>Come volete giocare?</h2>
+                <p class="hint" style="font-size:.92rem; margin-top:-.8rem; margin-bottom:1.6rem;">Non preoccuparti, puoi sempre tornare indietro e cambiare idea.</p>
                 <div class="azioni-scena" style="flex-direction:column; align-items:stretch; margin-top:1.6rem;">
-                    <button class="btn btn-primary" onclick="vaiA('scena-numero')">Tutti nella stessa stanza</button>
-                    <button class="btn btn-secondary" style="margin-top:.9rem;" onclick="vaiA('scena-scelta-ruolo-remoto')">Giocatori a distanza</button>
+                    <button class="btn btn-primary btn-scelta" onclick="vaiA('scena-numero')">
+                        <span class="btn-scelta-titolo">Tutti nella stessa stanza</span>
+                        <span class="btn-scelta-desc">Il modo classico: un telefono solo, passato di mano in mano mentre giocate tutti insieme.</span>
+                    </button>
+                    <button class="btn btn-secondary btn-scelta" style="margin-top:.9rem;" onclick="vaiA('scena-scelta-ruolo-remoto')">
+                        <span class="btn-scelta-titolo">Giocatori a distanza</span>
+                        <span class="btn-scelta-desc">Ognuno sul proprio telefono, anche da case diverse: ruoli e regia della notte arrivano via internet.</span>
+                    </button>
                 </div>
                 <div class="azioni-scena">
                     <button class="btn-testo" onclick="vaiA('scena-intro')">Indietro</button>
@@ -808,9 +1041,16 @@
         <div class="scena" id="scena-scelta-ruolo-remoto">
             <div class="pannello">
                 <h2>Chi sei?</h2>
+                <p class="hint" style="font-size:.92rem; margin-top:-.8rem; margin-bottom:1.6rem;">Una persona sola crea la stanza: tutte le altre si uniscono con il codice che genera.</p>
                 <div class="azioni-scena" style="flex-direction:column; align-items:stretch; margin-top:1.6rem;">
-                    <button class="btn btn-primary" onclick="vaiA('scena-crea-stanza')">Gioca come narratore</button>
-                    <button class="btn btn-secondary" style="margin-top:.9rem;" onclick="vai_a_entra_stanza()">Gioca come giocatore</button>
+                    <button class="btn btn-primary btn-scelta" onclick="vaiA('scena-crea-stanza')">
+                        <span class="btn-scelta-titolo">Gioca come narratore</span>
+                        <span class="btn-scelta-desc">Crei la stanza, distribuisci i ruoli e guidi la partita — anche tu potrai avere un ruolo e giocare.</span>
+                    </button>
+                    <button class="btn btn-secondary btn-scelta" style="margin-top:.9rem;" onclick="vai_a_entra_stanza()">
+                        <span class="btn-scelta-titolo">Gioca come giocatore</span>
+                        <span class="btn-scelta-desc">Ti unisci a una stanza già creata da qualcun altro, con il codice che ti ha dato.</span>
+                    </button>
                 </div>
                 <div class="azioni-scena">
                     <button class="btn-testo" onclick="vaiA('scena-scelta-distanza')">Indietro</button>
@@ -827,7 +1067,20 @@
                     <div class="stepper-valore" id="valore-numero-stanza">5</div>
                     <button class="stepper-btn" onclick="cambia_numero_stanza(1)" aria-label="Un giocatore in più">+</button>
                 </div>
-                <p class="hint">Potrai comunque procedere anche se non si collegano tutti</p>
+                <p class="hint">Potrai procedere solo quando si saranno collegati esattamente questi posti</p>
+
+                <div class="campo-form" style="margin-top:1.4rem; text-align:left;">
+                    <label style="display:flex; align-items:center; gap:.6rem; cursor:pointer;">
+                        <input type="checkbox" id="narratore-automatico-check" onchange="cambia_narratore_automatico()">
+                        <span>Narratore automatico</span>
+                    </label>
+                    <p class="hint" style="margin-top:.3rem;">Il sistema gestisce da solo la notte, interfacciandosi con ogni giocatore per attivare i poteri. Giochi anche tu, con un ruolo come chiunque altro. Non disponibile con ruoli personalizzati.</p>
+                </div>
+                <div class="campo-form" id="narratore-automatico-nome-wrap" style="display:none;">
+                    <label for="narratore-automatico-nome">Il tuo nome</label>
+                    <input type="text" id="narratore-automatico-nome" class="input-form" autocomplete="off" placeholder="Scrivi il tuo nome...">
+                </div>
+
                 <div class="azioni-scena">
                     <button class="btn btn-secondary" onclick="vaiA('scena-scelta-ruolo-remoto')">Indietro</button>
                     <button class="btn btn-primary" id="btn-crea-stanza" onclick="crea_stanza()">Crea stanza</button>
@@ -851,7 +1104,7 @@
                         <span class="stepper-mini-valore" id="lobby-ng-valore">5</span>
                         <button class="stepper-mini-btn" onclick="cambia_numero_lobby(1)" aria-label="Un posto in più">+</button>
                     </div>
-                    <div class="hint" style="font-size:.75rem; margin-top:.3rem;">posti disponibili nella stanza</div>
+                    <div class="hint" style="font-size:.75rem; margin-top:.3rem;">posti disponibili nel villaggio</div>
                 </div>
                 <div class="lista-vivi" id="lobby-elenco-giocatori" style="margin-top:1.4rem;"></div>
                 <div class="azioni-scena">
@@ -878,7 +1131,7 @@
                 <p class="hint" id="entra-errore" style="display:none; color:var(--cattivi); text-align:left;"></p>
                 <div class="azioni-scena">
                     <button class="btn btn-secondary" onclick="vaiA('scena-scelta-ruolo-remoto')">Indietro</button>
-                    <button class="btn btn-primary" id="btn-entra-stanza" onclick="entra_in_stanza()">Entra nella stanza</button>
+                    <button class="btn btn-primary" id="btn-entra-stanza" onclick="entra_in_stanza()">Entra nel villaggio</button>
                 </div>
             </div>
         </div>
@@ -886,10 +1139,10 @@
         <!-- ================= SCENA: attesa (giocatore collegato, in lobby) ================= -->
         <div class="scena" id="scena-attesa-giocatore">
             <div class="luna"></div>
-            <h1 class="titolo-principale" style="font-size:2.2rem;">Sei nella stanza</h1>
+            <h1 class="titolo-principale" style="font-size:2.2rem;">Sei nel villaggio</h1>
             <p class="sottotitolo" style="text-transform:none; letter-spacing:normal; font-family:var(--font-body); font-size:1.1rem;">In attesa che il narratore avvii la partita...</p>
             <div class="azioni-scena">
-                <button class="btn-testo" onclick="refresh()">Esci dalla stanza</button>
+                <button class="btn-testo" onclick="esci_dalla_stanza_giocatore()">Esci dalla stanza</button>
             </div>
         </div>
 
@@ -920,6 +1173,141 @@
             </div>
             <div class="carta-azioni">
                 <button type="button" class="btn btn-primary" id="remota-btn-mostra" onclick="mostra_remota()">Mostra ruolo</button>
+                <button type="button" class="btn btn-secondary" id="remota-btn-pronto-notte-auto" style="display:none;" onclick="pronto_per_notte_automatica()">Pronto per la notte</button>
+                <button type="button" class="btn btn-secondary" id="remota-btn-chiudi-carta" style="display:none;" onclick="chiudi_visualizzazione_carta()">Torna alla partita</button>
+            </div>
+        </div>
+
+        <!-- ================= SCENA: narratore automatico — attesa notturna generica ================= -->
+        <div class="scena" id="scena-notte-auto-attesa">
+            <div class="luna"></div>
+            <h1 class="titolo-principale" style="font-size:2rem;">Il villaggio dorme</h1>
+            <p class="sottotitolo" style="text-transform:none; letter-spacing:normal; font-family:var(--font-body); font-size:1.05rem;" id="notte-auto-attesa-testo">Qualcuno, nel buio, sta agendo...</p>
+            <div class="pannello" style="max-width:480px; margin-top:1.4rem;">
+                <h2 style="font-size:1rem;">Cosa si sa finora</h2>
+                <div id="notte-auto-log-pubblico"><p class="hint">Nessuna notizia, per ora.</p></div>
+            </div>
+        </div>
+
+        <!-- ================= SCENA: narratore automatico — turno d'azione generico ================= -->
+        <div class="scena" id="scena-notte-auto-azione">
+            <div class="pannello" style="max-width:480px;">
+                <h2 id="notte-auto-titolo">Il tuo turno</h2>
+                <p class="hint" id="notte-auto-istruzioni"></p>
+                <div class="lista-vivi" id="notte-auto-lista"></div>
+                <div class="azioni-scena">
+                    <button type="button" class="btn btn-primary" id="notte-auto-conferma" disabled>Confermo</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= SCENA: narratore automatico — turno del Suicida ================= -->
+        <div class="scena" id="scena-notte-auto-suicida">
+            <div class="pannello" style="max-width:480px;">
+                <h2>Suicida</h2>
+                <p class="hint" id="notte-auto-suicida-istruzioni">Puoi fingerti morto stanotte, oppure — se ti eri finto morto — resuscitare come semplice contadino.</p>
+                <div class="azioni-scena" style="flex-direction:column; align-items:stretch;">
+                    <button type="button" class="btn btn-secondary" id="notte-auto-suicida-btn-finto" onclick="scegli_azione_suicida('finto')">Fingi la morte stanotte</button>
+                    <button type="button" class="btn btn-secondary" style="margin-top:.7rem; display:none;" id="notte-auto-suicida-btn-resuscita" onclick="scegli_azione_suicida('resuscita')">Resuscita (torna contadino)</button>
+                    <button type="button" class="btn-testo" style="margin-top:.7rem;" onclick="scegli_azione_suicida('niente')">Non fare nulla stanotte</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= SCENA: narratore automatico — turno del Neomelodico ================= -->
+        <div class="scena" id="scena-notte-auto-neomelodico">
+            <div class="pannello" style="max-width:480px;">
+                <h2>Neomelodico</h2>
+                <p class="hint">Puoi usare il tuo potere, una sola volta in tutta la partita: stanotte non morirà nessuno, per nessun motivo.</p>
+                <div class="azioni-scena" style="flex-direction:column; align-items:stretch;">
+                    <button type="button" class="btn btn-primary" onclick="scegli_azione_neomelodico(true)">Usa il potere stanotte</button>
+                    <button type="button" class="btn-testo" style="margin-top:.7rem;" onclick="scegli_azione_neomelodico(false)">Non usarlo stanotte</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= SCENA: narratore automatico — voto e chat dei Lupi ================= -->
+        <div class="scena" id="scena-notte-auto-lupi">
+            <div class="pannello" style="max-width:480px;">
+                <h2>Sveglia, Lupi</h2>
+                <p class="hint">Scegliete insieme la vittima di stanotte. Serve l'unanimità; se non si raggiunge in tempo vince la maggioranza, in parità chi ha votato prima.</p>
+                <div class="notte-auto-countdown" id="notte-auto-lupi-countdown"></div>
+                <div class="lista-vivi" id="notte-auto-lupi-lista" style="margin-top:1rem;"></div>
+                <div class="voti-lupi-box" id="notte-auto-lupi-voti"></div>
+                <div class="chat-lupi-box" id="notte-auto-lupi-chat"></div>
+                <div class="campo-form" style="margin-top:.8rem;">
+                    <input type="text" id="notte-auto-lupi-chat-input" class="input-form" autocomplete="off" placeholder="Scrivi ai tuoi compagni lupi..." onkeydown="if(event.key==='Enter') invia_chat_lupi();">
+                </div>
+                <div class="azioni-scena">
+                    <button type="button" class="btn btn-secondary" onclick="invia_chat_lupi()">Invia messaggio</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= SCENA: narratore automatico — fase diurna ================= -->
+        <div class="scena" id="scena-giorno-auto">
+            <div class="pannello" style="max-width:520px;">
+                <h2>È giorno</h2>
+                <div id="giorno-auto-log-pubblico"><p class="hint">Nessuna notizia, per ora.</p></div>
+
+                <div id="giorno-auto-cacciatore" style="display:none; margin-top:1.2rem; border-top:1px solid var(--line); padding-top:1.2rem;">
+                    <p class="hint">Sei il Cacciatore. Puoi rivelarti e sparare, una sola volta in tutta la partita.</p>
+                    <div class="lista-vivi" id="giorno-auto-cacciatore-lista"></div>
+                    <div class="azioni-scena">
+                        <button type="button" class="btn btn-primary" id="giorno-auto-cacciatore-btn" disabled onclick="conferma_rivelati_cacciatore()">Rivelati e spara</button>
+                    </div>
+                </div>
+
+                <div id="giorno-auto-inquisitore" style="display:none; margin-top:1.2rem; border-top:1px solid var(--line); padding-top:1.2rem;">
+                    <p class="hint" id="giorno-auto-inquisitore-testo">Sei l'Inquisitore. Puoi rivelarti e interrogare qualcuno, una sola volta in tutta la partita.</p>
+                    <div class="lista-vivi" id="giorno-auto-inquisitore-lista"></div>
+                    <div class="azioni-scena">
+                        <button type="button" class="btn btn-primary" id="giorno-auto-inquisitore-btn" disabled onclick="conferma_rivelati_inquisitore()">Rivelati e interroga</button>
+                    </div>
+                    <div id="giorno-auto-inquisitore-esito" style="display:none; margin-top:1rem;">
+                        <p class="hint">Il giocatore interrogato ha risposto?</p>
+                        <div class="azioni-scena">
+                            <button type="button" class="btn btn-secondary" onclick="registra_esito_interrogatorio(true)">Ha risposto</button>
+                            <button type="button" class="btn btn-secondary" onclick="registra_esito_interrogatorio(false)">Non ha risposto</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="giorno-auto-narratore" style="display:none; margin-top:1.2rem; border-top:1px solid var(--line); padding-top:1.2rem;">
+                    <h2 style="font-size:1rem;">Pannello del narratore</h2>
+                    <p class="hint">Se il villaggio ha votato qualcuno, registralo qui (la fucilata del Cacciatore, quando la usa, viene già registrata da sola).</p>
+                    <div class="lista-vivi" id="giorno-auto-narratore-lista"></div>
+                    <div class="azioni-scena">
+                        <button type="button" class="btn btn-secondary" id="giorno-auto-narratore-registra" disabled onclick="registra_morte_giorno_narratore()">Registra morte per voto</button>
+                    </div>
+                    <div class="azioni-scena">
+                        <button type="button" class="btn btn-primary" onclick="avvia_notte_automatica()">Inizia la notte successiva</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= SCENA: narratore automatico — sei morto (spettatore) ================= -->
+        <div class="scena" id="scena-morto-auto">
+            <h1 class="titolo-principale" style="font-size:2rem;">Sei morto</h1>
+            <p class="sottotitolo" style="text-transform:none; letter-spacing:normal; font-family:var(--font-body); font-size:1.05rem;">Puoi continuare a osservare la partita, a viso scoperto</p>
+            <div class="pannello" style="max-width:480px;">
+                <h2 style="font-size:1rem;">Il villaggio, senza segreti</h2>
+                <div class="lista-vivi" id="morto-auto-lista-ruoli"></div>
+            </div>
+            <div class="pannello" style="max-width:480px; margin-top:1rem;">
+                <h2 style="font-size:1rem;">Cosa è successo</h2>
+                <div id="morto-auto-log-pubblico"><p class="hint">Nessuna notizia, per ora.</p></div>
+            </div>
+        </div>
+
+        <!-- ================= SCENA: narratore automatico — vittoria automatica ================= -->
+        <div class="scena" id="scena-vittoria-auto">
+            <div class="luna"></div>
+            <h1 class="titolo-principale" style="font-size:2rem;">Partita finita</h1>
+            <p class="sottotitolo" style="text-transform:none; letter-spacing:normal; font-family:var(--font-body); font-size:1.15rem;" id="vittoria-auto-testo"></p>
+            <div class="azioni-scena">
+                <button class="btn btn-primary" onclick="refresh()">Torna alla home</button>
             </div>
         </div>
 
@@ -961,6 +1349,7 @@
 
         <!-- ================= SCENA: scelta ruoli ================= -->
         <div class="scena" id="scena-ruoli">
+            <p class="hint" style="font-size:.88rem; max-width:480px; margin:0 auto 1.2rem;">Tocca un ruolo per aggiungerlo o toglierlo dalla partita: il totale in alto deve pareggiare il numero di giocatori. Il colore del bordo indica la squadra — buoni, cattivi o neutrali.</p>
             <div class="ruoli-header">
                 <h2 id="titolo_ruoli">Scegli i ruoli</h2>
                 <div class="contatore-ruoli-wrap" id="contatore-ruoli-wrap">
@@ -1022,7 +1411,7 @@
         <!-- ================= SCENA: narratore ================= -->
         <div class="scena" id="scena-narratore">
             <h2>Il villaggio è pronto</h2>
-            <p class="hint">Passa il dispositivo al narratore per iniziare la partita.</p>
+            <p class="hint" id="narratore-pronto-hint">Passa il dispositivo al narratore per iniziare la partita.</p>
             <button id="mosNas" class="btn btn-secondary" onclick="mostra_ruoli()">Mostra ruoli</button>
             <table class="tabella-narratore" id="tabella" style="display:none; margin-top:1.4rem;">
                 <thead>
@@ -1036,6 +1425,14 @@
                     </tr>
                 </thead>
             </table>
+            <div class="campo-form" style="text-align:left; max-width:420px; margin:1.4rem auto 0;">
+                <label style="display:flex; align-items:center; gap:.5rem; cursor:pointer; margin-bottom:0;">
+                    <input type="checkbox" id="regia-assistita-check" checked onchange="cambia_regia_assistita()">
+                    <span>Aiuto automatico durante la notte</span>
+                </label>
+                <p class="hint" style="margin-top:.3rem;">Oltre a dirti chi svegliare, ti verrà chiesto chi ha scelto ogni ruolo: a notte conclusa avrai un riepilogo automatico di chi è morto e perché, e le risposte per Veggente/Medium/Mitomane appariranno subito.</p>
+                <p class="hint" id="regia-assistita-avviso" style="display:none; margin-top:.5rem; color:var(--cattivi);">Attenzione: nella partita ci sono ruoli personalizzati — il sistema non sa come gestirli, quindi l'aiuto automatico potrebbe risultare incompleto o fuorviante per quei ruoli. Valuta di disattivarlo.</p>
+            </div>
             <div class="azioni-scena">
                 <button class="btn btn-primary" id="btn-inizia-notte" onclick="avvia_notte()">Inizia la notte</button>
                 <button class="btn btn-secondary" onclick="fine_partita()">Nuova partita</button>
@@ -1063,6 +1460,7 @@
         <div class="scena" id="scena-morti">
             <div class="pannello" style="max-width:480px;">
                 <h2 id="morti-titolo">Chi è sopravvissuto?</h2>
+                <div id="morti-recap" style="text-align:left; margin-bottom:1.2rem;"></div>
                 <p class="hint">Lascia la spunta a chi è ancora vivo, togli la spunta a chi è morto (di notte o per il voto del giorno).</p>
                 <div class="lista-vivi" id="lista-vivi"></div>
                 <div class="azioni-scena">
@@ -1175,26 +1573,15 @@
             </div>
         </div>
 
-        <!-- ================= POPUP: numero lupi ================= -->
-        <div class="popup-overlay" id="numL">
+        <!-- ================= POPUP: avviso/conferma generico ================= -->
+        <div class="popup-overlay" id="popup-avviso">
             <div class="popup-box">
-                <h3>Quanti lupi?</h3>
-                <input id="numeroL" type="number" min="1" autocomplete="off">
+                <div class="popup-avviso-icona" id="popup-avviso-icona">!</div>
+                <h3 id="popup-avviso-titolo"></h3>
+                <p id="popup-avviso-testo"></p>
                 <div class="azioni-scena">
-                    <button class="btn btn-secondary" onclick="chiudiL()">Annulla</button>
-                    <button class="btn btn-primary" onclick="inserisci_lupi()">Conferma</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- ================= POPUP: numero contadini ================= -->
-        <div class="popup-overlay" id="numC">
-            <div class="popup-box">
-                <h3>Quanti contadini?</h3>
-                <input id="numeroC" type="number" min="1" autocomplete="off">
-                <div class="azioni-scena">
-                    <button class="btn btn-secondary" onclick="chiudiC()">Annulla</button>
-                    <button class="btn btn-primary" onclick="inserisci_contadini()">Conferma</button>
+                    <button class="btn btn-secondary" id="popup-avviso-btn-annulla" style="display:none;" onclick="chiudi_popup_avviso(false)">Annulla</button>
+                    <button class="btn btn-primary" id="popup-avviso-btn-ok" onclick="chiudi_popup_avviso(true)">OK</button>
                 </div>
             </div>
         </div>
@@ -1221,27 +1608,10 @@
                 });
             }
 
-            var promptInstallazione=null;
-
-            window.addEventListener('beforeinstallprompt', function(e){
-                e.preventDefault();
-                promptInstallazione=e;
-                var btn=document.getElementById('btn-installa');
-                if(btn) btn.style.display='inline-block';
-            });
-
-            function installa_app(){
-                if(!promptInstallazione) return;
-                promptInstallazione.prompt();
-                promptInstallazione.userChoice.then(function(){
-                    promptInstallazione=null;
-                    document.getElementById('btn-installa').style.display='none';
-                });
-            }
-            window.addEventListener('appinstalled', function(){
-                var btn=document.getElementById('btn-installa');
-                if(btn) btn.style.display='none';
-            });
+            // Niente gestione custom di beforeinstallprompt/appinstalled: se
+            // il manifest è a posto, il browser propone da solo l'installazione
+            // (icona nella barra degli indirizzi su desktop, banner/voce di
+            // menu su Android) — non serve un bottone dedicato nel sito.
 
             /*
                 Distribuzione a distanza — richiede un database gratuito (Firebase
@@ -1289,6 +1659,31 @@
             var smettiAscoltoStanza=null
             var ngStanza=5
             var ngStanzaAttuale=5
+            var narratoreAutomatico=false     // scelto dal narratore in fase di creazione stanza
+            var mioPlayerIdNarratore=null      // playerId del narratore stesso, solo se narratoreAutomatico
+
+            // --- narratore automatico: stato lato "chiunque" (ogni dispositivo) ---
+            var mioRuoloAttuale=null           // il MIO ruolo attuale (cambia per Mitomane/Suicida)
+            var vivoPerPlayerId={}              // fotografia pubblica vivo/morto, da statoPubblico
+            var finteMortoPerPlayerId={}
+            var ultimaStanzaAuto=null          // ultimo "stato" ricevuto da ascolta() (giocatori/ruoli attuali)
+            var ultimaNotteAuto=null            // ultimo nodo "notte" ricevuto da ascoltaNotte()
+            var statoPubblicoAuto=null          // ultimo "statoPubblico" ricevuto (vivo/morto + registro eventi)
+            var rivelazioniAuto={}              // ultime "rivelazioniPubbliche" ricevute (Cacciatore/Inquisitore/vittoria)
+            var bersaglioNotteAutoScelto=null
+            var smettiAscoltoStanzaAuto=null
+            var smettiAscoltoNotteAuto=null
+            var smettiAscoltoStatoPubblicoAuto=null
+            var smettiAscoltoRivelazioniAuto=null
+            var smettiAscoltoRichiesteAuto=null
+
+            // --- narratore automatico: stato SOLO sul dispositivo del narratore ---
+            var statoPartitaAuto=null           // LupusEngine.creaStatoPartita(...) e successivi aggiornamenti
+            var notteAutoListaTurni=[]           // turni di questa notte, in ordine ('lupi' unificato)
+            var notteAutoIdx=-1
+            var notteAutoAzioniRaccolte={}
+            var notteAutoTimerId=null
+            var notteAutoTurnoFinalizzato=false
             var EXTRA={}
             var ng=5
             var lupi=0
@@ -1301,6 +1696,17 @@
             var usatoRuolo={}
             var pendingUsato={}
             var notteIniziata=false
+            // regia assistita: stato di gioco calcolato dal motore (stessa logica
+            // del narratore automatico remoto, qui applicata in presenza/manuale
+            // su un solo dispositivo) e azioni scelte dal narratore per la notte
+            // in corso, per ruolo — vedi render_notte()/prepara_morti().
+            var statoPartitaLocale=null
+            var notteLocaleAzioni={}
+            // Facoltativa: coi ruoli personalizzati il motore non sa come
+            // comportarsi (non ne conosce l'effetto), quindi l'aiuto
+            // potrebbe risultare fuorviante — il narratore può disattivarlo
+            // e tornare alla regia puramente manuale di sempre.
+            var regiaAssistitaAttiva=true
             var annotazioni=[]
             var descrizioniPartita={}   // override di descrizione validi solo per la partita in corso
             var infoRuoloCorrente=null  // id del ruolo attualmente aperto nel popup informativo
@@ -1322,19 +1728,96 @@
                 })
                 .catch(function(err){
                     console.error('Impossibile caricare roles.json', err);
-                    alert('Non riesco a caricare roles.json. Se hai aperto il file con un doppio click, avvialo invece con un piccolo server locale (es. estensione "Live Server" oppure "python3 -m http.server"): i browser bloccano le richieste fetch su file:// per motivi di sicurezza.');
+                    mostra_avviso('Impossibile caricare roles.json', 'Se hai aperto il file con un doppio click, avvialo invece con un piccolo server locale (es. estensione "Live Server" oppure "python3 -m http.server"): i browser bloccano le richieste fetch su file:// per motivi di sicurezza.');
                 });
 
             /* ==========================================================
                NAVIGAZIONE TRA SCENE
                ========================================================== */
+            // Schermate della notte automatica in cui ha senso poter
+            // rivedere la propria carta al volo (non durante quella
+            // iniziale, che la mostra già, né da morti/a vittoria ottenuta).
+            var SCENE_CON_MIA_CARTA = ['scena-notte-auto-attesa','scena-notte-auto-azione',
+                'scena-notte-auto-suicida','scena-notte-auto-neomelodico','scena-notte-auto-lupi','scena-giorno-auto'];
+
             function vaiA(id){
                 document.querySelectorAll('.scena').forEach(function(s){ s.classList.remove('scena-attiva'); });
                 document.getElementById(id).classList.add('scena-attiva');
+                document.getElementById('btn-home-fisso').style.display = (id === 'scena-intro') ? 'none' : 'flex';
+                var mostraBtnCarta = narratoreAutomatico && mioRuoloAttuale && SCENE_CON_MIA_CARTA.indexOf(id) !== -1;
+                var btnCarta = document.getElementById('btn-mia-carta-fisso');
+                btnCarta.style.display = mostraBtnCarta ? 'flex' : 'none';
+                if(mostraBtnCarta){
+                    var ruolo = ROLES[mioRuoloAttuale];
+                    document.getElementById('btn-mia-carta-testo').innerText = ruolo ? ruolo.nome : mioRuoloAttuale;
+                }
+            }
+
+            // Una partita è "in corso" (nel senso che uscire senza conferma
+            // farebbe perdere qualcosa) se si è andati oltre la schermata
+            // iniziale/di scelta modalità: sia in presenza (si stanno già
+            // scegliendo nomi/ruoli/carte) sia a distanza (si è già creata o
+            // raggiunta una stanza).
+            function partitaInCorso(){
+                if(modalitaGioco === 'remoto') return !!codiceStanza;
+                var sceneSenzaPartita = ['scena-intro', 'scena-scelta-distanza', 'scena-scelta-ruolo-remoto',
+                    'scena-crea-stanza', 'scena-entra-stanza', 'scena-numero'];
+                var attiva = document.querySelector('.scena-attiva');
+                return attiva && sceneSenzaPartita.indexOf(attiva.id) === -1;
+            }
+
+            // Bottone home fisso: chiede conferma solo se c'è davvero una
+            // partita in corso da abbandonare; altrimenti torna alla home
+            // senza clamore (non c'è nulla da perdere).
+            function vai_alla_home(){
+                if(!partitaInCorso()){ refresh(); return; }
+                var testoAvviso = 'La partita è ancora in corso. Se confermi, uscirai' +
+                    (modalitaGioco === 'remoto' && ruoloUtente === 'narratore' ? ' e la stanza verrà chiusa per tutti.' : '.');
+                mostra_conferma('Tornare alla home?', testoAvviso, function(){
+                    if(smettiAscoltoStanza){ smettiAscoltoStanza(); smettiAscoltoStanza=null; }
+                    ferma_ascolti_notte_automatica();
+                    try{ sessionStorage.removeItem('lupus_stanza'); }catch(e){}
+                    if(modalitaGioco === 'remoto' && ruoloUtente === 'narratore'){
+                        eliminaStanzaEPoi(refresh);
+                    } else {
+                        refresh();
+                    }
+                });
             }
 
             function refresh(){
                 window.open("index.html","_self")
+            }
+
+            // Elimina la stanza e SOLO DOPO esegue callback (es. refresh()):
+            // un reload immediato dopo aver lanciato eliminaStanza() senza
+            // attendere la promise può interrompere la richiesta prima che
+            // arrivi al server, lasciando la stanza orfana su Firebase.
+            // callback gira comunque anche se la cancellazione fallisce.
+            function eliminaStanzaEPoi(callback){
+                if(!codiceStanza){ callback(); return; }
+                LupusSync.eliminaStanza(codiceStanza).then(callback, callback);
+            }
+
+            // Il bottone "Esci dalla stanza" del giocatore in attesa
+            // chiamava solo refresh(): un semplice ricaricamento della
+            // pagina, senza mai togliere né la propria riga da Firebase né
+            // la sessione salvata in sessionStorage. Al ricaricamento,
+            // riprendi_sessione_remota() trovava ancora lì la sessione
+            // salvata e riagganciava il giocatore alla STESSA stanza (in
+            // cui restava comunque presente per il narratore) — il bottone
+            // sembrava non fare nulla. Ora si smette di ascoltare, si
+            // rimuove la sessione locale e la propria riga dalla stanza, e
+            // solo dopo (o comunque, anche se la rimozione fallisce) si
+            // ricarica — stesso pattern di eliminaStanzaEPoi qui sopra.
+            function esci_dalla_stanza_giocatore(){
+                if(smettiAscoltoStanza){ smettiAscoltoStanza(); smettiAscoltoStanza=null; }
+                try{ sessionStorage.removeItem('lupus_stanza'); } catch(e){}
+                if(codiceStanza && mioPlayerId){
+                    LupusSync.rimuoviGiocatore(codiceStanza, mioPlayerId).then(refresh, refresh);
+                } else {
+                    refresh();
+                }
             }
 
             /* ==========================================================
@@ -1345,18 +1828,37 @@
                 document.getElementById('valore-numero-stanza').innerText = ngStanza;
             }
 
+            function cambia_narratore_automatico(){
+                var attivo = document.getElementById('narratore-automatico-check').checked;
+                document.getElementById('narratore-automatico-nome-wrap').style.display = attivo ? 'block' : 'none';
+            }
+
             function crea_stanza(){
                 var bottone=document.getElementById('btn-crea-stanza');
+                var automatico = document.getElementById('narratore-automatico-check').checked;
+                var nomeNarratore = document.getElementById('narratore-automatico-nome').value.trim();
+                if(automatico && !nomeNarratore){
+                    mostra_avviso('Manca il tuo nome', 'Col narratore automatico giochi anche tu e ricevi un ruolo: inserisci il tuo nome per continuare.');
+                    return;
+                }
+
                 bottone.disabled=true; bottone.innerText='Creazione in corso...';
-                LupusSync.creaStanza(ngStanza).then(function(codice){
+                var opzioni = automatico ? { narratoreAutomatico: true, nomeNarratore: nomeNarratore } : undefined;
+                LupusSync.creaStanza(ngStanza, opzioni).then(function(risultato){
                     modalitaGioco='remoto';
                     ruoloUtente='narratore';
-                    codiceStanza=codice;
+                    narratoreAutomatico=!!automatico;
+                    if(automatico){
+                        codiceStanza=risultato.codice;
+                        mioPlayerIdNarratore=risultato.narratorePlayerId;
+                    } else {
+                        codiceStanza=risultato;
+                    }
                     bottone.disabled=false; bottone.innerText='Crea stanza';
                     avvia_lobby_narratore();
                 }).catch(function(err){
                     bottone.disabled=false; bottone.innerText='Crea stanza';
-                    alert('Non sono riuscito a creare la stanza.\n\n' + err.message);
+                    mostra_avviso('Non sono riuscito a creare la stanza', err.message);
                 });
             }
 
@@ -1379,17 +1881,22 @@
                 elencoEl.innerHTML = '';
                 elencoIds.forEach(function(id){
                     var g = giocatoriRemoti[id];
+                    var seStesso = id === mioPlayerIdNarratore;
                     var riga=document.createElement('div');
                     riga.className='vivo-riga';
                     riga.innerHTML =
-                        '<label style="flex:1; cursor:default;">'+g.nome+'</label>' +
-                        '<button type="button" class="ruolo-elimina" onclick="rimuovi_da_lobby(\''+id+'\')" aria-label="Rimuovi '+g.nome+'">×</button>';
+                        '<label style="flex:1; cursor:default;">'+g.nome+(seStesso ? ' (tu, narratore)' : '')+'</label>' +
+                        (seStesso ? '' : '<button type="button" class="ruolo-elimina" onclick="rimuovi_da_lobby(\''+id+'\')" aria-label="Rimuovi '+g.nome+'">×</button>');
                     elencoEl.appendChild(riga);
                 });
 
                 document.getElementById('lobby-contatore').innerText = elencoIds.length + ' / ' + ngStanzaAttuale;
-                document.getElementById('lobby-contatore-wrap').classList.toggle('completo', elencoIds.length === ngStanzaAttuale);
-                document.getElementById('btn-procedi-ruoli').disabled = elencoIds.length === 0;
+                var completo = elencoIds.length === ngStanzaAttuale;
+                document.getElementById('lobby-contatore-wrap').classList.toggle('completo', completo);
+                // Si può procedere solo a stanza piena: con meno o più
+                // giocatori collegati di quelli previsti, i ruoli da
+                // distribuire non corrisponderebbero a chi è davvero connesso.
+                document.getElementById('btn-procedi-ruoli').disabled = !completo;
             }
 
             function cambia_numero_lobby(delta){
@@ -1404,10 +1911,10 @@
             }
 
             function annulla_stanza(){
-                if(!confirm('Vuoi annullare questa stanza? Chi si è già collegato verrà disconnesso.')) return;
-                if(smettiAscoltoStanza){ smettiAscoltoStanza(); smettiAscoltoStanza=null; }
-                if(codiceStanza){ LupusSync.eliminaStanza(codiceStanza); }
-                refresh();
+                mostra_conferma('Annullare la stanza?', 'Chi si è già collegato verrà disconnesso.', function(){
+                    if(smettiAscoltoStanza){ smettiAscoltoStanza(); smettiAscoltoStanza=null; }
+                    eliminaStanzaEPoi(refresh);
+                });
             }
 
             // Chiude la partita: se il narratore è in modalità a distanza, elimina la
@@ -1416,15 +1923,16 @@
             function fine_partita(){
                 if(modalitaGioco === 'remoto' && ruoloUtente === 'narratore' && codiceStanza){
                     if(smettiAscoltoStanza){ smettiAscoltoStanza(); smettiAscoltoStanza=null; }
-                    LupusSync.eliminaStanza(codiceStanza);
+                    eliminaStanzaEPoi(refresh);
+                } else {
+                    refresh();
                 }
-                refresh();
             }
 
             function procedi_a_scelta_ruoli_remota(){
                 var elencoIds = Object.keys(giocatoriRemoti);
-                if(elencoIds.length === 0){
-                    alert('Non c\'è ancora nessun giocatore nella stanza.');
+                if(elencoIds.length !== ngStanzaAttuale){
+                    mostra_avviso('Stanza non completa', 'Puoi procedere solo quando i giocatori collegati (' + elencoIds.length + ') sono esattamente ' + ngStanzaAttuale + '. Aggiusta il numero di posti o aspetta che si collegano tutti.');
                     return;
                 }
                 giocatoriIdOrdine = elencoIds;
@@ -1436,21 +1944,56 @@
 
                 document.getElementById('titolo_ruoli').innerText = 'Scegli ' + ng + ' ruoli';
                 aggiorna_contatore_ruoli();
+                applica_restrizione_narratore_automatico();
                 vaiA('scena-ruoli');
             }
 
+            // Col narratore automatico non si possono usare ruoli personalizzati
+            // (il motore ne conosce solo gli effetti di quelli base): si
+            // nascondono dalla griglia invece di scoprirlo solo alla fine.
+            function applica_restrizione_narratore_automatico(){
+                if(!narratoreAutomatico) return;
+                ROLE_ORDER.forEach(function(id){
+                    if(!ROLES[id].personalizzato) return;
+                    var chip = document.getElementById('chip-'+id);
+                    if(chip) chip.style.display = 'none';
+                });
+                var nuovoBtn = document.querySelector('.ruolo-chip-nuovo');
+                if(nuovoBtn) nuovoBtn.style.display = 'none';
+            }
+
             function avvia_distribuzione_remota(){
+                if(narratoreAutomatico){
+                    var haPersonalizzati = ruoli_partita.some(function(id){ return ROLES[id] && ROLES[id].personalizzato; });
+                    if(haPersonalizzati){
+                        mostra_avviso('Ruoli personalizzati non supportati', 'Il narratore automatico non è disponibile con ruoli personalizzati: togline qualcuno dalla scelta.');
+                        return;
+                    }
+                }
+
                 ruoli_partita = LupusEngine.shuffleArray(ruoli_partita);
                 var mappa = {};
                 giocatoriIdOrdine.forEach(function(playerId, idx){
                     mappa[playerId] = ruoli_partita[idx];
                 });
                 LupusSync.assegnaRuoli(codiceStanza, mappa).then(function(){
-                    lista_narratore();
-                    vaiA('scena-narratore');
+                    if(narratoreAutomatico){
+                        avvia_narratore_automatico_dopo_distribuzione();
+                    } else {
+                        lista_narratore();
+                        vaiA('scena-narratore');
+                    }
                 }).catch(function(err){
-                    alert('Errore durante la distribuzione dei ruoli.\n\n' + err.message);
+                    mostra_avviso('Errore nella distribuzione dei ruoli', err.message);
                 });
+            }
+
+            // Il narratore automatico gioca anche lui: prima vede la propria
+            // carta come chiunque altro (stessa scena-carta-remota), poi da lì
+            // si aggancerà la supervisione della notte automatica.
+            function avvia_narratore_automatico_dopo_distribuzione(){
+                var mioIdx = giocatoriIdOrdine.indexOf(mioPlayerIdNarratore);
+                mostra_carta_remota(ruoli_partita[mioIdx]);
             }
 
             /* ==========================================================
@@ -1483,15 +2026,16 @@
                     ruoloUtente='giocatore';
                     codiceStanza=risultato.codice;
                     mioPlayerId=risultato.playerId;
+                    narratoreAutomatico=!!risultato.narratoreAutomatico;
                     try{
                         sessionStorage.setItem('lupus_stanza', JSON.stringify({
-                            codice: risultato.codice, playerId: risultato.playerId
+                            codice: risultato.codice, playerId: risultato.playerId, narratoreAutomatico: narratoreAutomatico
                         }));
                     } catch(e){}
-                    bottone.disabled=false; bottone.innerText='Entra nella stanza';
+                    bottone.disabled=false; bottone.innerText='Entra nel villaggio';
                     avvia_attesa_giocatore();
                 }).catch(function(err){
-                    bottone.disabled=false; bottone.innerText='Entra nella stanza';
+                    bottone.disabled=false; bottone.innerText='Entra nel villaggio';
                     erroreEl.innerText = err.message;
                     erroreEl.style.display='block';
                 });
@@ -1505,6 +2049,7 @@
                 ruoloUtente='giocatore';
                 codiceStanza=salvata.codice;
                 mioPlayerId=salvata.playerId;
+                narratoreAutomatico=!!salvata.narratoreAutomatico;
                 avvia_attesa_giocatore();
             }
 
@@ -1518,8 +2063,7 @@
                         // rimosso dal narratore, o la stanza non esiste più (partita terminata)
                         if(smettiAscoltoStanza){ smettiAscoltoStanza(); smettiAscoltoStanza=null; }
                         try{ sessionStorage.removeItem('lupus_stanza'); } catch(e){}
-                        alert(cartaMostrata ? 'La partita è terminata. Torni alla home.' : 'Sei stato rimosso dalla stanza, oppure la partita è stata annullata dal narratore.');
-                        refresh();
+                        mostra_avviso('Partita terminata', cartaMostrata ? 'La partita è terminata. Torni alla home.' : 'Sei stato rimosso dalla stanza, oppure la partita è stata annullata dal narratore.', refresh);
                         return;
                     }
                     var mioStato = stato.giocatori[mioPlayerId];
@@ -1530,7 +2074,11 @@
                 });
             }
 
-            function mostra_carta_remota(idRuolo){
+            // soloVisualizzazione: true quando si sta solo rivedendo la
+            // propria carta a partita già iniziata (bottone fisso "il mio
+            // ruolo") — mostra "Torna alla partita" invece di "Pronto per la
+            // notte", e la carta appare già girata (tanto il ruolo lo si sa già).
+            function mostra_carta_remota(idRuolo, soloVisualizzazione){
                 var ruolo = ROLES[idRuolo];
                 if(!ruolo) return;
 
@@ -1554,7 +2102,41 @@
                     illustrazione.innerHTML = '<div class="segnaposto"><span>'+ruolo.nome.charAt(0).toUpperCase()+'</span></div>';
                 }
 
+                mioRuoloAttuale = idRuolo;
+                var btnPronto = document.getElementById('remota-btn-pronto-notte-auto');
+                var btnChiudi = document.getElementById('remota-btn-chiudi-carta');
+                if(soloVisualizzazione){
+                    btnPronto.style.display = 'none';
+                    btnChiudi.style.display = 'inline-block';
+                } else {
+                    btnPronto.style.display = narratoreAutomatico ? 'inline-block' : 'none';
+                    btnPronto.disabled = false;
+                    btnPronto.innerText = 'Pronto per la notte';
+                    btnChiudi.style.display = 'none';
+                }
+
                 vaiA('scena-carta-remota');
+                if(soloVisualizzazione) mostra_remota();
+            }
+
+            // Bottone fisso "il mio ruolo": rivede la carta senza toccare lo
+            // stato della partita (che va avanti comunque in sottofondo).
+            function mostra_mia_carta_di_nuovo(){
+                if(!mioRuoloAttuale) return;
+                mostra_carta_remota(mioRuoloAttuale, true);
+            }
+            function chiudi_visualizzazione_carta(){
+                // Il narratore non va mai sulla schermata da morto anche se
+                // il suo personaggio è morto: deve poter continuare a
+                // gestire la partita (vedi sotto, stesso motivo).
+                if(ruoloUtente !== 'narratore' && vivoPerPlayerId[mioPlayerIdEffettivo()] === false){
+                    mostra_schermata_morto();
+                } else if(ultimaNotteAuto){
+                    aggiorna_schermata_notte_per_me(ultimaNotteAuto);
+                } else {
+                    aggiorna_schermata_giorno();
+                    vaiA('scena-giorno-auto');
+                }
             }
 
             function mostra_remota(){
@@ -1572,6 +2154,1009 @@
                 var coperta=document.getElementById('remota-carta-coperta');
                 if(!coperta.classList.contains('nascosta')) return;
                 document.getElementById('remota-card-flip').classList.toggle('flipped');
+            }
+
+            /* ==========================================================
+               POPUP generico di avviso/conferma — sostituisce alert()/confirm()
+               nativi con qualcosa coerente con lo stile del sito.
+               ========================================================== */
+            var popupAvvisoCallback=null;
+            function mostra_avviso(titolo, testo, onOk){
+                document.getElementById('popup-avviso-icona').textContent='!';
+                document.getElementById('popup-avviso-icona').classList.remove('attenzione');
+                document.getElementById('popup-avviso-titolo').innerText=titolo;
+                document.getElementById('popup-avviso-testo').innerText=testo;
+                document.getElementById('popup-avviso-btn-annulla').style.display='none';
+                document.getElementById('popup-avviso-btn-ok').innerText='OK';
+                popupAvvisoCallback=onOk||null;
+                document.getElementById('popup-avviso').classList.add('aperta');
+            }
+            function mostra_conferma(titolo, testo, onConferma){
+                document.getElementById('popup-avviso-icona').textContent='?';
+                document.getElementById('popup-avviso-icona').classList.add('attenzione');
+                document.getElementById('popup-avviso-titolo').innerText=titolo;
+                document.getElementById('popup-avviso-testo').innerText=testo;
+                document.getElementById('popup-avviso-btn-annulla').style.display='inline-block';
+                document.getElementById('popup-avviso-btn-ok').innerText='Conferma';
+                popupAvvisoCallback=onConferma||null;
+                document.getElementById('popup-avviso').classList.add('aperta');
+            }
+            function chiudi_popup_avviso(confermato){
+                document.getElementById('popup-avviso').classList.remove('aperta');
+                var cb=popupAvvisoCallback;
+                popupAvvisoCallback=null;
+                if(confermato && cb) cb();
+            }
+
+            /* ==========================================================
+               NARRATORE AUTOMATICO — helper comuni a ogni dispositivo
+               ========================================================== */
+            var ETICHETTE_TURNO_AUTO = {
+                illusionista: { titolo:'Illusionista', istruzioni:'Scegli chi bloccare stanotte: il suo potere non avrà alcun effetto.', platea:'vivi' },
+                spaccino:     { titolo:'Spaccino', istruzioni:"Scegli il bersaglio: le risposte su di lui saranno invertite, e i poteri usati su di lui si sposteranno sulla persona alla sua destra (l'ordine in cui siete entrati nel villaggio).", platea:'vivi' },
+                mitomane:     { titolo:'Mitomane', istruzioni:'Scegli chi guardare: se è un lupo diventerai lupo, se è la veggente diventerai la veggente, altrimenti resterai un semplice contadino.', platea:'vivi' },
+                insinuo:      { titolo:'Insinuo', istruzioni:'Scegli chi risulterà cattivo agli occhi della veggente, stanotte.', platea:'vivi' },
+                veggente:     { titolo:'Veggente', istruzioni:'Scegli chi controllare: saprai se è buono o cattivo.', platea:'vivi' },
+                guardia:      { titolo:'Guardia', istruzioni:'Scegli chi proteggere dai lupi stanotte.', platea:'vivi' },
+                medium:       { titolo:'Medium', istruzioni:'Scegli un giocatore morto: saprai se era buono, cattivo, o il Matto.', platea:'morti' },
+                angelo:       { titolo:'Angelo Custode', istruzioni:'Scegli chi proteggere per tutta la partita: se dovesse morire per qualsiasi motivo, morirai tu al suo posto.', platea:'vivi' },
+                puttana:      { titolo:'Puttana', istruzioni:'Scegli chi proteggere dai lupi stanotte. Attenzione: se i lupi scelgono proprio te, morite entrambi.', platea:'vivi' },
+                senzaVolto:   { titolo:'Senza Volto', istruzioni:'Scegli un giocatore appena morto da resuscitare (solo se era contadino o lupo).', platea:'morti' },
+                fantasma:     { titolo:'Fantasma', istruzioni:'Scegli chi indicare: indicando la stessa persona 5 notti di fila vinci. Chi indichi se ne accorgerà.', platea:'vivi' }
+            };
+            var inquisitoreEsitoGiaDato=false;
+
+            function mioPlayerIdEffettivo(){
+                return ruoloUtente === 'narratore' ? mioPlayerIdNarratore : mioPlayerId;
+            }
+
+            // Stesso identico ordine ovunque (l'ordine "naturale" delle chiavi
+            // Firebase per questo nodo, cronologico per costruzione): è il
+            // cerchio virtuale usato dal motore per la destra dello Spaccino,
+            // e resta stabile perché la stanza si blocca prima della notte 1.
+            function elencoGiocatoriOrdinati(){
+                if(!ultimaStanzaAuto || !ultimaStanzaAuto.giocatori) return [];
+                return Object.keys(ultimaStanzaAuto.giocatori);
+            }
+            function idxDaPlayerId(playerId){ return elencoGiocatoriOrdinati().indexOf(playerId); }
+            function playerIdDaIdx(idx){ return elencoGiocatoriOrdinati()[idx]; }
+            function nomeDaPlayerId(playerId){
+                return (ultimaStanzaAuto && ultimaStanzaAuto.giocatori && ultimaStanzaAuto.giocatori[playerId])
+                    ? ultimaStanzaAuto.giocatori[playerId].nome : '???';
+            }
+
+            // Riempie una lista di righe cliccabili con i giocatori che
+            // corrispondono ai filtri; onScegli(playerId) viene chiamata al click.
+            // escludiPlayerId serve per la regola "nessun potere su di sé":
+            // va passato ovunque TRANNE che per la Guardia, che può
+            // proteggere anche sé stessa.
+            function popola_lista_giocatori(elId, onScegli, soloVivi, soloMorti, escludiNome, escludiPlayerId){
+                var lista = document.getElementById(elId);
+                lista.innerHTML = '';
+                bersaglioNotteAutoScelto = null;
+                elencoGiocatoriOrdinati().forEach(function(pid){
+                    if(escludiPlayerId && pid === escludiPlayerId) return;
+                    var nome = nomeDaPlayerId(pid);
+                    if(escludiNome && nome === escludiNome) return;
+                    var vivo = vivoPerPlayerId[pid] !== false;
+                    if(soloVivi && !vivo) return;
+                    if(soloMorti && vivo) return;
+                    var riga=document.createElement('button');
+                    riga.type='button';
+                    riga.className='notte-auto-riga';
+                    riga.textContent = nome;
+                    riga.onclick=function(){
+                        lista.querySelectorAll('.notte-auto-riga').forEach(function(r){ r.classList.remove('selezionata'); });
+                        riga.classList.add('selezionata');
+                        onScegli(pid);
+                    };
+                    lista.appendChild(riga);
+                });
+            }
+
+            // Frase completa con cui annunciare una morte. Le morti notturne
+            // (qualunque sia la vera causa: lupi, un controllo della
+            // Veggente, un finto suicidio, una condanna dell'Inquisitore
+            // eseguita nel sonno) si annunciano TUTTE allo stesso identico
+            // modo — "è morto", senza altro — perché altrimenti la causa
+            // stessa diventerebbe un indizio su chi ha agito quella notte.
+            // Le morti diurne (voto del villaggio, fucilata del Cacciatore)
+            // restano invece esplicite: succedono alla luce del sole,
+            // pubblicamente, davanti a tutti — non c'è nulla da nascondere.
+            function testo_morte(nome, causa){
+                switch(causa){
+                    case 'voto': return nome + ' è stato giustiziato dal voto del villaggio.';
+                    case 'cacciatore': return nome + ' è stato ucciso dalla fucilata del Cacciatore.';
+                    default: return nome + ' è morto.';
+                }
+            }
+            var ICONA_LOG = { morte:'†', resurrezione:'✧', rivelazione:'◈', pace:'✓', privato:'☾', vittoria:'★' };
+            // Testo della vittoria automatica, condiviso fra la modalità a
+            // distanza (mostra_vittoria_automatica) e la regia assistita in
+            // presenza (costruisci_recap_notte_locale).
+            function testo_esito_vittoria(tipo){
+                var testi = {
+                    senzaVolto: 'Il Senza Volto ha resuscitato tre giocatori: ha vinto lui, in solitaria.',
+                    fantasma: 'Il Fantasma ha posseduto la sua vittima per cinque notti di fila: ha vinto lui, in solitaria.',
+                    matto: 'Il Matto è stato giustiziato dal voto del villaggio: ha vinto lui, in solitaria.',
+                    buoni: 'Tutti i cattivi sono stati eliminati: hanno vinto i buoni!',
+                    cattivi: 'Tutti i buoni sono stati eliminati: hanno vinto i cattivi!'
+                };
+                return testi[tipo] || 'La partita è finita.';
+            }
+            function testo_riga_log(voce){
+                var nome = nomeDaPlayerId(voce.playerId);
+                if(voce.tipo === 'morte') return testo_morte(nome, voce.causa);
+                if(voce.tipo === 'resurrezione') return nome + ' è tornato in vita!';
+                if(voce.tipo === 'pace') return 'Questa notte non è morto nessuno.';
+                if(voce.tipo === 'rivelazione'){
+                    if(voce.ruolo === 'cacciatore') return nome + ' si è rivelato Cacciatore e ha sparato a ' + nomeDaPlayerId(voce.bersaglioPlayerId) + '.';
+                    if(voce.ruolo === 'inquisitore' && voce.sottotipo === 'interroga') return nome + ' si è rivelato Inquisitore e ha interrogato ' + nomeDaPlayerId(voce.bersaglioPlayerId) + '.';
+                    if(voce.ruolo === 'inquisitore' && voce.sottotipo === 'esito'){
+                        return nomeDaPlayerId(voce.bersaglioPlayerId) + (voce.rispose ? ' ha risposto alla domanda dell\'Inquisitore.' : " non ha risposto alla domanda dell'Inquisitore.");
+                    }
+                }
+                return '';
+            }
+            function momento_riga_log(voce){
+                if(voce.notte !== undefined && voce.notte !== null) return 'Notte ' + voce.notte;
+                if(voce.giorno !== undefined && voce.giorno !== null) return 'Giorno ' + voce.giorno;
+                return '';
+            }
+            // Righe con icona colorata per tipo, invece del plaintext piatto
+            // di prima: più leggibile a colpo d'occhio, coerente col resto
+            // dello stile scuro "a tema luna" del sito.
+            function renderizza_log_pubblico_in(elId){
+                var box = document.getElementById(elId);
+                if(!box) return;
+                var voci = (statoPubblicoAuto && statoPubblicoAuto.registro) ? statoPubblicoAuto.registro.slice() : [];
+                Object.keys(rivelazioniAuto || {}).forEach(function(id){
+                    var r = rivelazioniAuto[id];
+                    if(r.ruolo === 'vittoria') return;
+                    voci.push({ tipo:'rivelazione', ruolo:r.ruolo, sottotipo:r.tipo, playerId:r.playerId, bersaglioPlayerId:r.bersaglioPlayerId, rispose:r.rispose, ts:r.ts||0 });
+                });
+                voci.sort(function(a,b){ return (a.ts||0) - (b.ts||0); });
+
+                box.innerHTML = '';
+                if(voci.length === 0){
+                    var vuoto=document.createElement('p');
+                    vuoto.className='hint';
+                    vuoto.textContent='Nessuna notizia, per ora.';
+                    box.appendChild(vuoto);
+                    return;
+                }
+                voci.forEach(function(voce){
+                    var riga=document.createElement('div');
+                    riga.className='log-evento '+voce.tipo;
+
+                    var icona=document.createElement('span');
+                    icona.className='log-icona';
+                    icona.setAttribute('aria-hidden','true');
+                    icona.textContent = ICONA_LOG[voce.tipo] || '•';
+                    riga.appendChild(icona);
+
+                    var corpo=document.createElement('div');
+                    corpo.className='log-corpo';
+                    var momento = momento_riga_log(voce);
+                    if(momento){
+                        var etichetta=document.createElement('span');
+                        etichetta.className='log-momento';
+                        etichetta.textContent = momento;
+                        corpo.appendChild(etichetta);
+                    }
+                    var testo=document.createElement('span');
+                    testo.className='log-testo';
+                    testo.textContent = testo_riga_log(voce);
+                    corpo.appendChild(testo);
+                    riga.appendChild(corpo);
+
+                    box.appendChild(riga);
+                });
+            }
+            function testo_esito_privato(e){
+                if(e.tipo === 'veggente') return 'Hai controllato ' + e.bersaglioNome + ': è ' + (e.cattivo ? 'CATTIVO' : 'buono') + '.';
+                if(e.tipo === 'medium') return 'Hai contattato ' + e.bersaglioNome + ': era ' + (e.esito === 'matto' ? 'il Matto' : (e.esito === 'cattivo' ? 'CATTIVO' : 'buono')) + '.';
+                if(e.tipo === 'mitomane') return 'Questa notte sei diventato: ' + ((ROLES[e.nuovoRuolo] && ROLES[e.nuovoRuolo].nome) || e.nuovoRuolo) + '.';
+                return '';
+            }
+
+            /* ==========================================================
+               NARRATORE AUTOMATICO — flusso lato "chiunque" (ogni giocatore,
+               compreso il narratore stesso quando gioca il proprio turno)
+               ========================================================== */
+            function pronto_per_notte_automatica(){
+                var btn=document.getElementById('remota-btn-pronto-notte-auto');
+                btn.disabled=true; btn.innerText='Attendo...';
+                // Il vecchio ascolto di avvia_attesa_giocatore() (quello della
+                // modalità remota "manuale", che su stanza sparita fa da solo
+                // alert()+refresh()) va spento: da qui in poi ci pensano gli
+                // ascolti della notte automatica, che sanno distinguere la
+                // vittoria (attesa) dalla chiusura esterna della stanza.
+                if(smettiAscoltoStanza){ smettiAscoltoStanza(); smettiAscoltoStanza=null; }
+                avvia_ascolto_notte_automatica();
+                if(ruoloUtente === 'narratore' && !statoPartitaAuto){
+                    avvia_prima_notte_automatica();
+                }
+            }
+
+            function avvia_ascolto_notte_automatica(){
+                if(smettiAscoltoStanzaAuto) return; // già avviato
+                smettiAscoltoStanzaAuto = LupusSync.ascolta(codiceStanza, su_aggiornamento_stanza_auto);
+                smettiAscoltoStatoPubblicoAuto = LupusSync.ascoltaStatoPubblico(codiceStanza, su_aggiornamento_stato_pubblico_auto);
+                smettiAscoltoNotteAuto = LupusSync.ascoltaNotte(codiceStanza, su_aggiornamento_notte_auto);
+                smettiAscoltoRivelazioniAuto = LupusSync.ascoltaRivelazioni(codiceStanza, su_aggiornamento_rivelazioni_auto);
+                if(ruoloUtente === 'narratore'){
+                    smettiAscoltoRichiesteAuto = LupusSync.ascoltaRichiesteSpeciali(codiceStanza, gestisci_richiesta_speciale);
+                }
+            }
+
+            // Interrotta dal narratore (o dal fatto che la stanza non c'è
+            // più per qualsiasi motivo): si smette di ascoltare tutto e si
+            // torna alla home, spiegando perché invece di sparire nel nulla.
+            var partitaAutoTerminataMostrata=false;
+            function mostra_partita_terminata_esternamente(){
+                if(partitaAutoTerminataMostrata) return;
+                partitaAutoTerminataMostrata=true;
+                ferma_ascolti_notte_automatica();
+                try{ sessionStorage.removeItem('lupus_stanza'); }catch(e){}
+                mostra_avviso('Partita terminata', 'La stanza è stata chiusa. Torni alla home.', function(){ refresh(); });
+            }
+
+            function ferma_ascolti_notte_automatica(){
+                if(smettiAscoltoStanzaAuto){ smettiAscoltoStanzaAuto(); smettiAscoltoStanzaAuto=null; }
+                if(smettiAscoltoNotteAuto){ smettiAscoltoNotteAuto(); smettiAscoltoNotteAuto=null; }
+                if(smettiAscoltoStatoPubblicoAuto){ smettiAscoltoStatoPubblicoAuto(); smettiAscoltoStatoPubblicoAuto=null; }
+                if(smettiAscoltoRivelazioniAuto){ smettiAscoltoRivelazioniAuto(); smettiAscoltoRivelazioniAuto=null; }
+                if(smettiAscoltoRichiesteAuto){ smettiAscoltoRichiesteAuto(); smettiAscoltoRichiesteAuto=null; }
+                if(notteAutoTimerId){ clearInterval(notteAutoTimerId); notteAutoTimerId=null; }
+                if(notteAutoLupiCountdownTimer){ clearInterval(notteAutoLupiCountdownTimer); notteAutoLupiCountdownTimer=null; }
+            }
+
+            var vittoriaAutoMostrata=false;
+            function su_aggiornamento_stanza_auto(stato){
+                var mioIdOra = mioPlayerIdEffettivo();
+                var sonoStatoRimosso = stato && stato.giocatori && mioIdOra && !stato.giocatori[mioIdOra];
+                if(!stato || sonoStatoRimosso){
+                    // La stanza è sparita da Firebase (o io ne sono stato
+                    // rimosso): se non siamo già sulla schermata di vittoria
+                    // (dove la scomparsa, ritardata di proposito, è prevista)
+                    // è perché il narratore ha chiuso la partita — si torna
+                    // tutti alla home. Il flag (non solo la classe CSS) resta
+                    // valido anche se questo callback arriva mentre il DOM è
+                    // a metà di un cambio scena.
+                    if(!vittoriaAutoMostrata){
+                        mostra_partita_terminata_esternamente();
+                    }
+                    return;
+                }
+                ultimaStanzaAuto = stato;
+                var mioId = mioPlayerIdEffettivo();
+                if(stato.giocatori && mioId && stato.giocatori[mioId]){
+                    mioRuoloAttuale = stato.giocatori[mioId].ruoloId || mioRuoloAttuale;
+                }
+                if(document.getElementById('scena-morto-auto').classList.contains('scena-attiva')){
+                    renderizza_ruoli_morto();
+                }
+                // L'ascolto della "notte" può arrivare prima di quello della
+                // "stanza" (l'ordine tra i due non è garantito): se la lista
+                // dei bersagli di un turno era stata costruita quando
+                // "ultimaStanzaAuto" era ancora vuota, restava vuota per
+                // sempre (nessun altro punto la ricostruiva). Qui, appena i
+                // dati della stanza arrivano, si ricostruisce se serve.
+                var scenaAttivaId = document.querySelector('.scena-attiva').id;
+                if(ultimaNotteAuto && scenaAttivaId === 'scena-notte-auto-lupi'){
+                    var listaLupi = document.getElementById('notte-auto-lupi-lista');
+                    if(listaLupi.children.length === 0){
+                        aggiorna_schermata_lupi(ultimaNotteAuto);
+                    } else {
+                        aggiorna_lupi_voti(ultimaNotteAuto.votiLupi);
+                        aggiorna_lupi_chat(ultimaNotteAuto.chatLupi);
+                    }
+                } else if(ultimaNotteAuto && scenaAttivaId === 'scena-notte-auto-azione'){
+                    if(document.getElementById('notte-auto-lista').children.length === 0){
+                        aggiorna_schermata_notte_per_me(ultimaNotteAuto);
+                    }
+                } else if(scenaAttivaId === 'scena-giorno-auto'){
+                    // Stessa corsa, versione diurna: le liste di Cacciatore/
+                    // Inquisitore/narratore-proxy dipendono anche loro da
+                    // "ultimaStanzaAuto" (nomi dei giocatori).
+                    var pannelliGiorno = [
+                        ['giorno-auto-cacciatore', 'giorno-auto-cacciatore-lista'],
+                        ['giorno-auto-inquisitore', 'giorno-auto-inquisitore-lista'],
+                        ['giorno-auto-narratore', 'giorno-auto-narratore-lista']
+                    ];
+                    var vuoteGiorno = pannelliGiorno.some(function(coppia){
+                        var pannello = document.getElementById(coppia[0]);
+                        var lista = document.getElementById(coppia[1]);
+                        return pannello.style.display !== 'none' && lista.children.length === 0;
+                    });
+                    if(vuoteGiorno) aggiorna_schermata_giorno();
+                }
+            }
+
+            function su_aggiornamento_stato_pubblico_auto(pubblico){
+                statoPubblicoAuto = pubblico || { vivo:{}, finteMorto:{}, registro:[], notte:1 };
+                vivoPerPlayerId = statoPubblicoAuto.vivo || {};
+                finteMortoPerPlayerId = statoPubblicoAuto.finteMorto || {};
+                renderizza_log_pubblico_in('notte-auto-log-pubblico');
+                renderizza_log_pubblico_in('giorno-auto-log-pubblico');
+                if(document.getElementById('scena-morto-auto').classList.contains('scena-attiva')){
+                    renderizza_log_pubblico_in('morto-auto-log-pubblico');
+                }
+                // Appena si scopre morti (senza dover aspettare il prossimo
+                // aggiornamento della "notte"), si passa subito alla
+                // schermata da spettatore invece di restare bloccati su
+                // quella del turno appena concluso.
+                if(!vittoriaAutoMostrata && ruoloUtente !== 'narratore' && vivoPerPlayerId[mioPlayerIdEffettivo()] === false &&
+                   !document.getElementById('scena-morto-auto').classList.contains('scena-attiva')){
+                    if(notteAutoLupiCountdownTimer){ clearInterval(notteAutoLupiCountdownTimer); notteAutoLupiCountdownTimer=null; }
+                    mostra_schermata_morto();
+                }
+            }
+
+            // Elenco pubblico di nome+ruolo+vivo/morto per chi è già morto
+            // (stesso "cosa sanno tutti" del narratore in presenza): i dati
+            // sono già nella memoria di ogni dispositivo (ruoloId di tutti
+            // arriva comunque con l'ascolto della stanza), qui si limita a
+            // mostrarli.
+            function renderizza_ruoli_morto(){
+                var box = document.getElementById('morto-auto-lista-ruoli');
+                if(!box || !ultimaStanzaAuto || !ultimaStanzaAuto.giocatori) return;
+                box.innerHTML = '';
+                var mioId = mioPlayerIdEffettivo();
+                elencoGiocatoriOrdinati().forEach(function(pid){
+                    var giocatore = ultimaStanzaAuto.giocatori[pid];
+                    var ruolo = ROLES[giocatore.ruoloId];
+                    var vivo = vivoPerPlayerId[pid] !== false;
+                    var riga = document.createElement('div');
+                    riga.className = 'vivo-riga' + (vivo ? '' : ' morto');
+                    var label = document.createElement('label');
+                    label.style.flex='1'; label.style.cursor='default';
+                    label.textContent = giocatore.nome + (pid===mioId ? ' (tu)' : '');
+                    riga.appendChild(label);
+                    var ruoloSpan = document.createElement('span');
+                    ruoloSpan.className='ruolo-piccolo';
+                    ruoloSpan.textContent = (ruolo ? ruolo.nome : giocatore.ruoloId) + (vivo ? '' : ' · morto');
+                    riga.appendChild(ruoloSpan);
+                    box.appendChild(riga);
+                });
+            }
+
+            function mostra_schermata_morto(){
+                renderizza_ruoli_morto();
+                renderizza_log_pubblico_in('morto-auto-log-pubblico');
+                vaiA('scena-morto-auto');
+            }
+
+            function su_aggiornamento_rivelazioni_auto(rivelazioni){
+                rivelazioniAuto = rivelazioni || {};
+                renderizza_log_pubblico_in('notte-auto-log-pubblico');
+                renderizza_log_pubblico_in('giorno-auto-log-pubblico');
+                if(document.getElementById('scena-morto-auto').classList.contains('scena-attiva')){
+                    renderizza_log_pubblico_in('morto-auto-log-pubblico');
+                }
+                var vittoriaEntry=null;
+                Object.keys(rivelazioniAuto).forEach(function(id){
+                    if(rivelazioniAuto[id].ruolo === 'vittoria') vittoriaEntry = rivelazioniAuto[id];
+                });
+                if(vittoriaEntry){ mostra_vittoria_automatica(vittoriaEntry); return; }
+                // Una nuova rivelazione (es. la propria, appena verificata)
+                // può cambiare cosa deve mostrare la schermata diurna (es.
+                // sbloccare il pannello "ha risposto?" dell'Inquisitore):
+                // senza questo, restava ferma alla richiesta appena inviata
+                // finché non arrivava un aggiornamento per un altro motivo.
+                if(document.getElementById('scena-giorno-auto').classList.contains('scena-attiva')){
+                    aggiorna_schermata_giorno();
+                }
+            }
+
+            function mostra_vittoria_automatica(evento){
+                if(vittoriaAutoMostrata) return;
+                vittoriaAutoMostrata=true;
+                ferma_ascolti_notte_automatica();
+                try{ sessionStorage.removeItem('lupus_stanza'); }catch(e){}
+                document.getElementById('vittoria-auto-testo').innerText = testo_esito_vittoria(evento.tipo);
+                vaiA('scena-vittoria-auto');
+
+                // Ogni dispositivo che arriva qui prova a eliminare la
+                // stanza (non solo il narratore): così, anche se chi ha
+                // pubblicato la vittoria chiude subito la scheda, la stanza
+                // non resta orfana su Firebase. Il ritardo dà tempo a
+                // dispositivi più lenti di ricevere l'evento prima che
+                // sparisca; eliminare la stessa stanza più volte non è un
+                // problema (le chiamate dopo la prima sono un no-op).
+                if(codiceStanza){
+                    var codiceDaEliminare = codiceStanza;
+                    setTimeout(function(){ LupusSync.eliminaStanza(codiceDaEliminare); }, 6000);
+                }
+            }
+
+            function su_aggiornamento_notte_auto(notte){
+                ultimaNotteAuto = notte;
+                var giaAvanzato = false;
+                if(ruoloUtente === 'narratore' && statoPartitaAuto){
+                    giaAvanzato = gestisci_orchestrazione_notte(notte);
+                }
+                // Se il turno è appena avanzato, chi ha appena scritto (il
+                // narratore) ha già in "ultimaNotteAuto" il nuovo turno vero
+                // (scritto da avanza_turno_notte_automatica): non renderizzare
+                // qui con lo scatto VECCHIO ricevuto da Firebase, altrimenti
+                // per un istante si mostra "non è il mio turno" anche quando
+                // lo è, finché non arriva l'eco della propria scrittura.
+                if(!giaAvanzato) aggiorna_schermata_notte_per_me(notte);
+            }
+
+            function aggiorna_schermata_notte_per_me(notte){
+                if(vittoriaAutoMostrata) return;
+                // Chi è morto per davvero (il Suicida che finge resta "vivo"
+                // per il motore: vivoPerPlayerId riflette solo le morti vere)
+                // non gioca più: vede il villaggio a viso scoperto, sempre,
+                // sia di notte che di giorno. Il narratore fa eccezione: la
+                // sua morte come giocatore non deve interrompere il suo
+                // lavoro di regia (deve poter continuare a far avanzare la
+                // notte, registrare il voto del villaggio, ecc.).
+                if(ruoloUtente !== 'narratore' && vivoPerPlayerId[mioPlayerIdEffettivo()] === false){
+                    if(notteAutoLupiCountdownTimer){ clearInterval(notteAutoLupiCountdownTimer); notteAutoLupiCountdownTimer=null; }
+                    mostra_schermata_morto();
+                    return;
+                }
+                if(!notte || notte.turno === null || notte.turno === undefined){
+                    if(notteAutoLupiCountdownTimer){ clearInterval(notteAutoLupiCountdownTimer); notteAutoLupiCountdownTimer=null; }
+                    aggiorna_schermata_giorno();
+                    vaiA('scena-giorno-auto');
+                    return;
+                }
+                // (chi è morto è già uscito da questa funzione qui sopra: da
+                // qui in poi si ragiona solo su chi è ancora vivo)
+                var ilMioTurno = (notte.turno === 'lupi') ? (mioRuoloAttuale === 'lupo') : (notte.turno === mioRuoloAttuale);
+                if(!ilMioTurno){
+                    if(notteAutoLupiCountdownTimer){ clearInterval(notteAutoLupiCountdownTimer); notteAutoLupiCountdownTimer=null; }
+                    vaiA('scena-notte-auto-attesa');
+                    return;
+                }
+                // Per i lupi si resta sempre sulla scena di voto/chat (si può
+                // cambiare voto e continuare a scriversi finché non si passa
+                // al turno successivo); per gli altri ruoli, una volta
+                // sottomessa l'azione si torna in attesa senza rimostrarla.
+                if(notte.turno !== 'lupi' && notte.azioni && notte.azioni[notte.turno]){
+                    if(notteAutoLupiCountdownTimer){ clearInterval(notteAutoLupiCountdownTimer); notteAutoLupiCountdownTimer=null; }
+                    vaiA('scena-notte-auto-attesa');
+                    return;
+                }
+                if(notte.turno === 'lupi') mostra_turno_lupi(notte);
+                else if(notte.turno === 'suicida') mostra_turno_suicida();
+                else if(notte.turno === 'neomelodico') mostra_turno_neomelodico();
+                else mostra_turno_generico(notte.turno);
+            }
+
+            // La Guardia non può proteggere due notti di fila la stessa
+            // persona: il proprio dispositivo se lo ricorda da sé (impostato
+            // in conferma_azione_generica), niente giri su Firebase — i dati
+            // di "notte" vengono azzerati ad ogni nuova notte, quindi non
+            // sarebbero comunque disponibili qui in modo affidabile.
+            var mioUltimoBersaglioGuardia=null;
+
+            function mostra_turno_generico(ruoloId){
+                var info = ETICHETTE_TURNO_AUTO[ruoloId];
+                if(!info) return;
+                document.getElementById('notte-auto-titolo').innerText = info.titolo;
+                var istruzioni = info.istruzioni;
+                var escludi = null;
+                if(ruoloId === 'guardia' && mioUltimoBersaglioGuardia){
+                    escludi = nomeDaPlayerId(mioUltimoBersaglioGuardia);
+                    istruzioni += ' (Non puoi scegliere di nuovo ' + escludi + '.)';
+                }
+                document.getElementById('notte-auto-istruzioni').innerText = istruzioni;
+                var btn = document.getElementById('notte-auto-conferma');
+                btn.disabled = true;
+                // Nessuno può usare il proprio potere su di sé, tranne la
+                // Guardia (può proteggere anche sé stessa).
+                var escludiSe = (ruoloId === 'guardia') ? null : mioPlayerIdEffettivo();
+                popola_lista_giocatori('notte-auto-lista', function(pid){
+                    bersaglioNotteAutoScelto = pid;
+                    btn.disabled = false;
+                }, info.platea === 'vivi', info.platea === 'morti', escludi, escludiSe);
+                btn.onclick = function(){ conferma_azione_generica(ruoloId); };
+                vaiA('scena-notte-auto-azione');
+            }
+            function conferma_azione_generica(ruoloId){
+                if(!bersaglioNotteAutoScelto) return;
+                if(ruoloId === 'guardia') mioUltimoBersaglioGuardia = bersaglioNotteAutoScelto;
+                document.getElementById('notte-auto-conferma').disabled = true;
+                LupusSync.sottomettiAzioneNotte(codiceStanza, ruoloId, bersaglioNotteAutoScelto);
+                vaiA('scena-notte-auto-attesa');
+            }
+
+            function mostra_turno_suicida(){
+                var finto = finteMortoPerPlayerId[mioPlayerIdEffettivo()];
+                document.getElementById('notte-auto-suicida-btn-finto').style.display = finto ? 'none' : 'inline-block';
+                document.getElementById('notte-auto-suicida-btn-resuscita').style.display = finto ? 'inline-block' : 'none';
+                vaiA('scena-notte-auto-suicida');
+            }
+            function scegli_azione_suicida(azione){
+                LupusSync.sottomettiAzioneNotte(codiceStanza, 'suicida', azione);
+                vaiA('scena-notte-auto-attesa');
+            }
+
+            function mostra_turno_neomelodico(){
+                vaiA('scena-notte-auto-neomelodico');
+            }
+            function scegli_azione_neomelodico(usa){
+                LupusSync.sottomettiAzioneNotte(codiceStanza, 'neomelodico', usa);
+                vaiA('scena-notte-auto-attesa');
+            }
+
+            var notteAutoLupiCountdownTimer=null;
+            function mostra_turno_lupi(notte){
+                aggiorna_schermata_lupi(notte);
+                vaiA('scena-notte-auto-lupi');
+                if(notteAutoLupiCountdownTimer) clearInterval(notteAutoLupiCountdownTimer);
+                notteAutoLupiCountdownTimer = setInterval(function(){ aggiorna_countdown_lupi(notte.scadenzaTurno); }, 1000);
+                aggiorna_countdown_lupi(notte.scadenzaTurno);
+            }
+            function aggiorna_countdown_lupi(scadenza){
+                var el=document.getElementById('notte-auto-lupi-countdown');
+                if(!scadenza){ el.innerText=''; return; }
+                var restano = Math.max(0, Math.round((scadenza - Date.now())/1000));
+                el.innerText = restano > 0 ? ('Tempo rimasto: ' + restano + 's') : 'Tempo scaduto, in attesa della risoluzione...';
+                if(restano <= 0 && notteAutoLupiCountdownTimer){ clearInterval(notteAutoLupiCountdownTimer); notteAutoLupiCountdownTimer=null; }
+            }
+            function aggiorna_schermata_lupi(notte){
+                popola_lista_giocatori('notte-auto-lupi-lista', function(pid){
+                    LupusSync.votaLupi(codiceStanza, mioPlayerIdEffettivo(), pid);
+                }, true, false, null, mioPlayerIdEffettivo());
+                aggiorna_lupi_voti(notte.votiLupi);
+                aggiorna_lupi_chat(notte.chatLupi);
+            }
+            function aggiorna_lupi_voti(votiLupi){
+                var box=document.getElementById('notte-auto-lupi-voti');
+                box.innerHTML='';
+                if(!ultimaStanzaAuto || !ultimaStanzaAuto.giocatori) return;
+                Object.keys(ultimaStanzaAuto.giocatori).filter(function(pid){
+                    return ultimaStanzaAuto.giocatori[pid].ruoloId === 'lupo';
+                }).forEach(function(pid){
+                    var voto = votiLupi && votiLupi[pid];
+                    var riga=document.createElement('div');
+                    riga.className='voti-lupi-riga';
+                    riga.textContent = nomeDaPlayerId(pid) + ': ' + (voto ? nomeDaPlayerId(voto.bersaglioPlayerId) : 'non ha ancora votato');
+                    box.appendChild(riga);
+                });
+            }
+            function aggiorna_lupi_chat(chatLupi){
+                var box=document.getElementById('notte-auto-lupi-chat');
+                box.innerHTML='';
+                var ids = Object.keys(chatLupi || {}).sort(function(a,b){ return (chatLupi[a].ts||0) - (chatLupi[b].ts||0); });
+                ids.forEach(function(id){
+                    var m = chatLupi[id];
+                    var riga=document.createElement('div');
+                    riga.className='chat-lupi-riga';
+                    var forte=document.createElement('strong');
+                    forte.textContent = nomeDaPlayerId(m.playerId) + ': ';
+                    riga.appendChild(forte);
+                    riga.appendChild(document.createTextNode(m.testo));
+                    box.appendChild(riga);
+                });
+                box.scrollTop = box.scrollHeight;
+            }
+            function invia_chat_lupi(){
+                var input=document.getElementById('notte-auto-lupi-chat-input');
+                var testo=input.value.trim();
+                if(!testo) return;
+                LupusSync.inviaMessaggioLupi(codiceStanza, mioPlayerIdEffettivo(), testo);
+                input.value='';
+            }
+
+            function aggiorna_schermata_giorno(){
+                renderizza_log_pubblico_in('giorno-auto-log-pubblico');
+
+                var mioId = mioPlayerIdEffettivo();
+                var sonoVivo = vivoPerPlayerId[mioId] !== false;
+                var mioEsitoPrivato = ultimaNotteAuto && ultimaNotteAuto.esiti && ultimaNotteAuto.esiti.rivelazioniPrivate &&
+                    ultimaNotteAuto.esiti.rivelazioniPrivate[mioId];
+
+                var boxLog = document.getElementById('giorno-auto-log-pubblico');
+                if(mioEsitoPrivato){
+                    var rigaPrivata=document.createElement('div');
+                    rigaPrivata.className='log-evento privato';
+                    var iconaPrivata=document.createElement('span');
+                    iconaPrivata.className='log-icona';
+                    iconaPrivata.setAttribute('aria-hidden','true');
+                    iconaPrivata.textContent='☾';
+                    rigaPrivata.appendChild(iconaPrivata);
+                    var corpoPrivato=document.createElement('div');
+                    corpoPrivato.className='log-corpo';
+                    var etichettaPrivata=document.createElement('span');
+                    etichettaPrivata.className='log-momento';
+                    etichettaPrivata.textContent='Solo per te';
+                    corpoPrivato.appendChild(etichettaPrivata);
+                    var testoPrivato=document.createElement('span');
+                    testoPrivato.className='log-testo';
+                    testoPrivato.textContent = testo_esito_privato(mioEsitoPrivato);
+                    corpoPrivato.appendChild(testoPrivato);
+                    rigaPrivata.appendChild(corpoPrivato);
+                    boxLog.appendChild(rigaPrivata);
+                }
+
+                var giaCacciatore = Object.keys(rivelazioniAuto).some(function(id){
+                    return rivelazioniAuto[id].playerId === mioId && rivelazioniAuto[id].ruolo === 'cacciatore';
+                });
+                var boxCacciatore = document.getElementById('giorno-auto-cacciatore');
+                if(mioRuoloAttuale === 'cacciatore' && sonoVivo && !giaCacciatore){
+                    boxCacciatore.style.display='block';
+                    document.getElementById('giorno-auto-cacciatore-btn').disabled=true;
+                    popola_lista_giocatori('giorno-auto-cacciatore-lista', function(pid){
+                        bersaglioNotteAutoScelto = pid;
+                        document.getElementById('giorno-auto-cacciatore-btn').disabled=false;
+                    }, true, false, null, mioId);
+                } else {
+                    boxCacciatore.style.display='none';
+                }
+
+                var giaInquisitore = Object.keys(rivelazioniAuto).some(function(id){
+                    return rivelazioniAuto[id].playerId === mioId && rivelazioniAuto[id].ruolo === 'inquisitore';
+                });
+                var boxInquisitore = document.getElementById('giorno-auto-inquisitore');
+                if(mioRuoloAttuale === 'inquisitore' && sonoVivo && !inquisitoreEsitoGiaDato){
+                    boxInquisitore.style.display='block';
+                    if(giaInquisitore){
+                        document.getElementById('giorno-auto-inquisitore-lista').innerHTML='';
+                        document.getElementById('giorno-auto-inquisitore-btn').style.display='none';
+                        document.getElementById('giorno-auto-inquisitore-esito').style.display='block';
+                    } else {
+                        document.getElementById('giorno-auto-inquisitore-btn').style.display='inline-block';
+                        document.getElementById('giorno-auto-inquisitore-btn').disabled=true;
+                        document.getElementById('giorno-auto-inquisitore-esito').style.display='none';
+                        popola_lista_giocatori('giorno-auto-inquisitore-lista', function(pid){
+                            bersaglioNotteAutoScelto = pid;
+                            document.getElementById('giorno-auto-inquisitore-btn').disabled=false;
+                        }, true, false, null, mioId);
+                    }
+                } else {
+                    boxInquisitore.style.display='none';
+                }
+
+                var boxNarratore = document.getElementById('giorno-auto-narratore');
+                if(ruoloUtente === 'narratore'){
+                    boxNarratore.style.display='block';
+                    document.getElementById('giorno-auto-narratore-registra').disabled=true;
+                    popola_lista_giocatori('giorno-auto-narratore-lista', function(pid){
+                        bersaglioNotteAutoScelto = pid;
+                        document.getElementById('giorno-auto-narratore-registra').disabled=false;
+                    }, true, false);
+                } else {
+                    boxNarratore.style.display='none';
+                }
+            }
+
+            function conferma_rivelati_cacciatore(){
+                if(!bersaglioNotteAutoScelto) return;
+                var bersaglio = bersaglioNotteAutoScelto;
+                mostra_conferma('Rivelati come Cacciatore?', 'Ti rivelerai a tutti come Cacciatore e spari a ' + nomeDaPlayerId(bersaglio) + ': è definitivo.', function(){
+                    document.getElementById('giorno-auto-cacciatore-btn').disabled=true;
+                    LupusSync.richiediAzioneSpeciale(codiceStanza, {
+                        playerId: mioPlayerIdEffettivo(), ruoloAtteso:'cacciatore', tipo:'cacciatore_spara', bersaglioPlayerId: bersaglio
+                    });
+                });
+            }
+            function conferma_rivelati_inquisitore(){
+                if(!bersaglioNotteAutoScelto) return;
+                var bersaglio = bersaglioNotteAutoScelto;
+                mostra_conferma('Rivelati come Inquisitore?', 'Ti rivelerai a tutti come Inquisitore e interrogherai ' + nomeDaPlayerId(bersaglio) + ': è definitivo.', function(){
+                    document.getElementById('giorno-auto-inquisitore-btn').disabled=true;
+                    LupusSync.richiediAzioneSpeciale(codiceStanza, {
+                        playerId: mioPlayerIdEffettivo(), ruoloAtteso:'inquisitore', tipo:'inquisitore_interroga', bersaglioPlayerId: bersaglio
+                    });
+                });
+            }
+            function registra_esito_interrogatorio(rispose){
+                inquisitoreEsitoGiaDato = true;
+                document.getElementById('giorno-auto-inquisitore').style.display='none';
+                LupusSync.richiediAzioneSpeciale(codiceStanza, {
+                    playerId: mioPlayerIdEffettivo(), ruoloAtteso:'inquisitore', tipo:'inquisitore_esito',
+                    rispose: rispose, bersaglioPlayerId: bersaglioNotteAutoScelto
+                });
+            }
+
+            /* ==========================================================
+               NARRATORE AUTOMATICO — orchestrazione (solo dispositivo narratore)
+               ========================================================== */
+            function avvia_prima_notte_automatica(){
+                statoPartitaAuto = LupusEngine.creaStatoPartita(ruoli_partita);
+                avvia_notte_automatica();
+            }
+
+            function avvia_notte_automatica(){
+                var usatoRuoloAuto = { neomelodico: statoPartitaAuto.neomelodicoUsato };
+                var lista = LupusEngine.calcolaListaNotte(statoPartitaAuto.ruoli, giocatori, statoPartitaAuto.vivo, ROLES,
+                    { notte: statoPartitaAuto.notte, playerAlive: statoPartitaAuto.vivo, usatoRuolo: usatoRuoloAuto });
+
+                // Un ruolo morto non può esercitare il potere: qui (a
+                // differenza della modalità in presenza) non serve comunque
+                // "chiamarlo" per non tradirsi col silenzio, perché ogni
+                // schermata è privata al proprio dispositivo — quindi lo si
+                // salta a monte, invece di prompt/timeout inutili.
+                notteAutoListaTurni = [];
+                var vistoLupi = false;
+                lista.forEach(function(voce){
+                    if(voce.id === 'lupo'){
+                        var haLupiVivi = voce.giocatori.some(function(g){ return g.vivo; });
+                        if(haLupiVivi && !vistoLupi){ notteAutoListaTurni.push('lupi'); vistoLupi = true; }
+                    } else {
+                        var attoreIdx = LupusEngine.trovaIndiceRuolo(statoPartitaAuto.ruoli, voce.id);
+                        if(attoreIdx !== -1 && statoPartitaAuto.vivo[attoreIdx]) notteAutoListaTurni.push(voce.id);
+                    }
+                });
+                notteAutoAzioniRaccolte = {};
+
+                if(notteAutoListaTurni.length === 0){
+                    notteAutoIdx = -1;
+                    LupusSync.avviaNotte(codiceStanza, statoPartitaAuto.notte, null, null).then(function(){
+                        concludi_notte_automatica();
+                    });
+                    return;
+                }
+
+                notteAutoIdx = 0;
+                notteAutoTurnoFinalizzato = false;
+                var primoTurno = notteAutoListaTurni[0];
+                var scadenza = Date.now() + 60000;
+                LupusSync.avviaNotte(codiceStanza, statoPartitaAuto.notte, primoTurno, scadenza).then(function(){
+                    if(notteAutoTimerId) clearInterval(notteAutoTimerId);
+                    notteAutoTimerId = setInterval(function(){ controlla_scadenza_turno_automatico(primoTurno, scadenza); }, 2000);
+                    renderizza_turno_locale(primoTurno, scadenza);
+                });
+            }
+
+            // Il dispositivo del narratore sa già, PRIMA che Firebase gliela
+            // rimandi indietro, qual è la propria scrittura sul turno: si
+            // renderizza subito con questo dato locale, invece di aspettare
+            // l'eco della propria scrittura (che arriverebbe comunque,
+            // rendendo tutto coerente, ma con un ritardo di rete evitabile).
+            function renderizza_turno_locale(turno, scadenza){
+                ultimaNotteAuto = {
+                    numero: statoPartitaAuto.notte,
+                    turno: turno,
+                    scadenzaTurno: scadenza,
+                    azioni: (ultimaNotteAuto && ultimaNotteAuto.azioni) || {},
+                    votiLupi: {},
+                    chatLupi: (ultimaNotteAuto && ultimaNotteAuto.chatLupi) || {}
+                };
+                aggiorna_schermata_notte_per_me(ultimaNotteAuto);
+            }
+
+            function avanza_turno_notte_automatica(){
+                notteAutoIdx++;
+                if(notteAutoTimerId){ clearInterval(notteAutoTimerId); notteAutoTimerId=null; }
+                if(notteAutoIdx >= notteAutoListaTurni.length){
+                    concludi_notte_automatica();
+                    return;
+                }
+                notteAutoTurnoFinalizzato = false;
+                var turno = notteAutoListaTurni[notteAutoIdx];
+                var scadenza = Date.now() + 60000;
+                LupusSync.impostaTurnoNotte(codiceStanza, turno, scadenza);
+                notteAutoTimerId = setInterval(function(){ controlla_scadenza_turno_automatico(turno, scadenza); }, 2000);
+                renderizza_turno_locale(turno, scadenza);
+            }
+
+            function elencoLupiViviIdx(){
+                var out=[];
+                statoPartitaAuto.ruoli.forEach(function(r, idx){ if(r === 'lupo' && statoPartitaAuto.vivo[idx]) out.push(idx); });
+                return out;
+            }
+            function mappaVotiLupiInArray(votiLupi){
+                var out=[];
+                Object.keys(votiLupi || {}).forEach(function(pid){
+                    var idx = idxDaPlayerId(pid);
+                    if(idx === -1) return;
+                    out.push({ giocatoreIdx: idx, bersaglioIdx: idxDaPlayerId(votiLupi[pid].bersaglioPlayerId), ts: votiLupi[pid].ts || 0 });
+                });
+                return out;
+            }
+
+            function controlla_scadenza_turno_automatico(turnoAtteso, scadenza){
+                if(notteAutoTurnoFinalizzato) return;
+                if(Date.now() < scadenza) return;
+                if(turnoAtteso === 'lupi'){
+                    var esito = LupusEngine.risolviVotoLupiConScadenza(mappaVotiLupiInArray(ultimaNotteAuto && ultimaNotteAuto.votiLupi), elencoLupiViviIdx());
+                    finalizza_turno_lupi(esito);
+                } else {
+                    finalizza_turno_singolo(turnoAtteso, null);
+                }
+            }
+            // Ritorna true se il turno è stato fatto avanzare (vedi la nota
+            // in su_aggiornamento_notte_auto sul perché conta il valore di ritorno).
+            function gestisci_orchestrazione_notte(notte){
+                if(!notte || notte.turno === null || notte.turno === undefined) return false;
+                if(notteAutoTurnoFinalizzato) return false;
+                if(notte.turno === 'lupi'){
+                    var unanime = LupusEngine.risolviVotoLupi(mappaVotiLupiInArray(notte.votiLupi), elencoLupiViviIdx());
+                    if(unanime !== null){ finalizza_turno_lupi(unanime); return true; }
+                } else if(notte.azioni && notte.azioni[notte.turno] !== undefined){
+                    finalizza_turno_singolo(notte.turno, notte.azioni[notte.turno].valore);
+                    return true;
+                }
+                return false;
+            }
+            function finalizza_turno_singolo(ruoloId, valore){
+                if(notteAutoTurnoFinalizzato) return;
+                notteAutoTurnoFinalizzato = true;
+                notteAutoAzioniRaccolte[ruoloId] = valore;
+                avanza_turno_notte_automatica();
+            }
+            function finalizza_turno_lupi(bersaglioIdx){
+                if(notteAutoTurnoFinalizzato) return;
+                notteAutoTurnoFinalizzato = true;
+                notteAutoAzioniRaccolte.lupiVittimaIdx = bersaglioIdx;
+                avanza_turno_notte_automatica();
+            }
+
+            function pubblica_stato_pubblico_da_engine(vociRegistroNuove){
+                var vivoOut={}, finteMortoOut={};
+                elencoGiocatoriOrdinati().forEach(function(pid, idx){
+                    vivoOut[pid] = statoPartitaAuto.vivo[idx];
+                    finteMortoOut[pid] = statoPartitaAuto.finteMorto[idx];
+                });
+                var registro = (statoPubblicoAuto && statoPubblicoAuto.registro) ? statoPubblicoAuto.registro.slice() : [];
+                (vociRegistroNuove || []).forEach(function(v){ registro.push(v); });
+                statoPubblicoAuto = { vivo:vivoOut, finteMorto:finteMortoOut, registro:registro, notte: statoPartitaAuto.notte };
+                return LupusSync.scriviStatoPubblico(codiceStanza, statoPubblicoAuto);
+            }
+            function pubblica_vittoria(vittoria){
+                // La cancellazione della stanza NON viene programmata qui: se
+                // il dispositivo del narratore chiude la scheda subito dopo
+                // aver pubblicato la vittoria, un setTimeout qui non
+                // partirebbe mai e la stanza resterebbe orfana su Firebase.
+                // Se ne occupa invece ogni dispositivo che riceve l'evento,
+                // in mostra_vittoria_automatica() — eliminare due volte la
+                // stessa stanza non è un problema (la seconda è un no-op).
+                return LupusSync.pubblicaRivelazione(codiceStanza, { playerId:'sistema', ruolo:'vittoria', tipo: vittoria.tipo, bersaglioPlayerId: vittoria.giocatoreIdx !== undefined ? playerIdDaIdx(vittoria.giocatoreIdx) : null });
+            }
+
+            // Va richiamata dopo OGNI morte, in aggiunta all'eventuale
+            // vittoria individuale già decisa dal motore (Matto/SenzaVolto/
+            // Fantasma): controlla se una delle due squadre è stata estinta.
+            function vittoriaEffettiva(vittoriaIndividuale){
+                return vittoriaIndividuale || LupusEngine.calcolaVittoriaSquadre(statoPartitaAuto, ROLES);
+            }
+
+            function concludi_notte_automatica(){
+                var raw = notteAutoAzioniRaccolte;
+                function idxOpz(pid){ return (pid === undefined || pid === null) ? null : idxDaPlayerId(pid); }
+
+                // Catturati PRIMA di risolviNotte: chi interpretava questi
+                // ruoli stanotte, perché Mitomane/Suicida possono cambiare
+                // ruolo per effetto della risoluzione stessa.
+                var mitomaneIdxAttore = LupusEngine.trovaIndiceRuolo(statoPartitaAuto.ruoli, 'mitomane');
+                var veggenteIdxAttore = LupusEngine.trovaIndiceRuolo(statoPartitaAuto.ruoli, 'veggente');
+                var mediumIdxAttore = LupusEngine.trovaIndiceRuolo(statoPartitaAuto.ruoli, 'medium');
+
+                var azioni = {
+                    illusionistaBersaglioIdx: idxOpz(raw.illusionista),
+                    spaccinoBersaglioIdx: idxOpz(raw.spaccino),
+                    mitomaneBersaglioIdx: idxOpz(raw.mitomane),
+                    lupiVittimaIdx: (raw.lupiVittimaIdx === undefined) ? null : raw.lupiVittimaIdx,
+                    insinuoBersaglioIdx: idxOpz(raw.insinuo),
+                    veggenteBersaglioIdx: idxOpz(raw.veggente),
+                    guardiaBersaglioIdx: idxOpz(raw.guardia),
+                    mediumBersaglioIdx: idxOpz(raw.medium),
+                    angeloBersaglioIdx: idxOpz(raw.angelo),
+                    puttanaBersaglioIdx: idxOpz(raw.puttana),
+                    senzaVoltoBersaglioIdx: idxOpz(raw.senzaVolto),
+                    neomelodicoAttivato: raw.neomelodico === true,
+                    fantasmaBersaglioIdx: idxOpz(raw.fantasma),
+                    suicidaAzione: (raw.suicida === 'finto' || raw.suicida === 'resuscita') ? raw.suicida : null
+                };
+
+                var numeroNotte = statoPartitaAuto.notte; // prima che risolviNotte lo incrementi
+                var esito = LupusEngine.risolviNotte(statoPartitaAuto, azioni, ROLES);
+                statoPartitaAuto = esito.stato;
+
+                var scritture=[];
+                statoPartitaAuto.ruoli.forEach(function(r, idx){
+                    if(r !== ruoli_partita[idx]) scritture.push(LupusSync.aggiornaRuoloGiocatore(codiceStanza, playerIdDaIdx(idx), r));
+                });
+                ruoli_partita = statoPartitaAuto.ruoli.slice();
+
+                var rivelazioniPrivate={};
+                if(esito.rivelazioni.veggente && veggenteIdxAttore !== -1){
+                    rivelazioniPrivate[playerIdDaIdx(veggenteIdxAttore)] = {
+                        tipo:'veggente', bersaglioNome: nomeDaPlayerId(playerIdDaIdx(esito.rivelazioni.veggente.bersaglioIdx)), cattivo: esito.rivelazioni.veggente.cattivo
+                    };
+                }
+                if(esito.rivelazioni.medium && mediumIdxAttore !== -1){
+                    rivelazioniPrivate[playerIdDaIdx(mediumIdxAttore)] = {
+                        tipo:'medium', bersaglioNome: nomeDaPlayerId(playerIdDaIdx(esito.rivelazioni.medium.bersaglioIdx)), esito: esito.rivelazioni.medium.esito
+                    };
+                }
+                if(esito.rivelazioni.mitomane && mitomaneIdxAttore !== -1){
+                    rivelazioniPrivate[playerIdDaIdx(mitomaneIdxAttore)] = { tipo:'mitomane', nuovoRuolo: esito.rivelazioni.mitomane.nuovoRuolo };
+                }
+                var nuoveVoci=[];
+                esito.morti.forEach(function(m){ nuoveVoci.push({ tipo:'morte', playerId: playerIdDaIdx(m.giocatoreIdx), causa: m.causa, notte: numeroNotte, ts: Date.now() }); });
+                esito.eventi.forEach(function(e){
+                    if(e.tipo === 'senzavolto_resuscita' || e.tipo === 'suicida_resuscitato'){
+                        nuoveVoci.push({ tipo:'resurrezione', playerId: playerIdDaIdx(e.giocatoreIdx), notte: numeroNotte, ts: Date.now() });
+                    }
+                });
+                // "Nessuno è morto" va detto esplicitamente, altrimenti una
+                // notte tranquilla passa semplicemente inosservata nel log
+                // (il finto suicidio non conta: appare morto ma non lo è).
+                var mortiReali = esito.morti.filter(function(m){ return m.causa !== 'suicidio_finto'; });
+                if(mortiReali.length === 0){
+                    nuoveVoci.push({ tipo:'pace', notte: numeroNotte, ts: Date.now() });
+                }
+
+                Promise.all(scritture).then(function(){
+                    return pubblica_stato_pubblico_da_engine(nuoveVoci);
+                }).then(function(){
+                    return LupusSync.scriviEsitiNotte(codiceStanza, { rivelazioniPrivate: rivelazioniPrivate });
+                }).then(function(){
+                    return LupusSync.impostaTurnoNotte(codiceStanza, null, null);
+                }).then(function(){
+                    var vittoria = vittoriaEffettiva(esito.vittoria);
+                    if(vittoria) return pubblica_vittoria(vittoria);
+                });
+            }
+
+            function gestisci_richiesta_speciale(richiesta){
+                var idxAttore = idxDaPlayerId(richiesta.playerId);
+                var davveroRuolo = idxAttore !== -1 && LupusEngine.verificaRuoloReale(statoPartitaAuto, idxAttore, richiesta.ruoloAtteso);
+
+                if(richiesta.tipo === 'cacciatore_spara'){
+                    if(davveroRuolo){
+                        LupusSync.pubblicaRivelazione(codiceStanza, { playerId: richiesta.playerId, ruolo:'cacciatore', tipo:'spara', bersaglioPlayerId: richiesta.bersaglioPlayerId });
+                        var esitoC = LupusEngine.applicaMorte(statoPartitaAuto, idxDaPlayerId(richiesta.bersaglioPlayerId), 'cacciatore');
+                        statoPartitaAuto = esitoC.stato;
+                        var vociC=[];
+                        if(esitoC.mortoIdx !== null) vociC.push({ tipo:'morte', playerId: playerIdDaIdx(esitoC.mortoIdx), causa:'cacciatore', giorno: statoPartitaAuto.notte - 1, ts: Date.now() });
+                        pubblica_stato_pubblico_da_engine(vociC).then(function(){
+                            var vittoria = vittoriaEffettiva(esitoC.vittoria);
+                            if(vittoria) return pubblica_vittoria(vittoria);
+                        });
+                    }
+                } else if(richiesta.tipo === 'inquisitore_interroga'){
+                    if(davveroRuolo){
+                        LupusSync.pubblicaRivelazione(codiceStanza, { playerId: richiesta.playerId, ruolo:'inquisitore', tipo:'interroga', bersaglioPlayerId: richiesta.bersaglioPlayerId });
+                    }
+                } else if(richiesta.tipo === 'inquisitore_esito'){
+                    if(davveroRuolo){
+                        // L'esito deve essere pubblico (lo sanno tutti, dal
+                        // vivo, appena l'interrogato risponde o tace).
+                        LupusSync.pubblicaRivelazione(codiceStanza, {
+                            playerId: richiesta.playerId, ruolo:'inquisitore', tipo:'esito',
+                            bersaglioPlayerId: richiesta.bersaglioPlayerId, rispose: !!richiesta.rispose
+                        });
+                        if(!richiesta.rispose){
+                            var idxBersaglio = idxDaPlayerId(richiesta.bersaglioPlayerId);
+                            if(idxBersaglio !== -1 && statoPartitaAuto.ruoli[idxBersaglio] === 'lupo'){
+                                statoPartitaAuto = LupusEngine.programmaMorte(statoPartitaAuto, idxBersaglio, 'inquisitore');
+                            }
+                        }
+                    }
+                }
+
+                LupusSync.rimuoviRichiestaSpeciale(codiceStanza, richiesta.id);
+            }
+
+            function registra_morte_giorno_narratore(){
+                if(!bersaglioNotteAutoScelto) return;
+                // L'unica causa di morte diurna che il narratore-proxy deve
+                // registrare a mano è il voto del villaggio: la fucilata del
+                // Cacciatore si auto-registra già, verificata, quando lui la usa.
+                var causa = 'voto';
+                var idx = idxDaPlayerId(bersaglioNotteAutoScelto);
+                var esito = LupusEngine.applicaMorte(statoPartitaAuto, idx, causa);
+                statoPartitaAuto = esito.stato;
+                var nuoveVoci=[];
+                if(esito.mortoIdx !== null) nuoveVoci.push({ tipo:'morte', playerId: playerIdDaIdx(esito.mortoIdx), causa: causa, giorno: statoPartitaAuto.notte - 1, ts: Date.now() });
+                document.getElementById('giorno-auto-narratore-registra').disabled = true;
+                pubblica_stato_pubblico_da_engine(nuoveVoci).then(function(){
+                    var vittoria = vittoriaEffettiva(esito.vittoria);
+                    if(vittoria) return pubblica_vittoria(vittoria);
+                }).then(function(){
+                    aggiorna_schermata_giorno();
+                });
             }
 
             /* ==========================================================
@@ -1685,18 +3270,24 @@
                     chip.setAttribute('data-squadra', ruolo.squadra);
                     chip.id='chip-'+id;
 
-                    var extraClick='';
-                    if(id==='lupo') extraClick=' onclick="inserisci_numero_lupi()"';
-                    else if(id==='contadino') extraClick=' onclick="inserisci_numero_contadini()"';
-
                     var bottoneElimina='';
                     if(ruolo.personalizzato){
                         bottoneElimina =
                             '<button type="button" class="ruolo-elimina" onclick="rimuovi_ruolo_personalizzato(\''+id+'\')" aria-label="Elimina ruolo '+ruolo.nome+'">×</button>';
                     }
 
+                    // Lupo e Contadino sono gli unici due ruoli che possono
+                    // avere più di un giocatore: uno stepper +/- inline sul
+                    // chip stesso, invece di un popup separato.
+                    var conteggio = (id==='lupo' || id==='contadino') ?
+                        ('<div class="ruolo-stepper">' +
+                            '<button type="button" class="ruolo-stepper-btn" onclick="cambia_numero_ruolo(\''+id+'\',-1)" aria-label="Uno in meno">−</button>' +
+                            '<span class="ruolo-stepper-valore" id="stepper-'+id+'-valore">1</span>' +
+                            '<button type="button" class="ruolo-stepper-btn" onclick="cambia_numero_ruolo(\''+id+'\',1)" aria-label="Uno in più">+</button>' +
+                        '</div>') : '';
+
                     chip.innerHTML =
-                        '<input type="checkbox" class="ruolo-input" id="'+id+'"'+extraClick+'>' +
+                        '<input type="checkbox" class="ruolo-input" id="'+id+'">' +
                         '<label for="'+id+'" class="ruolo-label">' +
                             '<span class="ruolo-sigillo" aria-hidden="true"></span>' +
                             '<span class="ruolo-testo" id="'+id+'_2">'+ruolo.nome+'</span>' +
@@ -1705,11 +3296,18 @@
                         '<svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="currentColor" viewBox="0 0 16 16">' +
                         '<path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"></path>' +
                         '<path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"></path>' +
-                        '</svg></button>' + bottoneElimina;
+                        '</svg></button>' + bottoneElimina + conteggio;
                     griglia.appendChild(chip);
 
                     chip.querySelector('input').addEventListener('change', function(){
                         chip.classList.toggle('selezionato', this.checked);
+                        if(id==='lupo'){
+                            lupi = this.checked ? (lupi>0 ? lupi : 1) : 0;
+                            document.getElementById('stepper-lupo-valore').innerText = lupi || 1;
+                        } else if(id==='contadino'){
+                            contadini = this.checked ? (contadini>0 ? contadini : 1) : 0;
+                            document.getElementById('stepper-contadino-valore').innerText = contadini || 1;
+                        }
                         aggiorna_contatore_ruoli();
                     });
                 });
@@ -1848,12 +3446,13 @@
             }
 
             function rimuovi_ruolo_personalizzato(id){
-                if(!confirm('Vuoi eliminare definitivamente questo ruolo personalizzato? Non potrai recuperarlo.')) return;
-                delete ROLES[id];
-                ROLE_ORDER = ROLE_ORDER.filter(function(x){ return x!==id; });
-                delete descrizioniPartita[id];
-                salva_ruoli_personalizzati();
-                costruisci_griglia_ruoli();
+                mostra_conferma('Eliminare il ruolo?', 'Vuoi eliminare definitivamente questo ruolo personalizzato? Non potrai recuperarlo.', function(){
+                    delete ROLES[id];
+                    ROLE_ORDER = ROLE_ORDER.filter(function(x){ return x!==id; });
+                    delete descrizioniPartita[id];
+                    salva_ruoli_personalizzati();
+                    costruisci_griglia_ruoli();
+                });
             }
 
             /* ==========================================================
@@ -1939,7 +3538,7 @@
                         consegna_ruoli();
                     }
                 } else {
-                    alert('Hai scelto ' + ruoli_partita.length + ' ruoli, ma i giocatori sono ' + ng + '. Usa il contatore in alto per pareggiare i due numeri.');
+                    mostra_avviso('Numeri non corrispondenti', 'Hai scelto ' + ruoli_partita.length + ' ruoli, ma i giocatori sono ' + ng + '. Usa il contatore in alto per pareggiare i due numeri.');
                 }
             }
 
@@ -2046,6 +3645,19 @@
                     cellaNote.innerHTML='<input type="text" class="input-annotazione" data-idx="'+idx+'" placeholder="annotazioni..." oninput="sincronizza_annotazione('+idx+', this.value)">';
                 }
                 document.getElementById('btn-inizia-notte').innerText = notteIniziata ? 'Continua la notte' : 'Inizia la notte';
+                // In presenza ha senso ricordare di passare il telefono; a
+                // distanza il narratore ha già il proprio dispositivo in
+                // mano, quindi la stessa frase sarebbe fuori luogo.
+                document.getElementById('narratore-pronto-hint').innerText = (modalitaGioco === 'remoto')
+                    ? 'Ogni giocatore ha già ricevuto la propria carta sul suo telefono.'
+                    : 'Passa il dispositivo al narratore per iniziare la partita.';
+
+                var haPersonalizzati = ruoli_partita.some(function(id){ return ROLES[id] && ROLES[id].personalizzato; });
+                document.getElementById('regia-assistita-avviso').style.display = haPersonalizzati ? 'block' : 'none';
+            }
+
+            function cambia_regia_assistita(){
+                regiaAssistitaAttiva = document.getElementById('regia-assistita-check').checked;
             }
 
             function sincronizza_annotazione(idx, valore){
@@ -2102,9 +3714,229 @@
                     notte=1;
                     usatoRuolo={};
                     notteIniziata=true;
+                    statoPartitaLocale = LupusEngine.creaStatoPartita(ruoli_partita);
                 }
                 render_notte();
                 vaiA('scena-notte');
+            }
+
+            // Ruoli il cui potere il motore sa risolvere da solo (stessa
+            // logica del narratore automatico remoto, qui applicata in
+            // presenza/a distanza-manuale su un solo dispositivo): per
+            // ognuno, oltre a "chi svegliare" si registra anche il bersaglio
+            // scelto stanotte, così a fine notte il motore può ricapitolare
+            // l'esito da solo (morti, sostituzioni di Angelo/Druido, cosa ha
+            // visto la Veggente, ecc.) invece di doverlo tenere a mente.
+            // Cacciatore e Inquisitore restano fuori apposta: se ne occupa
+            // il narratore a voce, come sempre (agiscono di giorno).
+            var CHIAVE_AZIONE_NOTTE_LOCALE = {
+                illusionista:'illusionistaBersaglioIdx', spaccino:'spaccinoBersaglioIdx',
+                mitomane:'mitomaneBersaglioIdx', lupo:'lupiVittimaIdx',
+                insinuo:'insinuoBersaglioIdx', veggente:'veggenteBersaglioIdx',
+                guardia:'guardiaBersaglioIdx', medium:'mediumBersaglioIdx',
+                angelo:'angeloBersaglioIdx', puttana:'puttanaBersaglioIdx',
+                senzaVolto:'senzaVoltoBersaglioIdx', fantasma:'fantasmaBersaglioIdx'
+            };
+            var PLATEA_AZIONE_NOTTE_LOCALE = {
+                illusionista:'vivi', spaccino:'vivi', mitomane:'vivi', lupo:'vivi',
+                insinuo:'vivi', veggente:'vivi', guardia:'vivi', medium:'morti',
+                angelo:'vivi', puttana:'vivi', fantasma:'vivi'
+                // senzaVolto non ha una "platea" fissa: le sue opzioni si
+                // leggono da statoPartitaLocale.mortiUltimoGiro, vedi
+                // opzioni_senzavolto_locale() più sotto.
+            };
+
+            // Bersagli proponibili per un ruolo stanotte: esclude chi lo
+            // interpreta (tranne la Guardia, che può proteggere anche sé
+            // stessa) e, solo per la Guardia, chi ha già protetto la notte
+            // scorsa (il motore lo ignorerebbe comunque, ma è più chiaro non
+            // offrirlo neppure come scelta).
+            function opzioni_bersaglio_notte_locale(ruoloId){
+                var attoreIdx = (ruoloId === 'lupo') ? -1 : LupusEngine.trovaIndiceRuolo(statoPartitaLocale.ruoli, ruoloId);
+                var escludiSe = (ruoloId === 'guardia') ? null : attoreIdx;
+                var escludiUltimo = (ruoloId === 'guardia') ? statoPartitaLocale.guardiaUltimoProtetto : null;
+                var platea = PLATEA_AZIONE_NOTTE_LOCALE[ruoloId];
+                var out=[];
+                giocatori.forEach(function(nome, idx){
+                    if(idx === escludiSe || idx === escludiUltimo) return;
+                    var vivo = statoPartitaLocale.vivo[idx] !== false;
+                    if(platea === 'vivi' && !vivo) return;
+                    if(platea === 'morti' && vivo) return;
+                    out.push({ idx:idx, nome:nome });
+                });
+                return out;
+            }
+
+            // Il Senza Volto può provare a resuscitare solo chi è morto "di
+            // recente" — la notte appena trascorsa o il giorno appena
+            // trascorso, prima di quella in corso — e solo se era Lupo o
+            // Contadino. `statoPartitaLocale.mortiUltimoGiro` è mantenuta
+            // dal motore stesso (applicaMorte vi accoda ogni morte reale,
+            // notturna o diurna; risolviNotte la azzera e ricomincia ad
+            // accumulare a ogni notte): a differenza degli altri ruoli
+            // questa lista NON dipende da nessuna scelta fatta stanotte per
+            // altri ruoli, quindi non serve ricalcolarla quando cambiano.
+            function opzioni_senzavolto_locale(){
+                var senzaVoltoIdx = LupusEngine.trovaIndiceRuolo(statoPartitaLocale.ruoli, 'senzaVolto');
+                return statoPartitaLocale.mortiUltimoGiro.filter(function(idx){
+                    if(idx === senzaVoltoIdx) return false;
+                    var ruolo = statoPartitaLocale.ruoli[idx];
+                    return ruolo === 'lupo' || ruolo === 'contadino';
+                }).map(function(idx){ return { idx:idx, nome: giocatori[idx] }; });
+            }
+            function imposta_azione_notte_locale(ruoloId, value){
+                notteLocaleAzioni[ruoloId] = (value === '') ? null : parseInt(value, 10);
+                aggiorna_anteprima_notte_locale();
+            }
+            function imposta_azione_suicida_locale(value){
+                notteLocaleAzioni.suicidaAzione = value || null;
+                // Se i lupi stanno per colpire proprio il Suicida che finge,
+                // l'attacco viene assorbito (nessuna morte reale): può
+                // cambiare chi risulta morto stanotte, quindi anche qui
+                // l'anteprima va ricalcolata.
+                aggiorna_anteprima_notte_locale();
+            }
+
+            // Converte le scelte raccolte stanotte (per id di ruolo) nella
+            // forma richiesta da LupusEngine.risolviNotte.
+            function costruisci_azioni_notte_locale(){
+                function opz(id){
+                    var v = notteLocaleAzioni[id];
+                    return (v === undefined || v === null) ? null : v;
+                }
+                return {
+                    illusionistaBersaglioIdx: opz('illusionista'),
+                    spaccinoBersaglioIdx: opz('spaccino'),
+                    mitomaneBersaglioIdx: opz('mitomane'),
+                    lupiVittimaIdx: opz('lupo'),
+                    insinuoBersaglioIdx: opz('insinuo'),
+                    veggenteBersaglioIdx: opz('veggente'),
+                    guardiaBersaglioIdx: opz('guardia'),
+                    mediumBersaglioIdx: opz('medium'),
+                    angeloBersaglioIdx: opz('angelo'),
+                    puttanaBersaglioIdx: opz('puttana'),
+                    senzaVoltoBersaglioIdx: opz('senzaVolto'),
+                    neomelodicoAttivato: notteLocaleAzioni.neomelodicoAttivato === true,
+                    fantasmaBersaglioIdx: opz('fantasma'),
+                    suicidaAzione: (notteLocaleAzioni.suicidaAzione === 'finto' || notteLocaleAzioni.suicidaAzione === 'resuscita') ? notteLocaleAzioni.suicidaAzione : null
+                };
+            }
+
+            // Una riga in stile "notizie" (stesse classi .log-evento usate
+            // nella modalità a distanza), qui per il recap del narratore.
+            function crea_riga_log_locale(tipo, testo){
+                var riga=document.createElement('div');
+                riga.className='log-evento '+tipo;
+                var icona=document.createElement('span');
+                icona.className='log-icona';
+                icona.setAttribute('aria-hidden','true');
+                icona.textContent = ICONA_LOG[tipo] || '•';
+                riga.appendChild(icona);
+                var corpo=document.createElement('div');
+                corpo.className='log-corpo';
+                var testoEl=document.createElement('span');
+                testoEl.className='log-testo';
+                testoEl.textContent=testo;
+                corpo.appendChild(testoEl);
+                riga.appendChild(corpo);
+                return riga;
+            }
+
+            // Ricapitola l'esito della notte appena risolta dal motore: morti
+            // (con la causa già corretta da eventuali sostituzioni di Angelo/
+            // Druido), resurrezioni, ed eventuali informazioni private da
+            // riferire sottovoce a Veggente/Medium/Mitomane — esattamente
+            // quello che il narratore dovrebbe altrimenti tenere a mente da
+            // solo. Gli attori vanno passati calcolati PRIMA di risolviNotte,
+            // perché Mitomane e Suicida possono cambiare ruolo per effetto
+            // della risoluzione stessa.
+            function costruisci_recap_notte_locale(esito, veggenteIdxAttore, mediumIdxAttore, mitomaneIdxAttore){
+                var righe=[];
+                esito.morti.forEach(function(m){
+                    righe.push({ tipo:'morte', testo: testo_morte(giocatori[m.giocatoreIdx], m.causa) });
+                });
+                esito.eventi.forEach(function(e){
+                    if(e.tipo === 'senzavolto_resuscita' || e.tipo === 'suicida_resuscitato'){
+                        righe.push({ tipo:'resurrezione', testo: giocatori[e.giocatoreIdx] + ' è tornato in vita!' });
+                    }
+                });
+                var mortiReali = esito.morti.filter(function(m){ return m.causa !== 'suicidio_finto'; });
+                if(mortiReali.length === 0){
+                    righe.push({ tipo:'pace', testo:'Questa notte non è morto nessuno.' });
+                }
+                if(esito.rivelazioni.veggente && veggenteIdxAttore !== -1){
+                    var rv = esito.rivelazioni.veggente;
+                    righe.push({ tipo:'privato', testo: 'Solo per la Veggente ('+giocatori[veggenteIdxAttore]+'): '+giocatori[rv.bersaglioIdx]+' è '+(rv.cattivo?'cattivo':'buono')+'.' });
+                }
+                if(esito.rivelazioni.medium && mediumIdxAttore !== -1){
+                    var rm = esito.rivelazioni.medium;
+                    var esitoTesto = rm.esito === 'matto' ? 'era il Matto' : (rm.esito === 'cattivo' ? 'era cattivo' : 'era buono');
+                    righe.push({ tipo:'privato', testo: 'Solo per il Medium ('+giocatori[mediumIdxAttore]+'): '+giocatori[rm.bersaglioIdx]+' '+esitoTesto+'.' });
+                }
+                if(esito.rivelazioni.mitomane && mitomaneIdxAttore !== -1){
+                    var rMito = esito.rivelazioni.mitomane;
+                    righe.push({ tipo:'privato', testo: 'Solo per il Mitomane ('+giocatori[mitomaneIdxAttore]+'): stanotte diventa '+(ROLES[rMito.nuovoRuolo] ? ROLES[rMito.nuovoRuolo].nome : rMito.nuovoRuolo)+'.' });
+                }
+                var vittoria = esito.vittoria || LupusEngine.calcolaVittoriaSquadre(statoPartitaLocale, ROLES);
+                if(vittoria){
+                    righe.push({ tipo:'vittoria', testo: testo_esito_vittoria(vittoria.tipo) });
+                }
+                return righe;
+            }
+
+            // Veggente, Medium e Mitomane hanno bisogno di una risposta
+            // SUBITO, non solo nel riepilogo di fine notte: nella realtà il
+            // narratore deve segnalare loro l'esito appena scelgono il
+            // bersaglio, prima ancora di passare al ruolo successivo. Si
+            // ricalcola una risoluzione "di prova" (LupusEngine.risolviNotte
+            // non tocca statoPartitaLocale: clona sempre lo stato) ogni volta
+            // che una scelta cambia, così l'anteprima resta corretta anche
+            // se dipende da un altro ruolo già impostato (Illusionista,
+            // Spaccino, Insinuo). Il Senza Volto NON ha bisogno di questo
+            // ricalcolo: le sue opzioni vengono da mortiUltimoGiro, fissa
+            // per tutta la notte — vedi opzioni_senzavolto_locale().
+            function aggiorna_anteprima_notte_locale(){
+                ['veggente','medium','mitomane'].forEach(function(ruoloId){
+                    var box = document.getElementById('notte-risposta-'+ruoloId);
+                    if(box) box.style.display='none';
+                });
+                if(!statoPartitaLocale) return;
+
+                var esito = LupusEngine.risolviNotte(statoPartitaLocale, costruisci_azioni_notte_locale(), ROLES);
+
+                if(esito.rivelazioni.veggente){
+                    var rv = esito.rivelazioni.veggente;
+                    var testo = giocatori[rv.bersaglioIdx] + ' è ' + (rv.cattivo ? 'cattivo' : 'buono') + '.';
+                    // Se il controllo ha smascherato (e quindi ucciso) un
+                    // Senza Volto/Criceto Mannaro/Fantasma, va detto SUBITO
+                    // anche questo — con la STESSA identica formula generica
+                    // usata per qualunque altra morte notturna (testo_morte:
+                    // "è morto", punto), mai una diversa: altrimenti si
+                    // capirebbe che è successo per mano della Veggente
+                    // invece che restare un mistero come tutte le altre.
+                    var mortoInsieme = esito.morti.filter(function(m){
+                        return m.giocatoreIdx === rv.bersaglioIdx && m.causa === 'veggente';
+                    })[0];
+                    if(mortoInsieme){
+                        testo += ' ' + testo_morte(giocatori[mortoInsieme.giocatoreIdx], mortoInsieme.causa);
+                    }
+                    mostra_risposta_live_notte_locale('veggente', testo);
+                }
+                if(esito.rivelazioni.medium){
+                    var rm = esito.rivelazioni.medium;
+                    var esitoTesto = rm.esito === 'matto' ? 'era il Matto' : (rm.esito === 'cattivo' ? 'era cattivo' : 'era buono');
+                    mostra_risposta_live_notte_locale('medium', giocatori[rm.bersaglioIdx] + ' ' + esitoTesto + '.');
+                }
+                if(esito.rivelazioni.mitomane){
+                    var rMito = esito.rivelazioni.mitomane;
+                    mostra_risposta_live_notte_locale('mitomane', 'Diventa ' + (ROLES[rMito.nuovoRuolo] ? ROLES[rMito.nuovoRuolo].nome : rMito.nuovoRuolo) + '.');
+                }
+            }
+            function mostra_risposta_live_notte_locale(ruoloId, testo){
+                var box = document.getElementById('notte-risposta-'+ruoloId);
+                if(!box) return;
+                box.textContent = testo;
+                box.style.display = 'block';
             }
 
             function render_notte(){
@@ -2112,6 +3944,7 @@
                 var lista=document.getElementById('notte-lista');
                 lista.innerHTML='';
                 pendingUsato={};
+                notteLocaleAzioni={};
 
                 // tutto il "cosa mostrare" è calcolato dal motore: qui costruiamo solo l'HTML
                 var stato = { notte: notte, playerAlive: playerAlive, usatoRuolo: usatoRuolo };
@@ -2143,6 +3976,40 @@
                     if(ruolo.sveglia && ruolo.sveglia.tipo==='finche_non_usato' && !tuttiMorti){
                         corpo += '<label class="usato-toggle"><input type="checkbox" data-ruolo="'+id+'" onchange="segna_usato(this)"> Ha usato il potere stanotte</label>';
                     }
+                    if(!tuttiMorti && regiaAssistitaAttiva){
+                        if(id === 'suicida'){
+                            var suicidaIdxAttore = LupusEngine.trovaIndiceRuolo(statoPartitaLocale.ruoli, 'suicida');
+                            var giaFinto = suicidaIdxAttore !== -1 && statoPartitaLocale.finteMorto[suicidaIdxAttore];
+                            corpo += '<select class="input-form" style="margin-top:.5rem;" onchange="imposta_azione_suicida_locale(this.value)">' +
+                                '<option value="">Nessuna azione</option>' +
+                                (giaFinto
+                                    ? '<option value="resuscita">Resuscita (torna contadino)</option>'
+                                    : '<option value="finto">Fingi la morte stanotte</option>') +
+                                '</select>';
+                        } else if(id === 'senzaVolto'){
+                            // Chi è morto "di recente" (notte/giorno appena
+                            // trascorsi): lista fissa per tutta la notte, non
+                            // dipende da nessun'altra scelta fatta stanotte —
+                            // vedi opzioni_senzavolto_locale().
+                            var opzioniSV = opzioni_senzavolto_locale();
+                            corpo += '<select class="input-form" style="margin-top:.5rem;" onchange="imposta_azione_notte_locale(\'senzaVolto\', this.value)">' +
+                                '<option value="">Nessuna scelta</option>' +
+                                opzioniSV.map(function(o){ return '<option value="'+o.idx+'">'+o.nome+'</option>'; }).join('') +
+                                '</select>';
+                        } else if(CHIAVE_AZIONE_NOTTE_LOCALE[id]){
+                            var opzioni = opzioni_bersaglio_notte_locale(id);
+                            corpo += '<select class="input-form" style="margin-top:.5rem;" onchange="imposta_azione_notte_locale(\''+id+'\', this.value)">' +
+                                '<option value="">Nessuna scelta</option>' +
+                                opzioni.map(function(o){ return '<option value="'+o.idx+'">'+o.nome+'</option>'; }).join('') +
+                                '</select>';
+                            // Veggente, Medium e Mitomane hanno una risposta da
+                            // dare subito: la riga resta vuota/nascosta finché
+                            // non c'è una scelta (vedi aggiorna_anteprima_notte_locale).
+                            if(id === 'veggente' || id === 'medium' || id === 'mitomane'){
+                                corpo += '<div class="notte-risposta" id="notte-risposta-'+id+'" style="display:none;"></div>';
+                            }
+                        }
+                    }
                     corpo += '</div>' +
                         '<button type="button" class="info-btn" onclick="info(\''+id+'\')" aria-label="Informazioni su '+ruolo.nome+'">' +
                         '<svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="currentColor" viewBox="0 0 16 16">' +
@@ -2157,29 +4024,91 @@
                 if(righeNotte.length===0){
                     lista.innerHTML='<p class="notte-vuota">Nessuno da svegliare questa notte.</p>';
                 }
+                aggiorna_anteprima_notte_locale();
             }
 
             function segna_usato(checkbox){
-                pendingUsato[checkbox.getAttribute('data-ruolo')] = checkbox.checked;
+                var id = checkbox.getAttribute('data-ruolo');
+                pendingUsato[id] = checkbox.checked;
+                // Il Neomelodico è anche uno dei ruoli che il motore risolve
+                // da solo: la sua "azione" stanotte è esattamente aver
+                // attivato o no il potere, sincronizzata qui invece che nel
+                // ciclo generico su pendingUsato in prepara_morti().
+                if(id === 'neomelodico'){
+                    notteLocaleAzioni.neomelodicoAttivato = checkbox.checked;
+                    // Se stanotte c'è pace, anche l'eventuale morte da
+                    // svelamento della Veggente (Senza Volto/Criceto
+                    // Mannaro/Fantasma) non avviene più: l'anteprima va
+                    // ricalcolata anche da qui.
+                    aggiorna_anteprima_notte_locale();
+                }
             }
 
             function prepara_morti(){
-                // applico i poteri "usati" segnati questa notte, prima di passare oltre
+                // applico i poteri "usati" segnati questa notte per i ruoli
+                // generici (il Neomelodico lo decide invece il motore qui
+                // sotto, in base a se è stato davvero possibile usarlo).
                 Object.keys(pendingUsato).forEach(function(id){
+                    if(id === 'neomelodico') return;
                     if(pendingUsato[id]) usatoRuolo[id]=true;
                 });
 
-                document.getElementById('morti-titolo').innerText = 'Chi è sopravvissuto alla notte '+notte+'?';
+                var numeroNotteAppenaConclusa = notte;
+                var recapBox = document.getElementById('morti-recap');
+                recapBox.innerHTML = '';
+
+                if(statoPartitaLocale && regiaAssistitaAttiva){
+                    // Catturati PRIMA di risolviNotte: chi interpretava questi
+                    // ruoli stanotte, perché Mitomane/Suicida possono cambiare
+                    // ruolo per effetto della risoluzione stessa.
+                    var veggenteIdxAttore = LupusEngine.trovaIndiceRuolo(statoPartitaLocale.ruoli, 'veggente');
+                    var mediumIdxAttore = LupusEngine.trovaIndiceRuolo(statoPartitaLocale.ruoli, 'medium');
+                    var mitomaneIdxAttore = LupusEngine.trovaIndiceRuolo(statoPartitaLocale.ruoli, 'mitomane');
+                    numeroNotteAppenaConclusa = statoPartitaLocale.notte;
+
+                    var esito = LupusEngine.risolviNotte(statoPartitaLocale, costruisci_azioni_notte_locale(), ROLES);
+                    statoPartitaLocale = esito.stato;
+                    ruoli_partita = statoPartitaLocale.ruoli.slice();
+                    playerAlive = statoPartitaLocale.vivo.slice();
+                    notte = statoPartitaLocale.notte; // già incrementato da risolviNotte
+                    usatoRuolo.neomelodico = statoPartitaLocale.neomelodicoUsato;
+
+                    var righeRecap = costruisci_recap_notte_locale(esito, veggenteIdxAttore, mediumIdxAttore, mitomaneIdxAttore);
+                    righeRecap.forEach(function(r){ recapBox.appendChild(crea_riga_log_locale(r.tipo, r.testo)); });
+                } else if(statoPartitaLocale){
+                    // Aiuto disattivato: la notte avanza comunque, ma senza
+                    // alcuna risoluzione automatica (comportamento di prima
+                    // di questa funzionalità).
+                    statoPartitaLocale.notte++;
+                    notte = statoPartitaLocale.notte;
+                }
+
+                document.getElementById('morti-titolo').innerText = 'Chi è sopravvissuto alla notte '+numeroNotteAppenaConclusa+'?';
                 var lista=document.getElementById('lista-vivi');
                 lista.innerHTML='';
                 giocatori.forEach(function(nome, idx){
                     var vivo = playerAlive[idx];
+                    // Il finto suicidio non deve creare confusione: va
+                    // segnalato come una morte qualunque nella lista (stessa
+                    // spunta "tolta" visivamente, stesso "(morto)"), per non
+                    // contraddire il riepilogo qui sopra che lo annuncia già
+                    // in modo identico a una morte vera. La spunta VERA
+                    // resta selezionata sotto (è vivo per davvero — se
+                    // venisse tolta diventerebbe morto sul serio confermando
+                    // questa schermata): un promemoria dorato ricorda perché.
+                    var finto = vivo && statoPartitaLocale && statoPartitaLocale.finteMorto[idx];
                     var riga=document.createElement('div');
-                    riga.className='vivo-riga' + (vivo ? '' : ' morto');
+                    riga.className='vivo-riga' + (vivo && !finto ? '' : ' morto');
                     if(vivo){
+                        var nomeVisivo = finto
+                            ? '<span style="text-decoration:line-through;">'+nome+'</span> <span style="font-size:.72rem; color:var(--cattivi);">(morto)</span>'
+                            : nome;
+                        var promemoriaFinto = finto
+                            ? ' <span class="ruolo-piccolo" style="color:var(--oro);">— finto, in realtà è vivo</span>'
+                            : '';
                         riga.innerHTML =
                             '<input type="checkbox" id="vivo-'+idx+'" data-idx="'+idx+'" checked>' +
-                            '<label for="vivo-'+idx+'">'+nome+' <span class="ruolo-piccolo">('+ROLES[ruoli_partita[idx]].nome+')</span></label>';
+                            '<label for="vivo-'+idx+'">'+nomeVisivo+' <span class="ruolo-piccolo">('+ROLES[ruoli_partita[idx]].nome+')</span>'+promemoriaFinto+'</label>';
                     } else {
                         // già morto in una notte precedente: resta visibile e SPUNTABILE,
                         // per permettere di segnarlo di nuovo vivo in caso di resurrezione (es. Senza Volto)
@@ -2195,11 +4124,44 @@
             }
 
             function conferma_morti(){
+                // La notte è già stata fatta avanzare in prepara_morti():
+                // qui si applicano solo le spunte. Una spunta che passa da
+                // "vivo" a "morto" è una morte NUOVA confermata qui — di
+                // regola il voto del villaggio — e va fatta passare da
+                // LupusEngine.applicaMorte (non da un semplice azzeramento):
+                // così scattano anche le sostituzioni di Angelo/Druido, la
+                // vittoria individuale del Matto se votato, e la morte entra
+                // nella finestra che il Senza Volto potrà scegliere la
+                // prossima notte (mortiUltimoGiro). Una spunta che torna
+                // "viva" (correzione manuale del narratore) resta invece un
+                // semplice azzeramento diretto: non è una morte da decidere.
+                var vittoriaDaVoto = null;
                 document.querySelectorAll('#lista-vivi input[type=checkbox]').forEach(function(cb){
                     var idx=parseInt(cb.getAttribute('data-idx'));
-                    playerAlive[idx] = cb.checked;
+                    var vivo = cb.checked;
+                    var eraVivo = playerAlive[idx];
+                    if(eraVivo && !vivo && statoPartitaLocale){
+                        var esito = LupusEngine.applicaMorte(statoPartitaLocale, idx, 'voto');
+                        statoPartitaLocale = esito.stato;
+                        if(esito.vittoria) vittoriaDaVoto = esito.vittoria;
+                    } else {
+                        playerAlive[idx] = vivo;
+                        if(statoPartitaLocale) statoPartitaLocale.vivo[idx] = vivo;
+                    }
                 });
-                notte+=1;
+                if(statoPartitaLocale){
+                    playerAlive = statoPartitaLocale.vivo.slice();
+                    ruoli_partita = statoPartitaLocale.ruoli.slice();
+                }
+                // Una morte confermata qui può essere quella decisiva: se
+                // un'intera squadra risulta appena estinta, va comunicato
+                // subito, esattamente come già succede dopo le morti
+                // notturne — altrimenti il narratore potrebbe non
+                // accorgersene e far proseguire una partita già finita.
+                var vittoria = vittoriaDaVoto || (statoPartitaLocale ? LupusEngine.calcolaVittoriaSquadre(statoPartitaLocale, ROLES) : null);
+                if(vittoria){
+                    mostra_avviso('La partita è finita', testo_esito_vittoria(vittoria.tipo));
+                }
                 render_notte();
                 vaiA('scena-notte');
             }
@@ -2237,55 +4199,22 @@
             }
 
             /* ==========================================================
-               CONTEGGIO LUPI / CONTADINI
+               CONTEGGIO LUPI / CONTADINI — stepper inline sul chip stesso
                ========================================================== */
-            function inserisci_numero_lupi(){
-                if(document.getElementById('lupo').checked===true){
-                    document.getElementById('numeroL').value = lupi>0 ? lupi : '';
-                    document.getElementById('numL').classList.add('aperta');
-                    setTimeout(function(){ document.getElementById('numeroL').focus(); }, 50);
+            // Chiamata dallo stepper +/- dentro al chip di Lupo/Contadino
+            // (gli unici due ruoli che possono avere più di un giocatore).
+            function cambia_numero_ruolo(id, delta){
+                var nuovo;
+                if(id === 'lupo'){
+                    lupi = Math.max(1, Math.min(15, lupi + delta));
+                    nuovo = lupi;
+                } else if(id === 'contadino'){
+                    contadini = Math.max(1, Math.min(15, contadini + delta));
+                    nuovo = contadini;
                 } else {
-                    document.getElementById('lupo_2').innerText='Lupo';
-                    lupi=0;
-                    aggiorna_contatore_ruoli();
+                    return;
                 }
-            }
-            function inserisci_lupi(){
-                var val=parseInt(document.getElementById('numeroL').value);
-                if(!val || val<1){ document.getElementById('numeroL').focus(); return; }
-                lupi=val;
-                document.getElementById('numL').classList.remove('aperta');
-                document.getElementById('lupo_2').innerText='Lupi ('+lupi+')';
-                aggiorna_contatore_ruoli();
-            }
-            function chiudiL(){
-                document.getElementById('numL').classList.remove('aperta');
-                if(lupi===0) document.getElementById('lupo').checked=false;
-                aggiorna_contatore_ruoli();
-            }
-
-            function inserisci_numero_contadini(){
-                if(document.getElementById('contadino').checked===true){
-                    document.getElementById('numeroC').value = contadini>0 ? contadini : '';
-                    document.getElementById('numC').classList.add('aperta');
-                    setTimeout(function(){ document.getElementById('numeroC').focus(); }, 50);
-                } else {
-                    document.getElementById('contadino_2').innerText='Contadino';
-                    contadini=0;
-                    aggiorna_contatore_ruoli();
-                }
-            }
-            function inserisci_contadini(){
-                var val=parseInt(document.getElementById('numeroC').value);
-                if(!val || val<1){ document.getElementById('numeroC').focus(); return; }
-                contadini=val;
-                document.getElementById('numC').classList.remove('aperta');
-                document.getElementById('contadino_2').innerText='Contadini ('+contadini+')';
-                aggiorna_contatore_ruoli();
-            }
-            function chiudiC(){
-                document.getElementById('numC').classList.remove('aperta');
-                if(contadini===0) document.getElementById('contadino').checked=false;
+                document.getElementById('stepper-'+id+'-valore').innerText = nuovo;
                 aggiorna_contatore_ruoli();
             }
         </script>

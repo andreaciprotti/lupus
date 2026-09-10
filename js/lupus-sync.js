@@ -19,10 +19,37 @@
  *   creata: <timestamp>,
  *   ng: <numero massimo di giocatori previsto dal narratore>,
  *   fase: 'lobby' | 'ruoli' | 'in_corso',
+ *   narratoreAutomatico: <bool>,        // impostata alla creazione, non cambia più
+ *   narratorePlayerId: <string|null>,   // se narratoreAutomatico, chi tra i giocatori è il narratore
  *   giocatori: {
- *     "<playerId>": { nome: "Marco", ruoloId: null, joinedAt: <timestamp> },
+ *     "<playerId>": { nome: "Marco", ruoloId: null, joinedAt: <timestamp>, narratore: <bool, opzionale> },
  *     ...
- *   }
+ *   },
+ *
+ *   // Solo con narratore automatico, ricreato da zero ad ogni notte:
+ *   notte: {
+ *     numero: 1,
+ *     turno: '<ruoloId>' | 'lupi' | null,   // chi sta agendo ora (per mostrare/nascondere le schermate)
+ *     scadenzaTurno: <timestamp epoch ms>|null,
+ *     azioni: { "<ruoloId>": { valore: <bersaglioPlayerId o altro>, ts: <timestamp> } },
+ *     votiLupi: { "<playerId>": { bersaglioPlayerId: <string>, ts: <timestamp> } },
+ *     chatLupi: { "<msgId>": { playerId: <string>, testo: <string>, ts: <timestamp> } },
+ *     esiti: null | { morti, eventi, vittoria, rivelazioniPrivate: { "<playerId>": {...} } }
+ *   },
+ *
+ *   // Pubblico: chi è vivo/morto adesso e perché — è la fotografia "ufficiale"
+ *   // che anche il pannello del narratore-proxy può leggere (mai i privati sopra).
+ *   statoPubblico: { vivo: { "<playerId>": <bool> }, morti: [...], notte: <numero> },
+ *
+ *   // Bottone "Rivelati" di Cacciatore/Inquisitore: eventi verificati dal
+ *   // dispositivo del narratore prima di essere pubblicati, così nessuno
+ *   // deve fidarsi sulla parola di chi dichiara un ruolo.
+ *   rivelazioniPubbliche: { "<eventoId>": { playerId, ruolo, bersaglioPlayerId, tipo, ts } },
+ *
+ *   // Coda di richieste in attesa che il narratore le verifichi e le
+ *   // trasformi (o no) in una rivelazionePubblica: bottone "Rivelati" di
+ *   // Cacciatore/Inquisitore, esito del suo interrogatorio.
+ *   richiesteSpeciali: { "<id>": { playerId, ruoloAtteso, tipo, bersaglioPlayerId, ts } }
  * }
  */
 (function(root, factory){
@@ -62,17 +89,41 @@
         return codice;
     }
 
-    // Crea una nuova stanza vuota, in attesa di giocatori. Risolve col codice creato.
-    function creaStanza(ng){
+    // Crea una nuova stanza vuota, in attesa di giocatori. Risolve col codice
+    // creato (stringa) — o, se opzioni.narratoreAutomatico è vero, con
+    // { codice, narratorePlayerId }: in quel caso il narratore viene inserito
+    // subito come giocatore (con opzioni.nomeNarratore) e riceverà un ruolo
+    // come chiunque altro al momento della distribuzione.
+    function creaStanza(ng, opzioni){
+        opzioni = opzioni || {};
         return new Promise(function(resolve, reject){
             if(!pronto()){ reject(new Error('LupusSync non configurato: vedi il commento vicino a LupusSync.configura() in index.html.')); return; }
             var codice = generaCodiceStanza();
-            db.ref('stanze/' + codice).set({
+            var rifStanza = db.ref('stanze/' + codice);
+            var giocatoriIniziali = {};
+            var narratorePlayerId = null;
+
+            if(opzioni.narratoreAutomatico){
+                var rifNarratore = rifStanza.child('giocatori').push();
+                narratorePlayerId = rifNarratore.key;
+                giocatoriIniziali[narratorePlayerId] = {
+                    nome: opzioni.nomeNarratore || 'Narratore',
+                    ruoloId: null,
+                    joinedAt: firebase.database.ServerValue.TIMESTAMP,
+                    narratore: true
+                };
+            }
+
+            rifStanza.set({
                 creata: firebase.database.ServerValue.TIMESTAMP,
                 ng: ng,
                 fase: 'lobby',
-                giocatori: {}
-            }).then(function(){ resolve(codice); }).catch(reject);
+                narratoreAutomatico: !!opzioni.narratoreAutomatico,
+                narratorePlayerId: narratorePlayerId,
+                giocatori: giocatoriIniziali
+            }).then(function(){
+                resolve(opzioni.narratoreAutomatico ? { codice: codice, narratorePlayerId: narratorePlayerId } : codice);
+            }).catch(reject);
         });
     }
 
@@ -94,7 +145,7 @@
                     ruoloId: null,
                     joinedAt: firebase.database.ServerValue.TIMESTAMP
                 }).then(function(){
-                    resolve({ playerId: nuovoRif.key, codice: codice });
+                    resolve({ playerId: nuovoRif.key, codice: codice, narratoreAutomatico: !!stato.narratoreAutomatico });
                 }).catch(reject);
             }).catch(reject);
         });
@@ -146,6 +197,175 @@
         return db.ref('stanze/' + codice + '/ng').set(ng);
     }
 
+    /* ==========================================================
+       NARRATORE AUTOMATICO — solo la parte "trasporto": nessuna delle
+       funzioni qui sotto decide chi vince o chi muore, si limitano a
+       leggere/scrivere i rami giusti. La logica vive tutta in
+       LupusEngine; qui sotto arriva già risolta da chi chiama (oggi, il
+       dispositivo del narratore).
+       ========================================================== */
+
+    // Azzera/avvia il nodo "notte" per la notte indicata, già pronto per il
+    // primo turno (un'unica scrittura atomica: chi ascolta non vede mai un
+    // turno nullo di passaggio prima del vero primo turno).
+    function avviaNotte(codice, numero, primoRuolo, scadenzaTurno){
+        if(!pronto()) return Promise.reject(new Error('LupusSync non configurato.'));
+        return db.ref('stanze/' + codice + '/notte').set({
+            numero: numero,
+            turno: primoRuolo || null,
+            scadenzaTurno: scadenzaTurno || null,
+            azioni: {},
+            votiLupi: {},
+            chatLupi: {},
+            esiti: null
+        });
+    }
+
+    // Fa avanzare il turno (quale ruolo/i lupi stanno agendo ora), con
+    // un'eventuale scadenza (epoch ms) che la UI usa per il countdown locale.
+    function impostaTurnoNotte(codice, ruoloId, scadenzaTs){
+        if(!pronto()) return Promise.reject(new Error('LupusSync non configurato.'));
+        return db.ref('stanze/' + codice + '/notte').update({
+            turno: ruoloId || null,
+            scadenzaTurno: scadenzaTs || null
+        });
+    }
+
+    // Un giocatore sottomette la propria azione per il ruolo che interpreta
+    // stanotte (bersaglio, o altro valore specifico del ruolo: es. l'azione
+    // del Suicida è 'finto'/'resuscita', quella del Neomelodico è un bool).
+    function sottomettiAzioneNotte(codice, ruoloId, valore){
+        if(!pronto()) return Promise.reject(new Error('LupusSync non configurato.'));
+        return db.ref('stanze/' + codice + '/notte/azioni/' + ruoloId).set({
+            valore: valore,
+            ts: firebase.database.ServerValue.TIMESTAMP
+        });
+    }
+
+    // Un lupo vota (o cambia voto) durante la fase di consenso. Ogni voto
+    // sovrascrive il precedente dello stesso giocatore: chi ascolta vede
+    // sempre lo stato attuale dei voti, in tempo reale.
+    function votaLupi(codice, playerId, bersaglioPlayerId){
+        if(!pronto()) return Promise.reject(new Error('LupusSync non configurato.'));
+        return db.ref('stanze/' + codice + '/notte/votiLupi/' + playerId).set({
+            bersaglioPlayerId: bersaglioPlayerId,
+            ts: firebase.database.ServerValue.TIMESTAMP
+        });
+    }
+
+    // Messaggio nella chat privata tra i soli Lupi (append-only).
+    function inviaMessaggioLupi(codice, playerId, testo){
+        if(!pronto()) return Promise.reject(new Error('LupusSync non configurato.'));
+        return db.ref('stanze/' + codice + '/notte/chatLupi').push({
+            playerId: playerId,
+            testo: testo,
+            ts: firebase.database.ServerValue.TIMESTAMP
+        });
+    }
+
+    // Il narratore (dopo aver girato LupusEngine.risolviNotte lato suo)
+    // scrive qui il risultato: pubblico E privato per-giocatore restano
+    // sotto lo stesso nodo "notte", ma è compito della UI non mostrare mai
+    // i privati di qualcun altro sullo schermo del narratore.
+    function scriviEsitiNotte(codice, esiti){
+        if(!pronto()) return Promise.reject(new Error('LupusSync non configurato.'));
+        return db.ref('stanze/' + codice + '/notte/esiti').set(esiti);
+    }
+
+    // Aggiorna il ruolo "attuale" di un giocatore (Mitomane che si
+    // converte, Suicida che resuscita da contadino, ...): sovrascrive
+    // ruoloId, che resta comunque l'unica fonte di verità sul ruolo.
+    function aggiornaRuoloGiocatore(codice, playerId, nuovoRuoloId){
+        if(!pronto()) return Promise.reject(new Error('LupusSync non configurato.'));
+        return db.ref('stanze/' + codice + '/giocatori/' + playerId + '/ruoloId').set(nuovoRuoloId);
+    }
+
+    // Fotografia pubblica e ufficiale di chi è vivo/morto — l'unica cosa
+    // che il pannello di supervisione del narratore-proxy può leggere.
+    function scriviStatoPubblico(codice, statoPubblico){
+        if(!pronto()) return Promise.reject(new Error('LupusSync non configurato.'));
+        return db.ref('stanze/' + codice + '/statoPubblico').set(statoPubblico);
+    }
+
+    // Ascolta l'intero nodo "notte" (turno, azioni, voti, chat, esiti) in
+    // tempo reale. Restituisce una funzione per smettere di ascoltare.
+    function ascoltaNotte(codice, callback){
+        if(!pronto()){ console.error('LupusSync non configurato.'); return function(){}; }
+        var rif = db.ref('stanze/' + codice + '/notte');
+        var handler = function(snap){ callback(snap.val()); };
+        rif.on('value', handler);
+        return function smettiAscolto(){ rif.off('value', handler); };
+    }
+
+    // Ascolta la fotografia pubblica (vivo/morto).
+    function ascoltaStatoPubblico(codice, callback){
+        if(!pronto()){ console.error('LupusSync non configurato.'); return function(){}; }
+        var rif = db.ref('stanze/' + codice + '/statoPubblico');
+        var handler = function(snap){ callback(snap.val()); };
+        rif.on('value', handler);
+        return function smettiAscolto(){ rif.off('value', handler); };
+    }
+
+    // Pubblica un evento di rivelazione verificato (bottone "Rivelati" di
+    // Cacciatore/Inquisitore) — va chiamata SOLO dopo aver controllato con
+    // LupusEngine.verificaRuoloReale che chi lo dichiara lo sia davvero.
+    // evento: { playerId, ruolo, bersaglioPlayerId, tipo }.
+    function pubblicaRivelazione(codice, evento){
+        if(!pronto()) return Promise.reject(new Error('LupusSync non configurato.'));
+        var dati = {
+            playerId: evento.playerId,
+            ruolo: evento.ruolo,
+            bersaglioPlayerId: evento.bersaglioPlayerId || null,
+            tipo: evento.tipo,
+            ts: firebase.database.ServerValue.TIMESTAMP
+        };
+        // Campo extra usato solo dall'esito pubblico dell'Inquisitore (il
+        // bersaglio ha risposto o no) — opzionale per tutti gli altri eventi.
+        if(evento.rispose !== undefined) dati.rispose = !!evento.rispose;
+        return db.ref('stanze/' + codice + '/rivelazioniPubbliche').push(dati);
+    }
+
+    // Ascolta le rivelazioni pubbliche (Cacciatore/Inquisitore che si svelano).
+    function ascoltaRivelazioni(codice, callback){
+        if(!pronto()){ console.error('LupusSync non configurato.'); return function(){}; }
+        var rif = db.ref('stanze/' + codice + '/rivelazioniPubbliche');
+        var handler = function(snap){ callback(snap.val() || {}); };
+        rif.on('value', handler);
+        return function smettiAscolto(){ rif.off('value', handler); };
+    }
+
+    // Richiesta di un'azione speciale diurna (bottone "Rivelati" del
+    // Cacciatore/Inquisitore, o l'esito del suo interrogatorio): il
+    // dispositivo del narratore la verifica contro il ruolo reale prima di
+    // pubblicarla come rivelazione ufficiale — chi chiama qui non deve
+    // fidarsi di sé stesso, è solo una richiesta in attesa di verifica.
+    function richiediAzioneSpeciale(codice, richiesta){
+        if(!pronto()) return Promise.reject(new Error('LupusSync non configurato.'));
+        var dati = {};
+        Object.keys(richiesta).forEach(function(k){ dati[k] = richiesta[k]; });
+        dati.ts = firebase.database.ServerValue.TIMESTAMP;
+        return db.ref('stanze/' + codice + '/richiesteSpeciali').push(dati);
+    }
+
+    // Il narratore ascolta solo le richieste NUOVE (child_added), le elabora
+    // una alla volta e poi le rimuove con rimuoviRichiestaSpeciale.
+    function ascoltaRichiesteSpeciali(codice, callback){
+        if(!pronto()){ console.error('LupusSync non configurato.'); return function(){}; }
+        var rif = db.ref('stanze/' + codice + '/richiesteSpeciali');
+        var handler = function(snap){
+            var val = snap.val() || {};
+            val.id = snap.key;
+            callback(val);
+        };
+        rif.on('child_added', handler);
+        return function smettiAscolto(){ rif.off('child_added', handler); };
+    }
+
+    function rimuoviRichiestaSpeciale(codice, id){
+        if(!pronto()) return Promise.reject(new Error('LupusSync non configurato.'));
+        return db.ref('stanze/' + codice + '/richiesteSpeciali/' + id).remove();
+    }
+
     return {
         configura: configura,
         generaCodiceStanza: generaCodiceStanza,
@@ -156,6 +376,21 @@
         impostaNumeroGiocatori: impostaNumeroGiocatori,
         assegnaRuoli: assegnaRuoli,
         ascolta: ascolta,
-        eliminaStanza: eliminaStanza
+        eliminaStanza: eliminaStanza,
+        avviaNotte: avviaNotte,
+        impostaTurnoNotte: impostaTurnoNotte,
+        sottomettiAzioneNotte: sottomettiAzioneNotte,
+        votaLupi: votaLupi,
+        inviaMessaggioLupi: inviaMessaggioLupi,
+        scriviEsitiNotte: scriviEsitiNotte,
+        aggiornaRuoloGiocatore: aggiornaRuoloGiocatore,
+        scriviStatoPubblico: scriviStatoPubblico,
+        ascoltaNotte: ascoltaNotte,
+        ascoltaStatoPubblico: ascoltaStatoPubblico,
+        pubblicaRivelazione: pubblicaRivelazione,
+        ascoltaRivelazioni: ascoltaRivelazioni,
+        richiediAzioneSpeciale: richiediAzioneSpeciale,
+        ascoltaRichiesteSpeciali: ascoltaRichiesteSpeciali,
+        rimuoviRichiestaSpeciale: rimuoviRichiestaSpeciale
     };
 });
