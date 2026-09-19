@@ -49,10 +49,10 @@
 
     /**
      * Costruisce l'elenco dei ruoli della partita (con le ripetizioni per
-     * lupo/contadino) a partire da quali ruoli sono selezionati.
+     * lupo/contadino/massone) a partire da quali ruoli sono selezionati.
      * @param {string[]} ordineRuoli - gli id dei ruoli, nell'ordine della griglia
      * @param {Object.<string,boolean>} selezionati - mappa id -> selezionato o no
-     * @param {{lupi:number, contadini:number}} conteggi
+     * @param {{lupi:number, contadini:number, massoni:number}} conteggi
      * @returns {string[]} l'elenco (non ancora mescolato) dei ruoli della partita
      */
     function componiRuoliPartita(ordineRuoli, selezionati, conteggi){
@@ -63,6 +63,8 @@
                 for(var i = 0; i < (conteggi.lupi || 0); i++) ruoliPartita.push(id);
             } else if(id === 'contadino'){
                 for(var j = 0; j < (conteggi.contadini || 0); j++) ruoliPartita.push(id);
+            } else if(id === 'massone'){
+                for(var k = 0; k < (conteggi.massoni || 0); k++) ruoliPartita.push(id);
             } else {
                 ruoliPartita.push(id);
             }
@@ -205,6 +207,17 @@
         return -1;
     }
 
+    // Come trovaIndiceRuolo, ma restituisce TUTTI gli indici (utile per i
+    // Massoni, che possono essere più di uno in partita e devono
+    // riconoscersi a vicenda la prima notte).
+    function trovaIndiciRuolo(ruoli, ruoloId){
+        var indici = [];
+        for(var i = 0; i < ruoli.length; i++){
+            if(ruoli[i] === ruoloId) indici.push(i);
+        }
+        return indici;
+    }
+
     // Cosa "vede" la veggente/il medium su un ruolo: buono/cattivo in base
     // alla squadra, con il Matto trattato a parte solo per il medium.
     function allineamentoVisibile(ruoloId, roles){
@@ -226,6 +239,10 @@
             fantasmaTargetIdx: s.fantasmaTargetIdx,
             fantasmaStreak: s.fantasmaStreak,
             senzaVoltoResuscitati: s.senzaVoltoResuscitati.slice(),
+            // Indici dei giocatori che lo Spaccino ha già indicato in una
+            // notte precedente: può indicare ciascun giocatore una sola
+            // volta in tutta la partita, mai due volte lo stesso.
+            spaccinoBersagliUsati: s.spaccinoBersagliUsati.slice(),
             neomelodicoUsato: s.neomelodicoUsato,
             mortiProgrammate: s.mortiProgrammate.slice(),
             mortiUltimoGiro: s.mortiUltimoGiro.slice(),
@@ -253,6 +270,7 @@
             // alla terza persona DIVERSA, non alla terza resurrezione in
             // assoluto (resuscitare due volte lo stesso non vale doppio).
             senzaVoltoResuscitati: [],
+            spaccinoBersagliUsati: [],
             neomelodicoUsato: false,
             mortiProgrammate: [],
             // Chi è morto "di recente" (la notte appena trascorsa più
@@ -387,12 +405,48 @@
         return null;
     }
 
+    /**
+     * Il Criceto Mannaro vince da solo se è ancora vivo quando la partita
+     * finisce, a prescindere da chiunque altro abbia vinto: non anticipa né
+     * forza mai la fine della partita da solo, si limita a "dirottare" su di
+     * sé l'esito quando una vittoria (di squadra o individuale) sta per
+     * essere dichiarata comunque. Va richiamata su ogni vittoria proposta,
+     * poco prima di mostrarla, sia in locale che in remoto.
+     * @param {Object|null} vittoriaProposta - l'esito che si stava per dichiarare
+     * @returns {Object|null} la vittoria da mostrare davvero
+     */
+    function vittoriaFinale(stato, roles, vittoriaProposta){
+        if(!vittoriaProposta) return vittoriaProposta;
+        var idx = trovaIndiceRuolo(stato.ruoli, 'cricetoMannaro');
+        if(idx !== -1 && stato.vivo[idx]){
+            return { tipo: 'cricetoMannaro', giocatoreIdx: idx };
+        }
+        return vittoriaProposta;
+    }
+
     // Verifica che chi dichiara di interpretare un ruolo (bottone "Rivelati"
     // di Cacciatore/Inquisitore) lo interpreti davvero, prima di rendere
     // pubblica la rivelazione — così il narratore-proxy non deve fidarsi
     // sulla parola del giocatore.
     function verificaRuoloReale(stato, giocatoreIdx, ruoloAtteso){
         return stato.ruoli[giocatoreIdx] === ruoloAtteso;
+    }
+
+    /**
+     * L'Inquisitore, una sola volta a partita, chiede a un giocatore se è
+     * Lupo: quello è costretto a rispondere con la verità (nessuna scelta di
+     * tacere, a differenza della vecchia regola). Risposta basata sul ruolo
+     * REALE del bersaglio (non su allineamentoVisibile: è una domanda
+     * diretta "sei Lupo?", non la percezione della Veggente — l'Indemoniato,
+     * pur giocando con i lupi, risponderebbe onestamente "no"). Usato il
+     * potere, l'Inquisitore diventa un semplice Contadino.
+     * @returns {{stato:Object, eLupo:boolean}}
+     */
+    function interrogaInquisitore(stato, inquisitoreIdx, bersaglioIdx){
+        var s = clonaStatoPartita(stato);
+        var eLupo = s.ruoli[bersaglioIdx] === 'lupo';
+        s.ruoli[inquisitoreIdx] = 'contadino';
+        return { stato: s, eLupo: eLupo };
     }
 
     /**
@@ -430,6 +484,12 @@
         var mortiFinestraPrecedente = s.mortiUltimoGiro;
         s.mortiUltimoGiro = [];
 
+        // Fotografia di chi era vivo PRIMA di qualunque azione di stanotte
+        // (morti programmate comprese, oggi di fatto sempre vuote da quando
+        // l'Inquisitore non ne genera più — vedi interrogaInquisitore):
+        // usata da inattivo() invece di s.vivo, che muta durante la notte.
+        var vivoInizioNotte = s.vivo.slice();
+
         // Illusionista e Spaccino contano solo se chi li interpreta è vivo e
         // non ha indicato sé stesso (nessuno può usare il proprio potere su
         // di sé): in quel caso il potere semplicemente non ha alcun effetto.
@@ -439,34 +499,54 @@
         var spaccinoIdxAttore = trovaIndiceRuolo(s.ruoli, 'spaccino');
         var spaccinoAttivo = spaccinoIdxAttore !== -1 && s.vivo[spaccinoIdxAttore] &&
             azioni.spaccinoBersaglioIdx !== spaccinoIdxAttore;
+        // Può indicare un giocatore solo una volta in tutta la partita: qui
+        // registriamo soltanto (l'interfaccia è responsabile di non
+        // riproporre chi è già in questa lista come bersaglio scelto).
+        if(spaccinoAttivo && s.spaccinoBersagliUsati.indexOf(azioni.spaccinoBersaglioIdx) === -1){
+            s.spaccinoBersagliUsati.push(azioni.spaccinoBersaglioIdx);
+        }
 
-        // Un ruolo non ha effetto stanotte se chi lo interpreta è morto (va
-        // comunque "chiamato" dalla UI, per non rivelarne la morte col
-        // silenzio, ma la sua azione non deve produrre nulla) o se è il
-        // bersaglio dell'Illusionista.
+        // Un ruolo non ha effetto stanotte se chi lo interpreta era GIÀ morto
+        // PRIMA di stanotte (va comunque "chiamato" dalla UI, per non
+        // rivelarne la morte col silenzio, ma la sua azione non deve produrre
+        // nulla) o se è il bersaglio dell'Illusionista. Usiamo apposta una
+        // fotografia di s.vivo presa a inizio notte (vivoInizioNotte, sotto)
+        // e non s.vivo in tempo reale: altrimenti un ruolo risolto DOPO che
+        // un altro potere lo ha ucciso questa stessa notte (es. il Medium
+        // dopo l'attacco dei lupi) risulterebbe erroneamente "già morto" e
+        // perderebbe il potere che stanotte gli spetta ancora.
         function inattivo(idx){
-            return idx === -1 || !s.vivo[idx] || (illusionistaAttivo && azioni.illusionistaBersaglioIdx === idx);
+            return idx === -1 || !vivoInizioNotte[idx] || (illusionistaAttivo && azioni.illusionistaBersaglioIdx === idx);
         }
-        // Poteri "esercitati su" un giocatore (proteggere, uccidere, ...): se
-        // il bersaglio è quello dello Spaccino, si spostano su chi gli sta
-        // "alla destra" — qui: il prossimo indice nell'ordine di ingresso
-        // in stanza, che usiamo come cerchio virtuale dei posti a sedere.
-        function conRedirect(idx){
-            if(spaccinoAttivo && idx !== null && idx !== undefined && idx === azioni.spaccinoBersaglioIdx){
-                return (idx + 1) % n;
+        // Se lo Spaccino droga chi ESERCITA un potere "su qualcuno" (Guardia,
+        // Puttana, SenzaVolto, Fantasma — i Lupi sono un caso a parte, vedi
+        // vittimaLupi, perché è un potere collettivo non di un singolo
+        // attore), quel potere non colpisce chi hanno scelto ma la persona
+        // alla sua destra — il prossimo indice nell'ordine di ingresso in
+        // stanza, usato come cerchio virtuale dei posti a sedere.
+        function conRedirect(idxAttore, idxBersaglio){
+            if(spaccinoAttivo && idxAttore === azioni.spaccinoBersaglioIdx &&
+               idxBersaglio !== null && idxBersaglio !== undefined){
+                return (idxBersaglio + 1) % n;
             }
-            return idx;
+            return idxBersaglio;
         }
-        // Risposte/informazioni dirette a un giocatore (letture di veggente
-        // e medium): se il soggetto osservato è il bersaglio dello Spaccino,
-        // la risposta vera viene invertita.
-        function conInversione(risultatoBool, idxOsservato){
-            return (spaccinoAttivo && idxOsservato === azioni.spaccinoBersaglioIdx) ? !risultatoBool : risultatoBool;
+        // Chi ha un potere di osservazione (Veggente, Medium): se è LUI il
+        // bersaglio dello Spaccino, è la sua stessa percezione quella
+        // notte a essere invertita — non importa chi stia controllando, è
+        // lui ad "essere drogato" e a percepire il contrario del vero (es.
+        // se lo Spaccino indica la Veggente, lei vedrà i lupi come buoni).
+        function conInversione(risultatoBool, idxAttore){
+            return (spaccinoAttivo && idxAttore === azioni.spaccinoBersaglioIdx) ? !risultatoBool : risultatoBool;
         }
         function registraMorte(idx, causa){
             if(idx === null || idx === undefined) return null;
             if(nottePacifica) return null;
             if(s.vivo[idx] === false) return null; // già morto per davvero, non si conta due volte
+            // Fantasma e Criceto Mannaro non possono essere uccisi dai lupi
+            // (vale per l'attacco diretto e per la morte "condivisa" della
+            // Puttana, uniche due vie da cui arriva causa 'lupi').
+            if(causa === 'lupi' && (s.ruoli[idx] === 'fantasma' || s.ruoli[idx] === 'cricetoMannaro')) return null;
             var esito = applicaMorte(s, idx, causa);
             s = esito.stato;
             if(esito.mortoIdx !== null) morti.push({ giocatoreIdx: esito.mortoIdx, causa: causa });
@@ -490,6 +570,21 @@
         var mortiProgrammate = s.mortiProgrammate;
         s.mortiProgrammate = [];
         mortiProgrammate.forEach(function(m){ registraMorte(m.giocatoreIdx, m.causa); });
+
+        // --- Angelo (solo notte 1): protezione permanente, per qualsiasi
+        //     causa. Va deciso PRIMA di ogni altra azione di questa stessa
+        //     notte (Veggente compresa): l'Angelo sceglie solo la notte 1,
+        //     quindi se la sua protezione fosse registrata più avanti in
+        //     questa funzione, un'altra azione risolta prima di lui in
+        //     QUESTA notte (es. la morte istantanea causata dalla Veggente
+        //     su Senza Volto/Criceto Mannaro/Fantasma) non la vedrebbe
+        //     ancora — proprio il bug segnalato dall'utente.
+        var angeloIdx = trovaIndiceRuolo(s.ruoli, 'angelo');
+        if(s.notte === 1 && angeloIdx !== -1 && !inattivo(angeloIdx) && azioni.angeloBersaglioIdx !== angeloIdx &&
+           azioni.angeloBersaglioIdx !== null && azioni.angeloBersaglioIdx !== undefined){
+            s.angeloVivoIdx = angeloIdx;
+            s.angeloProtettoIdx = azioni.angeloBersaglioIdx;
+        }
 
         // --- Mitomane (solo notte 2): cambia ruolo in base al bersaglio ---
         var mitomaneIdx = trovaIndiceRuolo(s.ruoli, 'mitomane');
@@ -517,7 +612,7 @@
             var cattivo = (insinuoAttivo && bersaglioV === azioni.insinuoBersaglioIdx)
                 ? true
                 : (allineamentoVisibile(ruoloBersaglioV, roles) === 'cattivo');
-            cattivo = conInversione(cattivo, bersaglioV);
+            cattivo = conInversione(cattivo, veggenteIdx);
             rivelazioni.veggente = { bersaglioIdx: bersaglioV, cattivo: cattivo };
 
             // Chi viene "controllato" dalla veggente muore, a prescindere
@@ -527,9 +622,14 @@
             }
         }
 
-        // --- Lupi: la vittima arriva già decisa dal voto, qui solo il redirect ---
+        // --- Lupi: la vittima arriva già decisa dal voto ---
+        // Il potere dello Spaccino vale anche sui Lupi: se droga uno di
+        // loro (un potere collettivo, non di un singolo attore come gli
+        // altri ruoli qui sotto), la vittima scelta dal branco non muore,
+        // muore invece la persona alla sua destra.
+        var spaccinoSuLupo = spaccinoAttivo && s.ruoli[azioni.spaccinoBersaglioIdx] === 'lupo';
         var vittimaLupi = (azioni.lupiVittimaIdx !== null && azioni.lupiVittimaIdx !== undefined)
-            ? conRedirect(azioni.lupiVittimaIdx)
+            ? (spaccinoSuLupo ? (azioni.lupiVittimaIdx + 1) % n : azioni.lupiVittimaIdx)
             : null;
 
         // --- Guardia ---
@@ -541,7 +641,7 @@
         if(guardiaIdx !== -1 && !inattivo(guardiaIdx) &&
            azioni.guardiaBersaglioIdx !== null && azioni.guardiaBersaglioIdx !== undefined &&
            azioni.guardiaBersaglioIdx !== s.guardiaUltimoProtetto){
-            if(conRedirect(azioni.guardiaBersaglioIdx) === vittimaLupi) guardiaSalva = true;
+            if(conRedirect(guardiaIdx, azioni.guardiaBersaglioIdx) === vittimaLupi) guardiaSalva = true;
             s.guardiaUltimoProtetto = azioni.guardiaBersaglioIdx;
         }
 
@@ -551,7 +651,7 @@
         var puttanaMuoreConProtetto = null;
         if(puttanaIdx !== -1 && !inattivo(puttanaIdx) && azioni.puttanaBersaglioIdx !== puttanaIdx &&
            azioni.puttanaBersaglioIdx !== null && azioni.puttanaBersaglioIdx !== undefined){
-            var protettoPuttana = conRedirect(azioni.puttanaBersaglioIdx);
+            var protettoPuttana = conRedirect(puttanaIdx, azioni.puttanaBersaglioIdx);
             if(vittimaLupi === puttanaIdx){
                 puttanaMuoreConProtetto = protettoPuttana;
             } else if(protettoPuttana === vittimaLupi){
@@ -594,18 +694,15 @@
         var mediumIdx = trovaIndiceRuolo(s.ruoli, 'medium');
         if(mediumIdx !== -1 && !inattivo(mediumIdx) && azioni.mediumBersaglioIdx !== mediumIdx &&
            azioni.mediumBersaglioIdx !== null && azioni.mediumBersaglioIdx !== undefined){
-            rivelazioni.medium = {
-                bersaglioIdx: azioni.mediumBersaglioIdx,
-                esito: allineamentoVisibile(s.ruoli[azioni.mediumBersaglioIdx], roles)
-            };
-        }
-
-        // --- Angelo (solo notte 1): protezione permanente, per qualsiasi causa ---
-        var angeloIdx = trovaIndiceRuolo(s.ruoli, 'angelo');
-        if(s.notte === 1 && angeloIdx !== -1 && !inattivo(angeloIdx) && azioni.angeloBersaglioIdx !== angeloIdx &&
-           azioni.angeloBersaglioIdx !== null && azioni.angeloBersaglioIdx !== undefined){
-            s.angeloVivoIdx = angeloIdx;
-            s.angeloProtettoIdx = azioni.angeloBersaglioIdx;
+            var bersaglioM = azioni.mediumBersaglioIdx;
+            var esitoM = allineamentoVisibile(s.ruoli[bersaglioM], roles);
+            // Come per la Veggente: se è il MEDIUM (non il morto osservato)
+            // il bersaglio dello Spaccino, è la sua percezione a invertirsi
+            // (il Matto non è su un asse buono/cattivo, resta invariato).
+            if(esitoM === 'buono' || esitoM === 'cattivo'){
+                esitoM = conInversione(esitoM === 'cattivo', mediumIdx) ? 'cattivo' : 'buono';
+            }
+            rivelazioni.medium = { bersaglioIdx: bersaglioM, esito: esitoM };
         }
 
         // --- SenzaVolto ---
@@ -617,7 +714,7 @@
         var senzaVoltoIdx = trovaIndiceRuolo(s.ruoli, 'senzaVolto');
         if(senzaVoltoIdx !== -1 && !inattivo(senzaVoltoIdx) && azioni.senzaVoltoBersaglioIdx !== senzaVoltoIdx &&
            azioni.senzaVoltoBersaglioIdx !== null && azioni.senzaVoltoBersaglioIdx !== undefined){
-            var bersaglioSV = conRedirect(azioni.senzaVoltoBersaglioIdx);
+            var bersaglioSV = conRedirect(senzaVoltoIdx, azioni.senzaVoltoBersaglioIdx);
             var eraAppenaMorto = mortiFinestraPrecedente.indexOf(bersaglioSV) !== -1;
             var ruoloEligibile = s.ruoli[bersaglioSV] === 'contadino' || s.ruoli[bersaglioSV] === 'lupo';
             if(eraAppenaMorto && ruoloEligibile){
@@ -640,7 +737,7 @@
         if(fantasmaIdx !== -1 && !inattivo(fantasmaIdx)){
             if(azioni.fantasmaBersaglioIdx !== fantasmaIdx &&
                azioni.fantasmaBersaglioIdx !== null && azioni.fantasmaBersaglioIdx !== undefined){
-                var bersaglioF = conRedirect(azioni.fantasmaBersaglioIdx);
+                var bersaglioF = conRedirect(fantasmaIdx, azioni.fantasmaBersaglioIdx);
                 if(bersaglioF === s.fantasmaTargetIdx){
                     s.fantasmaStreak++;
                 } else {
@@ -654,9 +751,16 @@
                     registraMorte(fantasmaIdx, 'veggente');
                 }
             }
-            if(veggenteIdx !== -1 && azioni.veggenteBersaglioIdx === fantasmaIdx){
-                registraMorte(fantasmaIdx, 'veggente');
-            }
+            // Il caso "la Veggente indica il Fantasma" è già gestito sopra,
+            // nel blocco della Veggente (stesso registraMorte usato per
+            // SenzaVolto/CricetoMannaro): non va ripetuto qui, altrimenti è
+            // una seconda chiamata a vuoto quando va tutto liscio (il primo
+            // registraMorte segna già il Fantasma come morto) ma diventa un
+            // vero doppio-conteggio quando la prima morte viene deviata
+            // sull'Angelo (il Fantasma risulta ancora vivo dopo il primo
+            // redirect, quindi la guardia "già morto" di registraMorte non
+            // la blocca, e questa seconda chiamata lo ucciderebbe per
+            // davvero senza che l'Angelo possa intervenire una seconda volta).
         }
 
         s.notte++;
@@ -682,6 +786,7 @@
         generaIdRuolo: generaIdRuolo,
         descrizioneEffettiva: descrizioneEffettiva,
         trovaIndiceRuolo: trovaIndiceRuolo,
+        trovaIndiciRuolo: trovaIndiciRuolo,
         allineamentoVisibile: allineamentoVisibile,
         creaStatoPartita: creaStatoPartita,
         applicaMorte: applicaMorte,
@@ -689,7 +794,9 @@
         risolviVotoLupi: risolviVotoLupi,
         risolviVotoLupiConScadenza: risolviVotoLupiConScadenza,
         calcolaVittoriaSquadre: calcolaVittoriaSquadre,
+        vittoriaFinale: vittoriaFinale,
         verificaRuoloReale: verificaRuoloReale,
+        interrogaInquisitore: interrogaInquisitore,
         risolviNotte: risolviNotte
     };
 });

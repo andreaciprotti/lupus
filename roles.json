@@ -19,7 +19,7 @@
       "sveglia": {
         "tipo": "sempre"
       },
-      "descrizione": "Lo spaccino è un ruolo cattivo e i lupi sanno chi è. Ogni notte indica un giocatore al quale viene modificato l'esito del potere: le risposte vengono invertite, mentre i poteri esercitati su un giocatore vengono spostati sulla persona alla sua destra, vale anche per i lupi.",
+      "descrizione": "Lo spaccino è un ruolo cattivo e i lupi sanno chi è. Ogni notte indica un giocatore da 'drogare': se quel giocatore è la Veggente o il Medium, la sua percezione quella notte si inverte (vede buoni i cattivi e viceversa); se invece esercita un potere su qualcun altro (Guardia, Puttana, Senza Volto, Fantasma, o uno dei Lupi), quel potere non colpisce chi ha scelto ma la persona alla sua destra. Può indicare ciascun giocatore una sola volta in tutta la partita.",
       "ordine_notte": 20
     },
     {
@@ -155,6 +155,17 @@
       "ordine_notte": 140
     },
     {
+      "id": "massone",
+      "nome": "Massone",
+      "squadra": "buoni",
+      "immagine": "assets/cards/massone.png",
+      "sveglia": {
+        "tipo": "solo_prima"
+      },
+      "descrizione": "Il massone è un semplice contadino, senza alcun potere sulle notti successive. La prima notte, però, i massoni si svegliano insieme e si riconoscono a vicenda: da quel momento sanno chi sono gli altri, e possono fidarsi di loro per il resto della partita. Servono almeno due massoni in una partita.",
+      "ordine_notte": 150
+    },
+    {
       "id": "matto",
       "nome": "Matto",
       "squadra": "neutrali",
@@ -217,7 +228,7 @@
       "sveglia": {
         "tipo": "mai"
       },
-      "descrizione": "L'inquisitore è un giocatore buono che durante il giorno può chiedere ad un giocatore se è un lupo, e questi è costretto a rispondere con la verità. Se il giocatore interrogato risponde, l'inquisitore perde il suo potere (e se era buono perde anche il diritto al voto). Se il giocatore indicato è un lupo e non risponde, morirà la notte seguente e l'inquisitore mantiene il potere.",
+      "descrizione": "L'inquisitore è un giocatore buono che, una sola volta in tutta la partita, può chiedere ad un giocatore se è un lupo: quello è costretto a rispondere con la verità. Usato questo potere, l'inquisitore diventa un semplice contadino.",
       "ordine_notte": null
     },
     {
@@ -239,7 +250,7 @@
       "sveglia": {
         "tipo": "mai"
       },
-      "descrizione": "Il Criceto Mannaro è un personaggio individuale. Non ha alcun potere speciale, vince se è ancora vivo quando finisce la partita. Non può essere ucciso dai Lupi. Il Veggente e il Medium lo vedono buono. Se viene visto dal Veggente muore.",
+      "descrizione": "Il Criceto Mannaro è un personaggio individuale. Non ha alcun potere speciale, ma se è ancora vivo quando la partita finisce vince lui da solo, a prescindere da chiunque altro abbia vinto. Non può essere ucciso dai Lupi. Il Veggente e il Medium lo vedono buono. Se viene visto dal Veggente muore.",
       "ordine_notte": null
     }
   ],
