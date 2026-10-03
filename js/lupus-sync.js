@@ -366,6 +366,98 @@
         return db.ref('stanze/' + codice + '/richiesteSpeciali/' + id).remove();
     }
 
+    /* ==========================================================
+       STATISTICHE — un nodo indipendente da "stanze": sopravvive anche
+       dopo che una stanza remota viene eliminata a fine partita, ed
+       esiste anche per le partite in presenza (che altrimenti non
+       toccherebbero mai Firebase). Una partita = un documento in
+       statistiche/partite/{id}:
+       {
+         modalita: 'presenza' | 'distanza',
+         numGiocatori: <numero>,
+         inizio: <timestamp server>, inizioLeggibile: <stringa>,
+         stato: 'in corso' | 'conclusa' | 'interrotta',
+         checkpoint: <stringa leggibile, es. "notte 3", "giorno dopo la notte 2">,
+         ultimoAggiornamento: <timestamp server, aggiornato ad ogni checkpoint>,
+         ultimoAggiornamentoLeggibile: <stringa>,
+         esito: <solo se conclusa: 'buoni'|'cattivi'|'matto'|'cricetoMannaro'|...>,
+         fine: <timestamp server, solo se conclusa o interrotta>, fineLeggibile: <stringa>
+       }
+       Per le partite a distanza si riusa lo stesso codiceStanza come id
+       (comodo per incrociare a mano i due nodi); per quelle in presenza,
+       che non hanno alcun codice stanza, se ne genera uno nuovo con
+       nuovoIdPartita(). Tutte queste funzioni sono pensate per essere
+       chiamate "spara e dimentica": se Firebase non è configurato o il
+       dispositivo è offline non scrivono nulla (no-op silenzioso), non
+       devono MAI poter bloccare o far fallire una partita vera — quella
+       in presenza, in particolare, deve restare giocabile anche offline.
+       I timestamp "grezzi" (inizio/fine/ultimoAggiornamento) restano numeri
+       (epoch ms, orario del SERVER: affidabile anche se l'orologio del
+       dispositivo è sbagliato) — servono per ordinare/calcolare durate.
+       Accanto a ciascuno c'è sempre un campo "...Leggibile" gemello, una
+       stringa già formattata (orario del DISPOSITIVO che scrive, quindi
+       solo per leggere a colpo d'occhio nella console Firebase: per calcoli
+       veri usare sempre la versione numerica).
+       ========================================================== */
+
+    // Stringa data/ora leggibile, stile italiano (es. "30/09/2026, 15:33:07").
+    function formattaDataLeggibile(){
+        return new Date().toLocaleString('it-IT');
+    }
+
+    // Genera un id per una partita in presenza: nessuna scrittura di
+    // rete, le chiavi push() di Firebase si generano lato client.
+    function nuovoIdPartita(){
+        if(!pronto()) return null;
+        return db.ref('statistiche/partite').push().key;
+    }
+
+    function registraPartitaIniziata(idPartita, dati){
+        if(!pronto() || !idPartita) return Promise.resolve();
+        return db.ref('statistiche/partite/' + idPartita).set({
+            modalita: dati.modalita,
+            numGiocatori: dati.numGiocatori,
+            inizio: firebase.database.ServerValue.TIMESTAMP,
+            inizioLeggibile: formattaDataLeggibile(),
+            stato: 'in corso',
+            checkpoint: 'ruoli distribuiti',
+            ultimoAggiornamento: firebase.database.ServerValue.TIMESTAMP,
+            ultimoAggiornamentoLeggibile: formattaDataLeggibile()
+        }).catch(function(){});
+    }
+
+    // Richiamata ad ogni avanzamento rilevante (nuova notte, giorno dopo
+    // una notte risolta): NON segna una conclusione, serve solo a sapere
+    // dove si trovava una partita se poi risultasse abbandonata.
+    function aggiornaCheckpointPartita(idPartita, checkpoint){
+        if(!pronto() || !idPartita) return Promise.resolve();
+        return db.ref('statistiche/partite/' + idPartita).update({
+            checkpoint: checkpoint,
+            ultimoAggiornamento: firebase.database.ServerValue.TIMESTAMP,
+            ultimoAggiornamentoLeggibile: formattaDataLeggibile()
+        }).catch(function(){});
+    }
+
+    function registraPartitaConclusa(idPartita, esito){
+        if(!pronto() || !idPartita) return Promise.resolve();
+        return db.ref('statistiche/partite/' + idPartita).update({
+            stato: 'conclusa',
+            esito: esito,
+            fine: firebase.database.ServerValue.TIMESTAMP,
+            fineLeggibile: formattaDataLeggibile()
+        }).catch(function(){});
+    }
+
+    function registraPartitaInterrotta(idPartita, checkpoint){
+        if(!pronto() || !idPartita) return Promise.resolve();
+        return db.ref('statistiche/partite/' + idPartita).update({
+            stato: 'interrotta',
+            checkpoint: checkpoint,
+            fine: firebase.database.ServerValue.TIMESTAMP,
+            fineLeggibile: formattaDataLeggibile()
+        }).catch(function(){});
+    }
+
     return {
         configura: configura,
         generaCodiceStanza: generaCodiceStanza,
@@ -391,6 +483,11 @@
         ascoltaRivelazioni: ascoltaRivelazioni,
         richiediAzioneSpeciale: richiediAzioneSpeciale,
         ascoltaRichiesteSpeciali: ascoltaRichiesteSpeciali,
-        rimuoviRichiestaSpeciale: rimuoviRichiestaSpeciale
+        rimuoviRichiestaSpeciale: rimuoviRichiestaSpeciale,
+        nuovoIdPartita: nuovoIdPartita,
+        registraPartitaIniziata: registraPartitaIniziata,
+        aggiornaCheckpointPartita: aggiornaCheckpointPartita,
+        registraPartitaConclusa: registraPartitaConclusa,
+        registraPartitaInterrotta: registraPartitaInterrotta
     };
 });

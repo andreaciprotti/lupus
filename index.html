@@ -1742,6 +1742,11 @@
             var regiaAssistitaAttiva=true
             var annotazioni=[]
 
+            // --- statistiche partita (Firebase, vedi funzioni STATISTICHE più sotto) ---
+            var idPartitaStat=null          // id del documento statistiche/partite/<id> di QUESTA partita
+            var partitaStatConclusa=false   // true appena si registra una vittoria: evita di sovrascriverla con "interrotta"
+            var ultimoCheckpointPartita=null
+
             /* ==========================================================
                CARICAMENTO DATI RUOLI
                ========================================================== */
@@ -1808,11 +1813,13 @@
                     if(smettiAscoltoStanza){ smettiAscoltoStanza(); smettiAscoltoStanza=null; }
                     ferma_ascolti_notte_automatica();
                     try{ sessionStorage.removeItem('lupus_stanza'); }catch(e){}
-                    if(modalitaGioco === 'remoto' && ruoloUtente === 'narratore'){
-                        eliminaStanzaEPoi(refresh);
-                    } else {
-                        refresh();
-                    }
+                    registra_interruzione_se_serve().then(function(){
+                        if(modalitaGioco === 'remoto' && ruoloUtente === 'narratore'){
+                            eliminaStanzaEPoi(refresh);
+                        } else {
+                            refresh();
+                        }
+                    });
                 });
             }
 
@@ -1828,6 +1835,46 @@
             function eliminaStanzaEPoi(callback){
                 if(!codiceStanza){ callback(); return; }
                 LupusSync.eliminaStanza(codiceStanza).then(callback, callback);
+            }
+
+            /* ==========================================================
+               STATISTICHE PARTITA — quante partite iniziano, come/quando
+               finiscono, a che punto restano se abbandonate. Vale per
+               ENTRAMBE le modalità (in presenza compresa, che altrimenti
+               non toccherebbe mai Firebase): sono "spara e dimentica",
+               LupusSync le rende no-op silenziose se Firebase non è
+               configurato o il dispositivo è offline, quindi non possono
+               mai bloccare una partita vera. Per le partite a distanza si
+               riusa codiceStanza come id (comodo per incrociare i dati a
+               mano); per quelle in presenza se ne genera uno nuovo.
+               ========================================================== */
+            function inizia_statistiche_partita(modalita, idPartita){
+                idPartitaStat = idPartita;
+                partitaStatConclusa = false;
+                ultimoCheckpointPartita = 'ruoli distribuiti';
+                if(idPartitaStat) LupusSync.registraPartitaIniziata(idPartitaStat, { modalita: modalita, numGiocatori: ng });
+            }
+            function aggiorna_checkpoint_partita(testo){
+                if(!idPartitaStat) return;
+                ultimoCheckpointPartita = testo;
+                LupusSync.aggiornaCheckpointPartita(idPartitaStat, testo);
+            }
+            function registra_vittoria_partita(tipoEsito){
+                if(!idPartitaStat) return;
+                partitaStatConclusa = true;
+                LupusSync.registraPartitaConclusa(idPartitaStat, tipoEsito);
+            }
+            // Va chiamata da ogni punto in cui il narratore (o l'unico
+            // dispositivo, in presenza) può abbandonare una partita non
+            // ancora vinta da nessuno: se è già stata registrata una
+            // vittoria non fa nulla, per non sovrascriverla. In remoto,
+            // solo il dispositivo del narratore scrive: un giocatore
+            // qualunque che se ne va non pone fine alla partita per gli
+            // altri, quindi non conta come interruzione.
+            function registra_interruzione_se_serve(){
+                if(!idPartitaStat || partitaStatConclusa) return Promise.resolve();
+                if(modalitaGioco === 'remoto' && ruoloUtente !== 'narratore') return Promise.resolve();
+                return LupusSync.registraPartitaInterrotta(idPartitaStat, ultimoCheckpointPartita);
             }
 
             // Il bottone "Esci dalla stanza" del giocatore in attesa
@@ -1952,12 +1999,14 @@
             // stanza su Firebase così i giocatori collegati tornano automaticamente alla
             // home, poi ricarica la pagina come farebbe una "nuova partita" locale.
             function fine_partita(){
-                if(modalitaGioco === 'remoto' && ruoloUtente === 'narratore' && codiceStanza){
-                    if(smettiAscoltoStanza){ smettiAscoltoStanza(); smettiAscoltoStanza=null; }
-                    eliminaStanzaEPoi(refresh);
-                } else {
-                    refresh();
-                }
+                registra_interruzione_se_serve().then(function(){
+                    if(modalitaGioco === 'remoto' && ruoloUtente === 'narratore' && codiceStanza){
+                        if(smettiAscoltoStanza){ smettiAscoltoStanza(); smettiAscoltoStanza=null; }
+                        eliminaStanzaEPoi(refresh);
+                    } else {
+                        refresh();
+                    }
+                });
             }
 
             function procedi_a_scelta_ruoli_remota(){
@@ -2008,6 +2057,7 @@
                     mappa[playerId] = ruoli_partita[idx];
                 });
                 LupusSync.assegnaRuoli(codiceStanza, mappa).then(function(){
+                    inizia_statistiche_partita('distanza', codiceStanza);
                     if(narratoreAutomatico){
                         avvia_narratore_automatico_dopo_distribuzione();
                     } else {
@@ -2908,6 +2958,7 @@
             }
 
             function avvia_notte_automatica(){
+                aggiorna_checkpoint_partita('notte ' + statoPartitaAuto.notte);
                 var usatoRuoloAuto = { neomelodico: statoPartitaAuto.neomelodicoUsato };
                 var lista = LupusEngine.calcolaListaNotte(statoPartitaAuto.ruoli, giocatori, statoPartitaAuto.vivo, ROLES,
                     { notte: statoPartitaAuto.notte, playerAlive: statoPartitaAuto.vivo, usatoRuolo: usatoRuoloAuto });
@@ -3052,6 +3103,7 @@
                 return LupusSync.scriviStatoPubblico(codiceStanza, statoPubblicoAuto);
             }
             function pubblica_vittoria(vittoria){
+                registra_vittoria_partita(vittoria.tipo);
                 // La cancellazione della stanza NON viene programmata qui: se
                 // il dispositivo del narratore chiude la scheda subito dopo
                 // aver pubblicato la vittoria, un setTimeout qui non
@@ -3158,6 +3210,7 @@
                 }).then(function(){
                     return LupusSync.impostaTurnoNotte(codiceStanza, null, null);
                 }).then(function(){
+                    aggiorna_checkpoint_partita('giorno dopo la notte ' + numeroNotte);
                     var vittoria = vittoriaEffettiva(esito.vittoria);
                     if(vittoria) return pubblica_vittoria(vittoria);
                 });
@@ -3631,6 +3684,7 @@
                 if(modalitaGioco==='remoto'){
                     avvia_distribuzione_remota();
                 } else {
+                    inizia_statistiche_partita('presenza', LupusSync.nuovoIdPartita());
                     turno=0;
                     vaiA('scena-carta');
                     consegna_ruoli();
@@ -3823,6 +3877,7 @@
                     usatoRuolo={};
                     notteIniziata=true;
                     statoPartitaLocale = LupusEngine.creaStatoPartita(ruoli_partita);
+                    aggiorna_checkpoint_partita('notte 1');
                 }
                 render_notte();
                 vaiA('scena-notte');
@@ -3991,6 +4046,7 @@
                 var vittoria = LupusEngine.vittoriaFinale(statoPartitaLocale, ROLES, vittoriaProposta);
                 if(vittoria){
                     righe.push({ tipo:'vittoria', testo: testo_esito_vittoria(vittoria.tipo) });
+                    registra_vittoria_partita(vittoria.tipo);
                 }
                 return righe;
             }
@@ -4231,6 +4287,7 @@
                     }
                     lista.appendChild(riga);
                 });
+                aggiorna_checkpoint_partita('giorno dopo la notte ' + numeroNotteAppenaConclusa);
                 vaiA('scena-morti');
             }
 
@@ -4273,6 +4330,9 @@
                 var vittoria = statoPartitaLocale ? LupusEngine.vittoriaFinale(statoPartitaLocale, ROLES, vittoriaProposta) : vittoriaProposta;
                 if(vittoria){
                     mostra_avviso('La partita è finita', testo_esito_vittoria(vittoria.tipo));
+                    registra_vittoria_partita(vittoria.tipo);
+                } else if(statoPartitaLocale){
+                    aggiorna_checkpoint_partita('notte ' + statoPartitaLocale.notte);
                 }
                 render_notte();
                 vaiA('scena-notte');
