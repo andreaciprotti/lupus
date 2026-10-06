@@ -1840,13 +1840,12 @@
             /* ==========================================================
                STATISTICHE PARTITA — quante partite iniziano, come/quando
                finiscono, a che punto restano se abbandonate. Vale per
-               ENTRAMBE le modalità (in presenza compresa, che altrimenti
-               non toccherebbe mai Firebase): sono "spara e dimentica",
-               LupusSync le rende no-op silenziose se Firebase non è
-               configurato o il dispositivo è offline, quindi non possono
-               mai bloccare una partita vera. Per le partite a distanza si
-               riusa codiceStanza come id (comodo per incrociare i dati a
-               mano); per quelle in presenza se ne genera uno nuovo.
+               ENTRAMBE le modalità (in presenza compresa): vanno al
+               server delle statistiche, non a Firebase. Sono "spara e
+               dimentica": se il server non risponde o il dispositivo è
+               offline non succede nulla, quindi non possono mai bloccare
+               una partita vera. Ogni partita ha un id nuovo
+               (LupusSync.nuovoIdPartita()).
                ========================================================== */
             function inizia_statistiche_partita(modalita, idPartita){
                 idPartitaStat = idPartita;
@@ -2057,7 +2056,7 @@
                     mappa[playerId] = ruoli_partita[idx];
                 });
                 LupusSync.assegnaRuoli(codiceStanza, mappa).then(function(){
-                    inizia_statistiche_partita('distanza', codiceStanza);
+                    inizia_statistiche_partita('distanza', LupusSync.nuovoIdPartita());
                     if(narratoreAutomatico){
                         avvia_narratore_automatico_dopo_distribuzione();
                     } else {

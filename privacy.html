@@ -15,7 +15,7 @@
     <div class="contenuto">
         <a class="torna" href="./index.html">← Torna al gioco</a>
         <h1>Informativa sulla Privacy</h1>
-        <p class="aggiornato">Ultimo aggiornamento: settembre 2026</p>
+        <p class="aggiornato">Ultimo aggiornamento: ottobre 2026</p>
 
         <p>Questa pagina descrive quali dati vengono trattati da <strong>Lupus</strong> (<a href="https://www.lupusonline.it">www.lupusonline.it</a>), un progetto gratuito e amatoriale creato per giocare al gioco del villaggio con gli amici.</p>
 
@@ -27,6 +27,15 @@
 
         <h2>Statistiche di visita</h2>
         <p>Il sito può utilizzare uno strumento di analisi del traffico privacy-friendly (es. Cloudflare Web Analytics), che non utilizza cookie di profilazione né identifica singoli visitatori: fornisce solo numeri aggregati e anonimi (es. quante persone hanno visitato il sito in un giorno), senza costruire un profilo della singola persona.</p>
+
+        <h2>Partite a distanza</h2>
+        <p>Se giochi in modalità "a distanza" (ognuno dal proprio dispositivo), i dati della partita passano da un database online (<strong>Firebase Realtime Database</strong> di Google, con server in Europa): il nome che scrivi per entrare, il ruolo che ti viene assegnato, le azioni e i voti di gioco e, per i lupi, la chat privata tra lupi. Non serve alcun account. Scrivi pure un soprannome invece del tuo nome vero: nessuno ti obbliga a usare quello reale.</p>
+        <p>I dati di una stanza vengono cancellati quando il narratore chiude la partita o quando qualcuno vince; se una partita viene abbandonata senza essere chiusa (ad esempio si chiude la scheda), la stanza può restare conservata più a lungo. Chiunque conosca il codice di una stanza potrebbe, in teoria, leggerne il contenuto: è un limite noto di questa fase del progetto, per questo conviene non scrivere dati personali nei nomi.</p>
+        <p>Nella memoria temporanea del browser (sessionStorage) viene tenuto anche il codice della stanza, solo per ricollegarti se aggiorni la pagina per sbaglio; sparisce alla chiusura della scheda.</p>
+
+        <h2>Statistiche anonime delle partite</h2>
+        <p>Per capire quante partite vengono giocate e come finiscono, Lupus invia a un server proprio (ospitato su <strong>Oracle Cloud</strong>, in Italia) alcuni dati anonimi di ogni partita, <strong>sia in presenza sia a distanza</strong>: un codice casuale della partita, la modalità, il numero di giocatori, l'orario di inizio e di fine, a che punto è arrivata (ad esempio "notte 3") e come è finita (chi ha vinto, oppure che è stata interrotta). <strong>Non vengono inviati nomi, ruoli dei singoli giocatori, né alcun dato che identifichi una persona.</strong></p>
+        <p>L'indirizzo IP di chi invia i dati è visto dal server solo per limitare gli abusi (troppe richieste ravvicinate) e viene tenuto in memoria per pochi minuti: non viene salvato insieme ai dati delle partite. Se sei offline o il server non risponde, la partita funziona normalmente e semplicemente non viene registrata. Questi dati anonimi sono conservati senza limite di tempo e consultati solo da chi gestisce il sito, per statistiche d'uso.</p>
 
         <h2>Dati salvati sul tuo dispositivo</h2>
         <p>Se crei ruoli personalizzati durante una partita, queste informazioni (nome, descrizione, eventuale immagine caricata) vengono salvate <strong>esclusivamente nella memoria locale del tuo browser</strong> (localStorage), sul tuo stesso dispositivo. Non vengono mai inviate a un server né condivise con chiunque altro: restano sul tuo telefono/computer finché non cancelli i dati di navigazione del sito o non li elimini tu stesso dall'app.</p>
