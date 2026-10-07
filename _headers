@@ -2,3 +2,12 @@
   X-Content-Type-Options: nosniff
   Referrer-Policy: strict-origin-when-cross-origin
   X-Frame-Options: SAMEORIGIN
+
+# Gli indirizzi *.pages.dev servono lo stesso sito del dominio ufficiale:
+# non devono essere indicizzati da Google come copie. Queste regole valgono
+# solo per quegli host, non per www.lupusonline.it.
+https://:project.pages.dev/*
+  X-Robots-Tag: noindex
+
+https://:version.:project.pages.dev/*
+  X-Robots-Tag: noindex
