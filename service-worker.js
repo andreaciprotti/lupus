@@ -3,10 +3,14 @@
 // istantaneamente anche offline), e nel frattempo aggiorna la cache in
 // background con quello che arriva dalla rete, per la prossima visita.
 
-const CACHE_NAME = 'lupus-cache-v2';
+const CACHE_NAME = 'lupus-cache-v3';
 
+// Si mette in cache './' e non './index.html': su alcuni hosting (es.
+// Cloudflare Pages) /index.html reindirizza a /, e una risposta salvata dopo
+// un redirect non può essere data a una navigazione (il browser la rifiuta e
+// mostra "pagina non disponibile").
 const APP_SHELL = [
-  './index.html',
+  './',
   './roles.json',
   './manifest.json',
   './assets/icons/icon-192.png',
@@ -72,6 +76,15 @@ self.addEventListener('activate', function(event){
   self.clients.claim();
 });
 
+// Rifà pulita una risposta nata da un redirect, così può essere usata per una
+// navigazione (vedi nota su APP_SHELL).
+function pulisciRisposta(risposta){
+  if(!risposta || !risposta.redirected) return Promise.resolve(risposta);
+  return risposta.blob().then(function(corpo){
+    return new Response(corpo, { status: risposta.status, statusText: risposta.statusText, headers: risposta.headers });
+  });
+}
+
 self.addEventListener('fetch', function(event){
   if(event.request.method !== 'GET') return;
 
@@ -84,15 +97,18 @@ self.addEventListener('fetch', function(event){
   event.respondWith(
     caches.match(event.request).then(function(cached){
       var rete = fetch(event.request).then(function(risposta){
-        if(risposta && risposta.status === 200){
+        if(risposta && risposta.status === 200 && !risposta.redirected){
           var copia = risposta.clone();
           caches.open(CACHE_NAME).then(function(cache){ cache.put(event.request, copia); });
         }
         return risposta;
       }).catch(function(){
+        // offline e pagina non in cache (es. l'app installata parte da
+        // /index.html ma in cache c'è solo /): si ripiega sulla home salvata
+        if(event.request.mode === 'navigate') return caches.match('./').then(pulisciRisposta);
         return cached;
       });
-      return cached || rete;
+      return cached ? pulisciRisposta(cached) : rete;
     })
   );
 });
