@@ -3,7 +3,7 @@
 // istantaneamente anche offline), e nel frattempo aggiorna la cache in
 // background con quello che arriva dalla rete, per la prossima visita.
 
-const CACHE_NAME = 'lupus-cache-v3';
+const CACHE_NAME = 'lupus-cache-v4';
 
 // Si mette in cache './' e non './index.html': su alcuni hosting (es.
 // Cloudflare Pages) /index.html reindirizza a /, e una risposta salvata dopo
@@ -17,8 +17,8 @@ const APP_SHELL = [
   './assets/icons/icon-512.png',
   './assets/icons/icon-maskable-192.png',
   './assets/icons/icon-maskable-512.png',
-  './assets/cards/veggente.png',
-  './assets/cards/contadino.png'
+  './assets/cards/veggente.webp',
+  './assets/cards/contadino.webp'
 ];
 
 // L'unica risorsa esterna della pagina sono i font di Google: senza queste righe

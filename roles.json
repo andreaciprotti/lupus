@@ -4,7 +4,7 @@
       "id": "illusionista",
       "nome": "Illusionista",
       "squadra": "cattivi",
-      "immagine": "assets/cards/illusionista.png",
+      "immagine": "assets/cards/illusionista.webp",
       "sveglia": {
         "tipo": "sempre"
       },
@@ -15,7 +15,7 @@
       "id": "spaccino",
       "nome": "Spaccino",
       "squadra": "cattivi",
-      "immagine": "assets/cards/spaccino.png",
+      "immagine": "assets/cards/spaccino.webp",
       "sveglia": {
         "tipo": "sempre"
       },
@@ -26,7 +26,7 @@
       "id": "mitomane",
       "nome": "Mitomane",
       "squadra": "neutrali",
-      "immagine": "assets/cards/mitomane.png",
+      "immagine": "assets/cards/mitomane.webp",
       "sveglia": {
         "tipo": "solo_seconda"
       },
@@ -37,7 +37,7 @@
       "id": "lupo",
       "nome": "Lupo",
       "squadra": "cattivi",
-      "immagine": "assets/cards/lupo.png",
+      "immagine": "assets/cards/lupo.webp",
       "sveglia": {
         "tipo": "sempre"
       },
@@ -48,7 +48,7 @@
       "id": "insinuo",
       "nome": "Insinuo",
       "squadra": "cattivi",
-      "immagine": "assets/cards/insinuo.png",
+      "immagine": "assets/cards/insinuo.webp",
       "sveglia": {
         "tipo": "sempre"
       },
@@ -59,7 +59,7 @@
       "id": "veggente",
       "nome": "Veggente",
       "squadra": "buoni",
-      "immagine": "assets/cards/veggente.png",
+      "immagine": "assets/cards/veggente.webp",
       "sveglia": {
         "tipo": "sempre"
       },
@@ -70,7 +70,7 @@
       "id": "guardia",
       "nome": "Guardia",
       "squadra": "buoni",
-      "immagine": "assets/cards/guardia.png",
+      "immagine": "assets/cards/guardia.webp",
       "sveglia": {
         "tipo": "sempre"
       },
@@ -81,7 +81,7 @@
       "id": "medium",
       "nome": "Medium",
       "squadra": "buoni",
-      "immagine": "assets/cards/medium.png",
+      "immagine": "assets/cards/medium.webp",
       "sveglia": {
         "tipo": "dopo_morte"
       },
@@ -92,7 +92,7 @@
       "id": "angelo",
       "nome": "Angelo",
       "squadra": "buoni",
-      "immagine": "assets/cards/angelo.png",
+      "immagine": "assets/cards/angelo.webp",
       "sveglia": {
         "tipo": "solo_prima"
       },
@@ -103,7 +103,7 @@
       "id": "puttana",
       "nome": "Puttana",
       "squadra": "buoni",
-      "immagine": "assets/cards/puttana.png",
+      "immagine": "assets/cards/puttana.webp",
       "sveglia": {
         "tipo": "sempre"
       },
@@ -114,7 +114,7 @@
       "id": "senzaVolto",
       "nome": "Senza Volto",
       "squadra": "neutrali",
-      "immagine": "assets/cards/senza_volto.png",
+      "immagine": "assets/cards/senza_volto.webp",
       "sveglia": {
         "tipo": "dopo_morte"
       },
@@ -125,7 +125,7 @@
       "id": "neomelodico",
       "nome": "Neomelodico",
       "squadra": "buoni",
-      "immagine": "assets/cards/neomelodico.png",
+      "immagine": "assets/cards/neomelodico.webp",
       "sveglia": {
         "tipo": "finche_non_usato"
       },
@@ -136,7 +136,7 @@
       "id": "fantasma",
       "nome": "Fantasma",
       "squadra": "neutrali",
-      "immagine": "assets/cards/fantasma.png",
+      "immagine": "assets/cards/fantasma.webp",
       "sveglia": {
         "tipo": "sempre"
       },
@@ -147,7 +147,7 @@
       "id": "suicida",
       "nome": "Suicida",
       "squadra": "buoni",
-      "immagine": "assets/cards/suicida.png",
+      "immagine": "assets/cards/suicida.webp",
       "sveglia": {
         "tipo": "sempre"
       },
@@ -158,7 +158,7 @@
       "id": "massone",
       "nome": "Massone",
       "squadra": "buoni",
-      "immagine": "assets/cards/massone.png",
+      "immagine": "assets/cards/massone.webp",
       "sveglia": {
         "tipo": "solo_prima"
       },
@@ -169,7 +169,7 @@
       "id": "matto",
       "nome": "Matto",
       "squadra": "neutrali",
-      "immagine": "assets/cards/matto.png",
+      "immagine": "assets/cards/matto.webp",
       "sveglia": {
         "tipo": "mai"
       },
@@ -180,7 +180,7 @@
       "id": "cacciatore",
       "nome": "Cacciatore",
       "squadra": "buoni",
-      "immagine": "assets/cards/cacciatore.png",
+      "immagine": "assets/cards/cacciatore.webp",
       "sveglia": {
         "tipo": "mai"
       },
@@ -191,7 +191,7 @@
       "id": "indemoniato",
       "nome": "Indemoniato",
       "squadra": "cattivi",
-      "immagine": "assets/cards/indemoniato.png",
+      "immagine": "assets/cards/indemoniato.webp",
       "sveglia": {
         "tipo": "mai"
       },
@@ -202,7 +202,7 @@
       "id": "contadino",
       "nome": "Contadino",
       "squadra": "buoni",
-      "immagine": "assets/cards/contadino.png",
+      "immagine": "assets/cards/contadino.webp",
       "sveglia": {
         "tipo": "mai"
       },
@@ -213,7 +213,7 @@
       "id": "druido",
       "nome": "Druido",
       "squadra": "buoni",
-      "immagine": "assets/cards/druido.png",
+      "immagine": "assets/cards/druido.webp",
       "sveglia": {
         "tipo": "mai"
       },
@@ -224,7 +224,7 @@
       "id": "inquisitore",
       "nome": "Inquisitore",
       "squadra": "buoni",
-      "immagine": "assets/cards/inquisitore.png",
+      "immagine": "assets/cards/inquisitore.webp",
       "sveglia": {
         "tipo": "mai"
       },
@@ -235,7 +235,7 @@
       "id": "sindaco",
       "nome": "Sindaco",
       "squadra": "buoni",
-      "immagine": "assets/cards/sindaco.png",
+      "immagine": "assets/cards/sindaco.webp",
       "sveglia": {
         "tipo": "mai"
       },
@@ -246,7 +246,7 @@
       "id": "cricetoMannaro",
       "nome": "Criceto Mannaro",
       "squadra": "neutrali",
-      "immagine": "assets/cards/criceto_mannaro.png",
+      "immagine": "assets/cards/criceto_mannaro.webp",
       "sveglia": {
         "tipo": "mai"
       },

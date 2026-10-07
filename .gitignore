@@ -1,0 +1,13 @@
+# Note di lavoro e codice del server: non devono finire pubblicati col sito
+# (Cloudflare Pages pubblica tutto quello che sta nella repo).
+CLAUDE.md
+server/
+
+# File di prova locali
+index_v2.html
+
+# Video di prova (sfondo.mp4, quello usato dal sito, è già tracciato)
+/*.mp4
+
+# Illustrazioni originali (PNG) e script di conversione: restano solo sul PC
+originali/
