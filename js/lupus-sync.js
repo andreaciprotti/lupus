@@ -437,6 +437,27 @@
         return inviaEventoStatistiche({ id: idPartita, evento: 'interrotta', checkpoint: checkpoint });
     }
 
+    /* ----------------------------------------------------------
+       Pareri degli utenti: a differenza delle statistiche, qui chi
+       chiama deve sapere se l'invio è andato a buon fine (per dirlo
+       all'utente). Restituisce sempre una promise che si risolve (mai
+       rifiuta) con { ok, stato }: stato 0 = rete assente o troppo lenta.
+       ---------------------------------------------------------- */
+    var ATTESA_MASSIMA_FEEDBACK_MS = 10000;
+    function inviaFeedback(dati){
+        if(typeof fetch === 'undefined') return Promise.resolve({ ok: false, stato: 0 });
+        var richiesta = fetch(URL_STATISTICHE + '/feedback', {
+            method: 'POST',
+            headers: { 'Content-Type': 'text/plain;charset=UTF-8' },
+            body: JSON.stringify(dati)
+        }).then(function(r){ return { ok: r.ok, stato: r.status }; },
+                function(){ return { ok: false, stato: 0 }; });
+        var scadenza = new Promise(function(resolve){
+            setTimeout(function(){ resolve({ ok: false, stato: 0 }); }, ATTESA_MASSIMA_FEEDBACK_MS);
+        });
+        return Promise.race([richiesta, scadenza]);
+    }
+
     return {
         configura: configura,
         generaCodiceStanza: generaCodiceStanza,
@@ -467,6 +488,7 @@
         registraPartitaIniziata: registraPartitaIniziata,
         aggiornaCheckpointPartita: aggiornaCheckpointPartita,
         registraPartitaConclusa: registraPartitaConclusa,
-        registraPartitaInterrotta: registraPartitaInterrotta
+        registraPartitaInterrotta: registraPartitaInterrotta,
+        inviaFeedback: inviaFeedback
     };
 });

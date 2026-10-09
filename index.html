@@ -956,6 +956,33 @@
             .popup-box .azioni-scena{ margin-top: 1rem; }
 
             /* ==========================================================
+               PARERI DEGLI UTENTI — link discreti + popup di invio
+               ========================================================== */
+            /* Link in linea col testo (non confonderlo con .btn-testo, il pulsante-testo a sé). */
+            .link-parere{
+                background:none; border:none; padding:0; font:inherit; color:inherit;
+                text-decoration:underline; text-underline-offset:3px; cursor:pointer;
+            }
+            .link-parere:hover{ color: var(--buoni); }
+            .intro-testo .intro-evoluzione{ max-width:34ch; margin-left:auto; margin-right:auto; line-height:1.5; }
+            .intro-evoluzione .link-parere{ color: var(--moon-dim); }
+            .popup-feedback .popup-box{ max-width:420px; max-height:92vh; overflow-y:auto; text-align:left; }
+            .popup-feedback .popup-box h3{ text-align:center; }
+            .popup-feedback .feedback-intro{ font-size:1rem; margin-bottom:.8rem; }
+            .popup-feedback .stelle-voto{ display:flex; justify-content:center; gap:.2rem; margin:.2rem 0 1rem; }
+            .popup-feedback .stella{
+                background:none; border:none; padding:.1rem .25rem; cursor:pointer;
+                font-size:2rem; line-height:1; color: var(--moon-fioco); transition: color .2s, text-shadow .2s;
+            }
+            .popup-feedback .stella.attiva{ color: var(--oro); text-shadow: 0 0 12px var(--oro-glow); }
+            .popup-feedback .contatore-testo{ display:block; text-align:right; margin-top:.2rem; font-family: var(--font-ui); font-size:.7rem; color: var(--moon-fioco); }
+            .popup-feedback .feedback-esito{ min-height:1.2em; margin:.2rem 0 0; font-family: var(--font-ui); font-size:.82rem; color: var(--cattivi); text-align:center; }
+            .popup-feedback .feedback-nota{ font-family: var(--font-ui); font-size:.72rem; color: var(--moon-fioco); line-height:1.5; margin-top:.8rem; }
+            .popup-feedback .feedback-nota a{ color: var(--moon-dim); }
+            /* Campo esca per i bot: fuori dallo schermo, i veri utenti non lo vedono né lo compilano. */
+            .esca-feedback{ position:absolute; left:-9999px; width:1px; height:1px; opacity:0; }
+
+            /* ==========================================================
                FOOTER LEGALE — discreto, sempre presente ma non invasivo
                ========================================================== */
             .footer-legale{
@@ -972,6 +999,10 @@
                 color: rgba(125,128,148,.75); text-decoration:none; pointer-events: auto;
             }
             .footer-legale a:hover{ color: var(--moon-dim); }
+            .footer-legale .link-parere{ color: rgba(125,128,148,.75); pointer-events: auto; font-size:inherit; }
+            .footer-legale .link-parere:hover{ color: var(--moon-dim); }
+            /* Nella home il link c'è già nel testo: nel footer sarebbe un doppione. */
+            body:has(#scena-intro.scena-attiva) .footer-parere{ display:none; }
             .footer-legale span{ opacity:.5; }
         </style>
         <script type="application/ld+json">
@@ -1048,6 +1079,7 @@
                     </div>
                 </div>
                 <p class="intro-nota">Gratuito, senza registrazione. Funziona anche offline una volta aperto.</p>
+                <p class="intro-nota intro-evoluzione">Lupus è un progetto in crescita e non è ancora la versione definitiva: migliora grazie ai pareri di chi lo prova. <button type="button" class="link-parere" onclick="apri_feedback()">Lascia un parere</button></p>
             </section>
         </div>
 
@@ -1609,10 +1641,51 @@
             </div>
         </div>
 
+        <!-- ================= POPUP: lascia un parere ================= -->
+        <div class="popup-overlay popup-feedback" id="popup-feedback">
+            <div class="popup-box">
+                <h3 id="feedback-titolo">Il tuo parere conta</h3>
+                <p class="feedback-intro" id="feedback-intro">Lupus è in continua evoluzione e questa non è ancora la versione definitiva: ogni commento, idea o problema che ci segnali serve a farlo diventare meglio. Bastano due righe.</p>
+                <div class="stelle-voto" id="feedback-stelle" role="group" aria-label="Voto da 1 a 5 (facoltativo)">
+                    <button type="button" class="stella" aria-label="1 stella" onclick="imposta_voto_feedback(1)">★</button>
+                    <button type="button" class="stella" aria-label="2 stelle" onclick="imposta_voto_feedback(2)">★</button>
+                    <button type="button" class="stella" aria-label="3 stelle" onclick="imposta_voto_feedback(3)">★</button>
+                    <button type="button" class="stella" aria-label="4 stelle" onclick="imposta_voto_feedback(4)">★</button>
+                    <button type="button" class="stella" aria-label="5 stelle" onclick="imposta_voto_feedback(5)">★</button>
+                </div>
+                <div class="campo-form">
+                    <label for="feedback-tipo">Di cosa si tratta?</label>
+                    <select id="feedback-tipo" class="input-form">
+                        <option value="commento">Un commento</option>
+                        <option value="idea">Un'idea o una richiesta</option>
+                        <option value="problema">Un problema</option>
+                    </select>
+                </div>
+                <div class="campo-form">
+                    <label for="feedback-testo">Il tuo messaggio</label>
+                    <textarea id="feedback-testo" class="input-form" rows="4" maxlength="1000" placeholder="Cosa ti è piaciuto? Cosa cambieresti?" oninput="aggiorna_contatore_feedback()"></textarea>
+                    <span class="contatore-testo" id="feedback-contatore">0 / 1000</span>
+                </div>
+                <div class="campo-form">
+                    <label for="feedback-contatto">Contatto (facoltativo)</label>
+                    <input type="text" id="feedback-contatto" class="input-form" maxlength="120" autocomplete="off" placeholder="Un'email, solo se vuoi una risposta">
+                </div>
+                <input type="text" id="feedback-sito" class="esca-feedback" tabindex="-1" autocomplete="off" aria-hidden="true">
+                <p class="feedback-esito" id="feedback-esito" role="status"></p>
+                <div class="azioni-scena">
+                    <button class="btn btn-secondary" type="button" id="feedback-chiudi" onclick="chiudi_feedback()">Chiudi</button>
+                    <button class="btn btn-primary" type="button" id="feedback-invia" onclick="invia_feedback()">Invia</button>
+                </div>
+                <p class="feedback-nota">Il messaggio è anonimo: non salviamo il tuo nome. Se scrivi un contatto lo useremo solo per risponderti. <a href="./privacy">Maggiori dettagli</a></p>
+            </div>
+        </div>
+
         <footer class="footer-legale">
             <a href="./privacy">Privacy</a>
             <span aria-hidden="true">·</span>
             <a href="./termini">Termini di utilizzo</a>
+            <span class="footer-parere" aria-hidden="true">·</span>
+            <button type="button" class="link-parere footer-parere" onclick="apri_feedback()">Lascia un parere</button>
         </footer>
 
         <script src="./js/lupus-engine.js"></script>
@@ -1761,6 +1834,7 @@
                     carica_ruoli_personalizzati();
                     costruisci_griglia_ruoli();
                     riprendi_sessione_remota();
+                    mostra_feedback_fine_partita_se_serve();
                 })
                 .catch(function(err){
                     console.error('Impossibile caricare roles.json', err);
@@ -1810,6 +1884,7 @@
                 var testoAvviso = 'La partita è ancora in corso. Se confermi, uscirai' +
                     (modalitaGioco === 'remoto' && ruoloUtente === 'narratore' ? ' e la stanza verrà chiusa per tutti.' : '.');
                 mostra_conferma('Tornare alla home?', testoAvviso, function(){
+                    if(partita_avviata()) segna_feedback_fine_partita();
                     if(smettiAscoltoStanza){ smettiAscoltoStanza(); smettiAscoltoStanza=null; }
                     ferma_ascolti_notte_automatica();
                     try{ sessionStorage.removeItem('lupus_stanza'); }catch(e){}
@@ -1859,6 +1934,7 @@
                 LupusSync.aggiornaCheckpointPartita(idPartitaStat, testo);
             }
             function registra_vittoria_partita(tipoEsito){
+                segna_feedback_fine_partita();
                 if(!idPartitaStat) return;
                 partitaStatConclusa = true;
                 LupusSync.registraPartitaConclusa(idPartitaStat, tipoEsito);
@@ -1874,6 +1950,35 @@
                 if(!idPartitaStat || partitaStatConclusa) return Promise.resolve();
                 if(modalitaGioco === 'remoto' && ruoloUtente !== 'narratore') return Promise.resolve();
                 return LupusSync.registraPartitaInterrotta(idPartitaStat, ultimoCheckpointPartita);
+            }
+
+            // Una partita è davvero iniziata (ruoli già distribuiti) se questo
+            // dispositivo ne sta registrando le statistiche (in presenza, o
+            // narratore a distanza) oppure, da giocatore a distanza, se ha
+            // già ricevuto il proprio ruolo. Serve a NON chiedere un parere
+            // a chi esce da una lobby o da una scelta ruoli mai conclusa.
+            function partita_avviata(){
+                return !!idPartitaStat || !!mioRuoloAttuale;
+            }
+
+            // Alla fine di una partita (vittoria o abbandono) si chiede un
+            // parere, ma quasi sempre si passa da un ricaricamento della
+            // pagina (refresh()): un popup aperto prima andrebbe perso. Si
+            // lascia quindi un segno in sessionStorage e il popup compare
+            // appena la home si ricarica (mostra_feedback_fine_partita_se_serve).
+            // sessionStorage, non localStorage: sparisce con la scheda, così
+            // il popup non può comparire giorni dopo, fuori contesto.
+            var CHIAVE_FEEDBACK_FINE = 'lupus_feedback_fine';
+            function segna_feedback_fine_partita(){
+                try{ sessionStorage.setItem(CHIAVE_FEEDBACK_FINE, '1'); }catch(e){}
+            }
+            function mostra_feedback_fine_partita_se_serve(){
+                var daChiedere = false;
+                try{
+                    daChiedere = sessionStorage.getItem(CHIAVE_FEEDBACK_FINE) === '1';
+                    sessionStorage.removeItem(CHIAVE_FEEDBACK_FINE);
+                }catch(e){}
+                if(daChiedere) setTimeout(function(){ apri_feedback(true); }, 900);
             }
 
             // Il bottone "Esci dalla stanza" del giocatore in attesa
@@ -1998,6 +2103,7 @@
             // stanza su Firebase così i giocatori collegati tornano automaticamente alla
             // home, poi ricarica la pagina come farebbe una "nuova partita" locale.
             function fine_partita(){
+                if(partita_avviata()) segna_feedback_fine_partita();
                 registra_interruzione_se_serve().then(function(){
                     if(modalitaGioco === 'remoto' && ruoloUtente === 'narratore' && codiceStanza){
                         if(smettiAscoltoStanza){ smettiAscoltoStanza(); smettiAscoltoStanza=null; }
@@ -2141,6 +2247,7 @@
                 smettiAscoltoStanza = LupusSync.ascolta(codiceStanza, function(stato){
                     if(!stato || !stato.giocatori || !stato.giocatori[mioPlayerId]){
                         // rimosso dal narratore, o la stanza non esiste più (partita terminata)
+                        if(cartaMostrata) segna_feedback_fine_partita();
                         if(smettiAscoltoStanza){ smettiAscoltoStanza(); smettiAscoltoStanza=null; }
                         try{ sessionStorage.removeItem('lupus_stanza'); } catch(e){}
                         mostra_avviso('Partita terminata', cartaMostrata ? 'La partita è terminata. Torni alla home.' : 'Sei stato rimosso dalla stanza, oppure la partita è stata annullata dal narratore.', refresh);
@@ -2278,6 +2385,76 @@
                 var cb=popupAvvisoCallback;
                 popupAvvisoCallback=null;
                 if(confermato && cb) cb();
+            }
+
+            /* ==========================================================
+               PARERI DEGLI UTENTI — popup di invio (stessa pagina, nessuna
+               schermata a parte). Il messaggio parte verso js/lupus-sync.js
+               (`inviaFeedback`): qui si tocca solo il DOM.
+               ========================================================== */
+            var feedbackVoto=0;
+            var feedbackInvioInCorso=false;
+            function aggiorna_stelle_feedback(){
+                var stelle=document.querySelectorAll('#feedback-stelle .stella');
+                for(var i=0;i<stelle.length;i++){
+                    stelle[i].classList.toggle('attiva', i<feedbackVoto);
+                }
+            }
+            function imposta_voto_feedback(n){
+                feedbackVoto=(feedbackVoto===n)?0:n;   // un secondo tocco sulla stessa stella toglie il voto
+                aggiorna_stelle_feedback();
+            }
+            function aggiorna_contatore_feedback(){
+                document.getElementById('feedback-contatore').innerText=
+                    document.getElementById('feedback-testo').value.length+' / 1000';
+            }
+            // dopoPartita: true quando si apre da solo alla fine di una partita
+            // (vittoria o abbandono): cambiano solo i testi, il modulo è lo stesso.
+            function apri_feedback(dopoPartita){
+                document.getElementById('feedback-titolo').innerText=
+                    dopoPartita ? 'Com\'è andata?' : 'Il tuo parere conta';
+                document.getElementById('feedback-intro').innerText=
+                    dopoPartita
+                    ? 'Grazie per aver giocato! Lupus è in continua evoluzione e non è ancora la versione definitiva: dirci cosa ti è piaciuto, cosa no, o cosa è andato storto ci aiuta a migliorarlo. Bastano due righe.'
+                    : 'Lupus è in continua evoluzione e questa non è ancora la versione definitiva: ogni commento, idea o problema che ci segnali serve a farlo diventare meglio. Bastano due righe.';
+                document.getElementById('feedback-chiudi').innerText= dopoPartita ? 'Non ora' : 'Chiudi';
+                document.getElementById('feedback-esito').innerText='';
+                document.getElementById('popup-feedback').classList.add('aperta');
+            }
+            function chiudi_feedback(){
+                document.getElementById('popup-feedback').classList.remove('aperta');
+            }
+            function invia_feedback(){
+                if(feedbackInvioInCorso) return;
+                var elEsito=document.getElementById('feedback-esito');
+                var testo=document.getElementById('feedback-testo').value.replace(/^\s+|\s+$/g,'');
+                if(!testo){ elEsito.innerText='Scrivi qualche parola prima di inviare.'; return; }
+                var btn=document.getElementById('feedback-invia');
+                feedbackInvioInCorso=true;
+                btn.disabled=true; btn.innerText='Invio…';
+                elEsito.innerText='';
+                LupusSync.inviaFeedback({
+                    tipo: document.getElementById('feedback-tipo').value,
+                    voto: feedbackVoto||null,
+                    testo: testo,
+                    contatto: document.getElementById('feedback-contatto').value,
+                    sito: document.getElementById('feedback-sito').value
+                }).then(function(r){
+                    feedbackInvioInCorso=false;
+                    btn.disabled=false; btn.innerText='Invia';
+                    if(r && r.ok){
+                        document.getElementById('feedback-testo').value='';
+                        document.getElementById('feedback-contatto').value='';
+                        feedbackVoto=0; aggiorna_stelle_feedback(); aggiorna_contatore_feedback();
+                        chiudi_feedback();
+                        mostra_avviso('Grazie!','Il tuo parere è arrivato. Ci aiuta a far crescere Lupus.');
+                    } else if(r && r.stato===429){
+                        elEsito.innerText='Hai già inviato diversi pareri: riprova tra un po\'.';
+                    } else {
+                        // il testo resta nel campo: basta riprovare
+                        elEsito.innerText='Non siamo riusciti a inviarlo. Controlla la connessione e riprova.';
+                    }
+                });
             }
 
             /* ==========================================================
@@ -2494,6 +2671,7 @@
             function mostra_partita_terminata_esternamente(){
                 if(partitaAutoTerminataMostrata) return;
                 partitaAutoTerminataMostrata=true;
+                if(partita_avviata()) segna_feedback_fine_partita();
                 ferma_ascolti_notte_automatica();
                 try{ sessionStorage.removeItem('lupus_stanza'); }catch(e){}
                 mostra_avviso('Partita terminata', 'La stanza è stata chiusa. Torni alla home.', function(){ refresh(); });
@@ -2650,6 +2828,7 @@
             function mostra_vittoria_automatica(evento){
                 if(vittoriaAutoMostrata) return;
                 vittoriaAutoMostrata=true;
+                segna_feedback_fine_partita();
                 ferma_ascolti_notte_automatica();
                 try{ sessionStorage.removeItem('lupus_stanza'); }catch(e){}
                 document.getElementById('vittoria-auto-testo').innerText = testo_esito_vittoria(evento.tipo);
